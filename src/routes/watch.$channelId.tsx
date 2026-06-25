@@ -95,6 +95,14 @@ function WatchPage() {
     }
   }, [channel, fav]);
 
+  const onBack = useCallback(() => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      window.history.back();
+    } else {
+      navigate({ to: "/browse" });
+    }
+  }, [navigate]);
+
   if (cat.isLoading) return <div className="shimmer mx-auto aspect-video max-w-5xl rounded-xl" />;
 
   if (!channel) {
@@ -119,7 +127,7 @@ function WatchPage() {
   return (
     <div className="mx-auto max-w-5xl">
       <button
-        onClick={() => navigate({ to: "/browse" })}
+        onClick={onBack}
         className="mb-4 inline-flex items-center gap-1.5 text-[12px] text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
       >
         <ArrowLeft className="size-3.5" /> Back

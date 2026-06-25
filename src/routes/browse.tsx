@@ -249,6 +249,49 @@ function BrowsePage() {
   const epg = useEpg();
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
+  // 1. On mount: Restore saved search filters if the current URL has no filters
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const hasParams = !!(
+      selected.category ||
+      selected.language ||
+      selected.country ||
+      selected.q ||
+      selected.sort
+    );
+    if (!hasParams) {
+      const savedStr = sessionStorage.getItem("tela-browse-search");
+      if (savedStr) {
+        try {
+          const saved = JSON.parse(savedStr);
+          if (Object.keys(saved).length > 0) {
+            navigate({ search: saved, replace: true });
+          }
+        } catch {
+          // ignore
+        }
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // 2. On search params change: Save current filters to sessionStorage
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const hasParams = !!(
+      selected.category ||
+      selected.language ||
+      selected.country ||
+      selected.q ||
+      selected.sort
+    );
+    if (hasParams) {
+      sessionStorage.setItem("tela-browse-search", JSON.stringify(selected));
+    } else {
+      sessionStorage.removeItem("tela-browse-search");
+    }
+  }, [selected]);
+
   const ids = useMemo(() => {
     if (!cat.data) return [];
     const sets: Set<string>[] = [];
