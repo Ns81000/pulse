@@ -1,5 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Search, Tv, Compass, Heart, Home } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const NAV = [
   { to: "/", label: "Home", icon: Home },
@@ -10,11 +11,22 @@ const NAV = [
 
 export function Header({ onSearchOpen }: { onSearchOpen?: () => void }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const [shortcutText, setShortcutText] = useState("Ctrl+K");
+
+  useEffect(() => {
+    if (typeof navigator !== "undefined" && navigator.userAgent.indexOf("Mac") !== -1) {
+      setShortcutText("⌘K");
+    }
+  }, []);
+
   return (
-    <header className="sticky top-0 z-30 border-b border-[var(--border-subtle)] bg-[color:var(--surface-base)]/85 backdrop-blur-md">
+    <header className="sticky top-0 z-30 border-b border-[var(--border-subtle)] bg-[color:var(--surface-base)]/80 backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-[1600px] items-center gap-4 px-4 sm:px-6">
-        <Link to="/" className="flex shrink-0 items-center gap-2">
-          <div className="grid size-6 place-items-center rounded-md bg-[var(--accent)]">
+        <Link
+          to="/"
+          className="flex shrink-0 items-center gap-2 transition-transform active:scale-98"
+        >
+          <div className="grid size-6 place-items-center rounded-md bg-gradient-to-br from-[#ff4a54] to-[#9e1a22] shadow-[0_0_8px_rgba(229,72,77,0.3)]">
             <span className="font-mono text-[10px] font-bold text-white">T</span>
           </div>
           <span className="font-display text-[15px] font-semibold tracking-tight">Tela</span>
@@ -27,7 +39,7 @@ export function Header({ onSearchOpen }: { onSearchOpen?: () => void }) {
               <Link
                 key={n.to}
                 to={n.to}
-                className={`rounded-md px-3 py-1.5 text-[13px] transition-colors ${
+                className={`rounded-md px-3 py-1.5 text-[13px] font-medium transition-colors ${
                   active
                     ? "text-[var(--text-primary)]"
                     : "text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
@@ -47,9 +59,7 @@ export function Header({ onSearchOpen }: { onSearchOpen?: () => void }) {
           >
             <Search className="size-3.5" />
             <span className="flex-1 text-left">Search…</span>
-            <kbd className="hidden rounded border border-[var(--border-default)] bg-[var(--surface-3)] px-1.5 py-px font-mono text-[10px] sm:inline">
-              Alt+K
-            </kbd>
+            <kbd className="keycap-kbd hidden sm:inline-flex">{shortcutText}</kbd>
           </button>
         </div>
       </div>
@@ -60,7 +70,7 @@ export function Header({ onSearchOpen }: { onSearchOpen?: () => void }) {
 export function BottomTabBar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-30 border-t border-[var(--border-subtle)] bg-[color:var(--surface-base)]/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md sm:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-30 border-t border-[var(--border-subtle)] glassmorphic-blur pb-[env(safe-area-inset-bottom)] sm:hidden">
       <ul className="flex">
         {NAV.map((n) => {
           const Icon = n.icon;
@@ -69,12 +79,17 @@ export function BottomTabBar() {
             <li key={n.to} className="flex-1">
               <Link
                 to={n.to}
-                className={`flex h-14 flex-col items-center justify-center gap-1 text-[10px] ${
+                className={`flex h-14 flex-col items-center justify-center gap-0.5 text-[10px] transition-all duration-100 active:scale-92 ${
                   active ? "text-[var(--accent)]" : "text-[var(--text-tertiary)]"
                 }`}
               >
-                <Icon className="size-[19px]" strokeWidth={active ? 2.2 : 1.8} />
-                <span>{n.label}</span>
+                <div className="relative flex flex-col items-center">
+                  <Icon className="size-[18px]" strokeWidth={active ? 2.2 : 1.8} />
+                  {active && (
+                    <span className="absolute -bottom-1.5 size-1 rounded-full bg-[var(--accent)] shadow-[0_0_6px_var(--accent)]" />
+                  )}
+                </div>
+                <span className="mt-1.5 text-[9.5px] font-medium tracking-wide">{n.label}</span>
               </Link>
             </li>
           );

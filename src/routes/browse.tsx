@@ -21,6 +21,7 @@ import {
   Check,
 } from "lucide-react";
 import type { Catalog } from "@/lib/types";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 
 const search = z.object({
   category: z.string().optional(),
@@ -369,8 +370,8 @@ function BrowsePage() {
           />
           <button
             type="button"
-            onClick={() => setMobileFiltersOpen((o) => !o)}
-            className="btn-ghost inline-flex items-center gap-1.5 sm:hidden"
+            onClick={() => setMobileFiltersOpen(true)}
+            className="btn-ghost inline-flex items-center gap-1.5 sm:hidden active:scale-95 transition-transform"
           >
             <SlidersHorizontal className="size-3.5" />
           </button>
@@ -401,9 +402,8 @@ function BrowsePage() {
       )}
 
       <div className="flex gap-6">
-        <aside
-          className={`${mobileFiltersOpen ? "block" : "hidden"} sm:block w-full shrink-0 sm:w-[260px]`}
-        >
+        {/* Desktop Sidebar Filter Panel */}
+        <aside className="hidden sm:block w-full shrink-0 sm:w-[260px]">
           {cat.isLoading && (
             <div className="space-y-4 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] p-4">
               {/* Filter title */}
@@ -457,7 +457,9 @@ function BrowsePage() {
             />
           )}
         </aside>
-        <div className={`${mobileFiltersOpen ? "hidden" : "block"} sm:block min-w-0 flex-1`}>
+
+        {/* Main Grid Content */}
+        <div className="min-w-0 flex-1">
           {cat.isLoading && (
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
               {Array.from({ length: 15 }).map((_, i) => (
@@ -477,6 +479,36 @@ function BrowsePage() {
           )}
         </div>
       </div>
+
+      {/* Mobile Filters Bottom Sheet Drawer */}
+      <Drawer open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
+        <DrawerContent className="px-5 pb-8 pt-2 max-h-[85vh] overflow-y-auto bg-[var(--surface-1)] border-[var(--border-subtle)]">
+          <DrawerHeader className="text-left px-0 pb-3 border-b border-[var(--border-subtle)]">
+            <DrawerTitle className="font-display text-base font-semibold text-[var(--text-primary)]">
+              Filter Channels
+            </DrawerTitle>
+          </DrawerHeader>
+          <div className="mt-4 overflow-y-auto no-scrollbar pb-6">
+            {cat.data && (
+              <FilterPanel
+                catalog={cat.data}
+                selected={selected}
+                onChange={(next) => {
+                  navigate({
+                    search: (p: S) => ({
+                      ...p,
+                      category: next.category,
+                      language: next.language,
+                      country: next.country,
+                    }),
+                    replace: false,
+                  });
+                }}
+              />
+            )}
+          </div>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 }

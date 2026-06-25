@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { ArrowLeft, Heart, ExternalLink } from "lucide-react";
+import { ArrowLeft, Heart, ExternalLink, Tv } from "lucide-react";
 import { toast } from "sonner";
 import { useCatalog, useEpg, checkStream, getWorkingStreamIndex } from "@/lib/data-hooks";
 import { Player } from "@/components/Player";
@@ -14,8 +14,19 @@ import {
   recordHistory,
   recordHealth,
 } from "@/lib/idb";
-import type { ChannelStatus } from "@/lib/types";
+import type { ChannelStatus, Catalog, EPGData } from "@/lib/types";
 import { streamErrorMsg } from "@/lib/stream-messages";
+
+// iptv-org country mapping for flagcdn
+const CODE_MAP: Record<string, string> = {
+  uk: "gb",
+  int: "",
+};
+
+function toFlagCode(code: string): string {
+  const lower = code.toLowerCase();
+  return CODE_MAP[lower] ?? lower;
+}
 
 export const Route = createFileRoute("/watch/$channelId")({
   component: WatchPage,
@@ -32,10 +43,11 @@ function WatchPage() {
   const [fav, setFav] = useState(false);
 
   const channel = cat.data?.channels[channelId];
-  const flag = useMemo(() => {
-    if (!cat.data || !channel) return "";
-    return cat.data.meta.countries.find((c) => c.code === channel.country)?.flag ?? "";
-  }, [cat.data, channel]);
+  const flagCode = useMemo(() => {
+    if (!channel) return "";
+    return channel.country ? toFlagCode(channel.country) : "";
+  }, [channel]);
+
   const catNames = useMemo(() => {
     if (!cat.data || !channel) return [];
     return channel.categories.map(
@@ -56,7 +68,6 @@ function WatchPage() {
         const s = channel.streams[idx];
         if (!s) return "error";
 
-        // Front-end Mixed Content protection:
         if (
           typeof window !== "undefined" &&
           window.location.protocol === "https:" &&
@@ -68,12 +79,10 @@ function WatchPage() {
         return await checkStream(s.url, s.referrer, s.user_agent, force);
       };
 
-      // Try the cached/last-working stream first
       const res = await tryStream(workingIndex);
       if (res === "online") {
         statusResult = "online";
       } else {
-        // Fallback to sequentially checking all other streams
         let found = false;
         for (let i = 0; i < channel.streams.length; i++) {
           if (i === workingIndex) continue;
@@ -110,7 +119,6 @@ function WatchPage() {
 
   useEffect(() => {
     if (!channel) {
-      // Catalog still loading — don't leave status stuck on "checking"
       if (!cat.isLoading) setStatus("error");
       return;
     }
@@ -118,7 +126,6 @@ function WatchPage() {
     checkFav(channel.id).then(setFav);
   }, [channel, runCheck, cat.isLoading]);
 
-  // Stay in sync when favourite toggled from another component
   useEffect(() => {
     if (!channel) return;
     const onFavChange = () => checkFav(channel.id).then(setFav);
@@ -177,128 +184,355 @@ function WatchPage() {
 
   const now = epg.data?.programs[channel.id]?.now;
   const next = epg.data?.programs[channel.id]?.next;
+  const hasSchedule = !!(now || next);
 
   return (
-    <div className="mx-auto max-w-5xl">
+    <div className="mx-auto max-w-[1600px] w-full px-1">
       <button
         onClick={onBack}
-        className="mb-4 inline-flex items-center gap-1.5 text-[12px] text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
+        className="mb-4 inline-flex items-center gap-1.5 text-[12px] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors active:scale-95"
       >
         <ArrowLeft className="size-3.5" /> Back
       </button>
 
-      {showPlayer && (
-        <div className="overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-black">
-          <Player channel={channel} onFatalError={onFatalPlayerError} />
-        </div>
-      )}
+      {/* Grid container: Cinema layout on desktop (lg and above), stacked on mobile */}
+      <div
+        className={`grid grid-cols-1 gap-6 ${hasSchedule ? "lg:grid-cols-[1fr_360px] xl:grid-cols-[1fr_400px]" : "lg:grid-cols-[1fr_320px]"}`}
+      >
+        {/* Left column: Player screen & Metadata Details */}
+        <div className="space-y-5 min-w-0">
+          {showPlayer && (
+            <div className="overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-black shadow-lg">
+              <Player channel={channel} onFatalError={onFatalPlayerError} />
+            </div>
+          )}
 
-      {showLoading && (
-        <div className="shimmer relative aspect-video w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-1)]">
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-            <div className="size-8 animate-spin rounded-full border-2 border-[var(--border-default)] border-t-[var(--accent)]" />
-            <p className="text-[12px] text-[var(--text-tertiary)] font-medium">
-              {status === "checking"
-                ? "Verifying stream connection..."
-                : "Re-connecting to stream..."}
-            </p>
+          {showLoading && (
+            <div className="shimmer relative aspect-video w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-1)]">
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+                <div className="size-8 animate-spin rounded-full border-2 border-[var(--border-default)] border-t-[var(--accent)]" />
+                <p className="text-[12px] text-[var(--text-tertiary)] font-medium animate-pulse">
+                  {status === "checking"
+                    ? "Verifying stream connection..."
+                    : "Re-connecting to stream..."}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {showRecovery && (
+            <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-1)] p-6">
+              <div className="flex items-start gap-3">
+                <StatusBadge status={status} size="md" />
+                <div>
+                  <h2 className="font-display text-base font-medium">
+                    This channel isn't responding right now.
+                  </h2>
+                  <p className="mt-1 text-[13px] text-[var(--text-tertiary)]">
+                    Public IPTV links come and go. Try an alternative below — they're picked from
+                    channels in the same category.
+                  </p>
+                  <button
+                    onClick={() => runCheck(true)}
+                    className="btn-ghost mt-3 text-[12px] active:scale-95 transition-transform"
+                  >
+                    Try again
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Details Card */}
+          <div className="py-2 px-1">
+            <header className="flex flex-wrap justify-between items-start gap-4">
+              <div className="min-w-0 flex-1">
+                <div className="flex min-w-0 flex-wrap items-center gap-2.5">
+                  <h1 className="truncate font-display text-xl sm:text-2xl font-semibold tracking-tight">
+                    {channel.name}
+                  </h1>
+                  {flagCode && (
+                    <img
+                      src={`https://flagcdn.com/w20/${flagCode}.png`}
+                      srcSet={`https://flagcdn.com/w40/${flagCode}.png 2x`}
+                      width={20}
+                      height={15}
+                      alt={channel.country}
+                      title={channel.country}
+                      className="rounded-[2px] object-cover shrink-0 shadow-sm"
+                    />
+                  )}
+                  <StatusBadge status={status} />
+                </div>
+                {catNames.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {catNames.map((n) => (
+                      <span
+                        key={n}
+                        className="rounded-full bg-[var(--surface-2)] px-2.5 py-1 text-[11px] text-[var(--text-tertiary)] font-medium"
+                      >
+                        {n}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="flex shrink-0 gap-2">
+                <button
+                  onClick={toggleFav}
+                  className="btn-ghost inline-flex items-center gap-1.5 active:scale-95 transition-transform"
+                >
+                  <Heart
+                    className={`size-3.5 ${fav ? "fill-[var(--accent)] text-[var(--accent)]" : ""}`}
+                  />
+                  <span className="hidden sm:inline">{fav ? "Favourited" : "Favourite"}</span>
+                </button>
+                {channel.website && (
+                  <a
+                    href={channel.website}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn-ghost inline-flex items-center gap-1.5 active:scale-95 transition-transform"
+                  >
+                    <ExternalLink className="size-3.5" />
+                    <span className="hidden sm:inline">Site</span>
+                  </a>
+                )}
+              </div>
+            </header>
+
+            {/* Mobile EPG timeline view inline */}
+            {hasSchedule && (
+              <div className="mt-5 border-t border-[var(--border-subtle)] pt-4 block lg:hidden">
+                <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--text-tertiary)] font-semibold">
+                  Broadcast Schedule
+                </p>
+                {now && (
+                  <div className="mt-2.5 text-[13px] space-y-2">
+                    <p className="text-[var(--text-primary)]">
+                      <span className="mr-2 font-mono text-[9px] font-bold uppercase text-[var(--accent)] bg-[var(--accent-subtle)] px-1 py-0.5 rounded">
+                        Now
+                      </span>
+                      <span className="font-medium">{now.title}</span>
+                    </p>
+                    {next && (
+                      <p className="text-[12.5px] text-[var(--text-tertiary)]">
+                        <span className="mr-2 font-mono text-[9px] font-medium uppercase border border-[var(--border-default)] px-1 py-0.5 rounded">
+                          Next
+                        </span>
+                        {next.title}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Alternatives Shelf (Only visible on mobile view layout) */}
+          <div className="block lg:hidden mt-6">
+            {cat.data && (
+              <AlternativesShelf
+                catalog={cat.data}
+                epg={epg.data}
+                failedChannelId={channel.id}
+                title={showRecovery ? "Working alternatives" : "More like this"}
+              />
+            )}
           </div>
         </div>
-      )}
 
-      {showRecovery && (
-        <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-1)] p-6">
-          <div className="flex items-start gap-3">
-            <StatusBadge status={status} size="md" />
-            <div>
-              <h2 className="font-display text-base font-medium">
-                This channel isn't responding right now.
-              </h2>
-              <p className="mt-1 text-[13px] text-[var(--text-tertiary)]">
-                Public IPTV links come and go. Try an alternative below — they're picked from
-                channels in the same category.
-              </p>
-              <button onClick={() => runCheck(true)} className="btn-ghost mt-3 text-[12px]">
-                Try again
-              </button>
+        {/* Right column: EPG & Recommendations Sidebar (Visible on desktop only) */}
+        <div className="hidden lg:flex flex-col gap-5 min-w-0">
+          {/* EPG Sidebar widget */}
+          {hasSchedule && (
+            <div className="py-1 border-b border-[var(--border-subtle)] pb-5">
+              <h3 className="font-mono text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)] mb-4">
+                Broadcast Schedule
+              </h3>
+              <div className="space-y-4">
+                {now && (
+                  <div className="relative pl-4 border-l-2 border-[var(--accent)] py-1">
+                    <span className="absolute -left-[5px] top-[14px] size-2 rounded-full bg-[var(--accent)] animate-pulse" />
+                    <p className="text-[9px] uppercase font-mono tracking-wider text-[var(--accent)] font-semibold">
+                      Now playing
+                    </p>
+                    <h4 className="text-[13.5px] font-medium text-[var(--text-primary)] mt-0.5 leading-snug">
+                      {now.title}
+                    </h4>
+                    <p className="text-[11px] text-[var(--text-tertiary)] mt-1 font-mono">
+                      {new Date(now.start).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}{" "}
+                      -{" "}
+                      {new Date(now.end).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                  </div>
+                )}
+                {next && (
+                  <div className="relative pl-4 border-l-2 border-[var(--border-default)] py-1">
+                    <p className="text-[9px] uppercase font-mono tracking-wider text-[var(--text-tertiary)]">
+                      Up next
+                    </p>
+                    <h4 className="text-[13.5px] font-medium text-[var(--text-secondary)] mt-0.5 leading-snug">
+                      {next.title}
+                    </h4>
+                    <p className="text-[11px] text-[var(--text-tertiary)] mt-1 font-mono">
+                      {new Date(next.start).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}{" "}
+                      -{" "}
+                      {new Date(next.end).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Alternatives Sidebar widget */}
+          <div className="py-1 flex flex-col">
+            <h3 className="mb-3 font-mono text-[10.5px] font-bold uppercase tracking-[0.14em] text-[var(--text-tertiary)] shrink-0">
+              {showRecovery ? "Working Alternatives" : "Recommended Channels"}
+            </h3>
+            <div className="space-y-3">
+              {cat.data && (
+                <AlternativesVerticalList
+                  catalog={cat.data}
+                  epg={epg.data}
+                  failedChannelId={channel.id}
+                />
+              )}
             </div>
           </div>
         </div>
-      )}
+      </div>
+    </div>
+  );
+}
 
-      <header className="mt-5 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4 sm:flex sm:flex-wrap sm:justify-between">
-        <div className="min-w-0 flex-1">
-          <div className="flex min-w-0 flex-wrap items-center gap-2">
-            <h1 className="truncate font-display text-2xl font-semibold tracking-tight">
-              {channel.name}
-            </h1>
-            {flag && (
-              <span className="text-xl leading-none" aria-hidden>
-                {flag}
-              </span>
-            )}
-            <StatusBadge status={status} />
-          </div>
-          {now ? (
-            <div className="mt-3 text-[13px]">
-              <p className="text-[var(--text-primary)]">
-                <span className="mr-1.5 font-mono text-[10px] uppercase tracking-wider text-[var(--text-tertiary)]">
-                  Now
+function AlternativesVerticalList({
+  catalog,
+  epg,
+  failedChannelId,
+}: {
+  catalog: Catalog;
+  epg?: EPGData;
+  failedChannelId: string;
+}) {
+  const navigate = useNavigate();
+  const player = usePlayer();
+
+  const ids = useMemo(() => {
+    const failed = failedChannelId ? catalog.channels[failedChannelId] : null;
+    if (!failed) return catalog.indexes.all_ids.slice(0, 15);
+
+    const failedCats = new Set(failed.categories);
+    const failedCountry = failed.country;
+    const scored: { id: string; score: number }[] = [];
+    for (const id of catalog.indexes.all_ids) {
+      if (id === failed.id) continue;
+      const c = catalog.channels[id];
+      if (!c) continue;
+      const overlap = c.categories.filter((x: string) => failedCats.has(x)).length;
+      if (overlap === 0) continue;
+      const score = overlap * 10 + (c.country === failedCountry ? 5 : 0);
+      scored.push({ id, score });
+    }
+    scored.sort((a, b) => b.score - a.score);
+    const result = scored.slice(0, 15).map((s) => s.id);
+    if (result.length < 10) {
+      for (const id of catalog.indexes.all_ids) {
+        if (id === failed.id) continue;
+        if (!result.includes(id)) result.push(id);
+        if (result.length >= 15) break;
+      }
+    }
+    return result;
+  }, [catalog, failedChannelId]);
+
+  return (
+    <div className="flex flex-col gap-2.5">
+      {ids.map((id) => {
+        const c = catalog.channels[id];
+        if (!c) return null;
+        const nowProg = epg?.programs[id]?.now;
+        const code = c.country ? toFlagCode(c.country) : "";
+        return (
+          <button
+            key={id}
+            onClick={async () => {
+              const first = c.streams[0];
+              const toastId = `stream-${c.id}`;
+              toast.loading(`Connecting to ${c.name}...`, { id: toastId });
+              const result = await checkStream(first.url, first.referrer, first.user_agent);
+              if (result === "online") {
+                toast.dismiss(toastId);
+                player.open(c);
+                navigate({ to: "/watch/$channelId", params: { channelId: c.id } });
+              } else {
+                toast.error(c.name, {
+                  id: toastId,
+                  description: streamErrorMsg(result),
+                  duration: 6000,
+                  action: {
+                    label: "Open anyway",
+                    onClick: () => {
+                      toast.dismiss(toastId);
+                      player.open(c);
+                      navigate({ to: "/watch/$channelId", params: { channelId: c.id } });
+                    },
+                  },
+                });
+              }
+            }}
+            className="flex items-start gap-3 w-full p-1.5 text-left rounded-lg hover:bg-[var(--surface-2)] transition-all duration-150 active:scale-[0.985]"
+          >
+            {/* Aspect-video larger thumbnail */}
+            <div className="relative aspect-video w-28 h-[63px] shrink-0 rounded-md bg-[var(--surface-base)] border border-[var(--border-subtle)] flex items-center justify-center overflow-hidden">
+              {c.logo_url ? (
+                <img src={c.logo_url} alt="" className="max-h-[75%] max-w-[75%] object-contain" />
+              ) : (
+                <Tv className="size-5 text-[var(--text-disabled)]" />
+              )}
+            </div>
+            <div className="min-w-0 flex-1 py-0.5">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="truncate text-[13.5px] font-semibold text-[var(--text-primary)]">
+                  {c.name}
                 </span>
-                <span className="font-medium">{now.title}</span>
-              </p>
-              {next && (
-                <p className="mt-1 text-[12.5px] text-[var(--text-tertiary)]">
-                  <span className="mr-1.5 font-mono text-[10px] uppercase tracking-wider">
-                    Next
-                  </span>
-                  {next.title}
+                {code && (
+                  <img
+                    src={`https://flagcdn.com/w20/${code}.png`}
+                    width={14}
+                    height={10}
+                    alt=""
+                    className="rounded-[1.5px] shrink-0 shadow-sm"
+                  />
+                )}
+              </div>
+              {nowProg ? (
+                <p className="truncate text-[11.5px] text-[var(--text-secondary)] mt-1.5 font-medium">
+                  <span className="mr-1 inline-block size-1.5 -translate-y-[2.5px] rounded-full bg-[var(--status-online)]" />
+                  {nowProg.title}
+                </p>
+              ) : (
+                <p className="text-[10px] text-[var(--text-disabled)] mt-1.5 font-mono text-[9px] uppercase tracking-wide">
+                  No schedule data
                 </p>
               )}
             </div>
-          ) : null}
-          {catNames.length > 0 && (
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {catNames.map((n) => (
-                <span
-                  key={n}
-                  className="rounded-full bg-[var(--surface-2)] px-2.5 py-1 text-[11px] text-[var(--text-tertiary)]"
-                >
-                  {n}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-        <div className="flex shrink-0 gap-2">
-          <button onClick={toggleFav} className="btn-ghost inline-flex items-center gap-1.5">
-            <Heart
-              className={`size-3.5 ${fav ? "fill-[var(--accent)] text-[var(--accent)]" : ""}`}
-            />
-            <span className="hidden sm:inline">{fav ? "Favourited" : "Favourite"}</span>
           </button>
-          {channel.website && (
-            <a
-              href={channel.website}
-              target="_blank"
-              rel="noreferrer"
-              className="btn-ghost inline-flex items-center gap-1.5"
-            >
-              <ExternalLink className="size-3.5" />
-              <span className="hidden sm:inline">Site</span>
-            </a>
-          )}
-        </div>
-      </header>
-
-      {cat.data && (
-        <AlternativesShelf
-          catalog={cat.data}
-          epg={epg.data}
-          failedChannelId={channel.id}
-          title={showRecovery ? "Working alternatives" : "More like this"}
-        />
-      )}
+        );
+      })}
     </div>
   );
 }

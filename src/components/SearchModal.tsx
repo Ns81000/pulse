@@ -376,15 +376,18 @@ export function SearchModal({ open, onClose }: Props) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center px-4 pt-[10vh] sm:pt-[12vh]">
+    <div className="fixed inset-0 z-50 flex items-start justify-center sm:px-4 sm:pt-[12vh]">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onMouseDown={onClose} />
+      <div
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm hidden sm:block"
+        onMouseDown={onClose}
+      />
 
       {/* Modal panel */}
-      <div className="relative w-full max-w-2xl overflow-hidden rounded-2xl border border-[var(--border-default)] bg-[var(--surface-1)] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)]">
+      <div className="relative flex h-full w-full flex-col bg-[var(--surface-1)] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] sm:h-auto sm:max-w-2xl sm:overflow-hidden sm:rounded-2xl sm:border sm:border-[var(--border-default)] sm:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)] sm:pt-0 sm:pb-0">
         {/* Input row with pills */}
         <div
-          className="flex min-h-[52px] flex-wrap items-center gap-1.5 border-b border-[var(--border-subtle)] px-3 py-2.5"
+          className="flex min-h-[56px] flex-wrap items-center gap-1.5 border-b border-[var(--border-subtle)] px-3 py-2.5 shrink-0"
           onMouseDown={(e) => {
             if (e.target === e.currentTarget) inputRef.current?.focus();
           }}
@@ -397,7 +400,7 @@ export function SearchModal({ open, onClose }: Props) {
             return (
               <span
                 key={pill.type}
-                className="inline-flex items-center gap-1 rounded-md border border-[var(--accent)] bg-[var(--accent-subtle)] px-2 py-0.5 text-[12px] font-medium text-[var(--accent)]"
+                className="inline-flex items-center gap-1 rounded-md border border-[var(--accent)] bg-[var(--accent-subtle)] px-2 py-0.5 text-[12px] font-medium text-[var(--accent)] transition-all"
               >
                 {flagCode && (
                   <img
@@ -432,9 +435,7 @@ export function SearchModal({ open, onClose }: Props) {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder={
-              pills.length === 0
-                ? "Search channels, countries, categories, languages…"
-                : "Search channels…"
+              pills.length === 0 ? "Search channels, countries, categories..." : "Search channels…"
             }
             className="min-w-[140px] flex-1 bg-transparent text-[15px] text-[var(--text-primary)] outline-none placeholder:text-[var(--text-tertiary)]"
           />
@@ -448,7 +449,7 @@ export function SearchModal({ open, onClose }: Props) {
                 setQ("");
                 inputRef.current?.focus();
               }}
-              className="shrink-0 rounded p-0.5 text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
+              className="shrink-0 rounded-full p-1 text-[var(--text-tertiary)] hover:bg-[var(--surface-3)] hover:text-[var(--text-primary)] transition-colors"
               aria-label="Clear"
             >
               <X className="size-3.5" />
@@ -458,19 +459,29 @@ export function SearchModal({ open, onClose }: Props) {
           <button
             type="button"
             onClick={onClose}
-            className="shrink-0 rounded border border-[var(--border-default)] bg-[var(--surface-3)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
+            className="keycap-kbd hidden sm:inline-flex shrink-0"
           >
             Esc
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex sm:hidden shrink-0 items-center justify-center size-8 rounded-full bg-[var(--surface-2)] text-[var(--text-secondary)] hover:bg-[var(--surface-3)] transition-colors"
+            aria-label="Close search"
+          >
+            <X className="size-4" />
           </button>
         </div>
 
         {/* Results list */}
-        <div ref={listRef} className="max-h-[58vh] overflow-y-auto p-2">
+        <div ref={listRef} className="flex-1 overflow-y-auto p-2 no-scrollbar">
           {/* Loading */}
           {cat.isLoading && (
-            <div className="px-4 py-8 text-center">
+            <div className="px-4 py-12 text-center">
               <div className="mx-auto mb-3 size-5 animate-spin rounded-full border-2 border-[var(--border-default)] border-t-[var(--accent)]" />
-              <p className="text-[13px] text-[var(--text-tertiary)]">Loading catalog…</p>
+              <p className="text-[13px] text-[var(--text-tertiary)] font-medium">
+                Loading IPTV catalog…
+              </p>
             </div>
           )}
 
@@ -481,9 +492,12 @@ export function SearchModal({ open, onClose }: Props) {
                 Recently watched
               </p>
               {recent.length === 0 ? (
-                <p className="px-2 py-6 text-center text-[13px] text-[var(--text-tertiary)]">
+                <p className="px-2 py-8 text-center text-[13px] text-[var(--text-tertiary)] leading-relaxed">
                   Start typing to search across{" "}
-                  {cat.data?.indexes.all_ids.length.toLocaleString() ?? "thousands of"} channels.
+                  <span className="font-semibold text-[var(--text-secondary)]">
+                    {cat.data?.indexes.all_ids.length.toLocaleString() ?? "thousands of"}
+                  </span>{" "}
+                  channels.
                 </p>
               ) : (
                 recent.map((id, idx) => {
@@ -503,7 +517,7 @@ export function SearchModal({ open, onClose }: Props) {
                         setActive(idx);
                       }}
                       onClick={() => playChannel(id)}
-                      className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-[13.5px] transition-colors ${
+                      className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-[13.5px] transition-colors active:scale-[0.995] ${
                         isActive
                           ? "bg-[var(--surface-3)] text-[var(--text-primary)]"
                           : "text-[var(--text-secondary)]"
@@ -521,7 +535,7 @@ export function SearchModal({ open, onClose }: Props) {
                         />
                       )}
                       {isActive && (
-                        <CornerDownLeft className="size-3 shrink-0 text-[var(--text-tertiary)]" />
+                        <CornerDownLeft className="size-3 shrink-0 text-[var(--text-tertiary)] hidden sm:block" />
                       )}
                     </button>
                   );
@@ -532,7 +546,7 @@ export function SearchModal({ open, onClose }: Props) {
 
           {/* No results */}
           {!cat.isLoading && (debouncedQ.trim() || pills.length > 0) && rows.length === 0 && (
-            <p className="px-4 py-10 text-center text-[13px] text-[var(--text-tertiary)]">
+            <p className="px-4 py-12 text-center text-[13px] text-[var(--text-tertiary)]">
               No matches{debouncedQ ? ` for "${debouncedQ}"` : ""}
               {pills.length > 0 ? " with active filters" : ""}
             </p>
@@ -559,12 +573,11 @@ export function SearchModal({ open, onClose }: Props) {
                         setActive(flatIdx);
                       }}
                       onMouseMove={() => {
-                        // Re-enable mouse hover once the mouse actually moves
                         isUsingKeyboard.current = false;
                         setActive(flatIdx);
                       }}
                       onClick={row.action}
-                      className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-[13.5px] transition-colors ${
+                      className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-[13.5px] transition-colors active:scale-[0.995] ${
                         isActive
                           ? "bg-[var(--surface-3)] text-[var(--text-primary)]"
                           : "text-[var(--text-secondary)]"
@@ -588,12 +601,12 @@ export function SearchModal({ open, onClose }: Props) {
                       )}
                       {/* Space hint for filter rows */}
                       {isActive && canPin && (
-                        <kbd className="rounded border border-[var(--border-default)] bg-[var(--surface-2)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-tertiary)]">
+                        <kbd className="keycap-kbd hidden sm:inline-flex text-[9px] py-px px-1">
                           Space
                         </kbd>
                       )}
                       {isActive && !canPin && (
-                        <CornerDownLeft className="size-3 shrink-0 text-[var(--text-tertiary)]" />
+                        <CornerDownLeft className="size-3 shrink-0 text-[var(--text-tertiary)] hidden sm:block" />
                       )}
                     </button>
                   );
@@ -604,36 +617,31 @@ export function SearchModal({ open, onClose }: Props) {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between border-t border-[var(--border-subtle)] px-4 py-2 text-[10.5px] text-[var(--text-tertiary)]">
-          <span className="flex items-center gap-3">
-            <span className="inline-flex items-center gap-1">
-              <kbd className="rounded border border-[var(--border-default)] bg-[var(--surface-3)] px-1 font-mono">
-                ↑↓
-              </kbd>
+        <div className="flex items-center justify-between border-t border-[var(--border-subtle)] px-4 py-2.5 text-[10.5px] text-[var(--text-tertiary)] bg-[var(--surface-base)]/50 shrink-0">
+          <span className="hidden sm:flex items-center gap-3">
+            <span className="inline-flex items-center gap-1.5">
+              <kbd className="keycap-kbd">↑↓</kbd>
               navigate
             </span>
-            <span className="inline-flex items-center gap-1">
-              <kbd className="rounded border border-[var(--border-default)] bg-[var(--surface-3)] px-1 font-mono">
-                ↵
-              </kbd>
+            <span className="inline-flex items-center gap-1.5">
+              <kbd className="keycap-kbd">↵</kbd>
               open
             </span>
             {activeRow?.isFilter && (
-              <span className="inline-flex items-center gap-1">
-                <kbd className="rounded border border-[var(--border-default)] bg-[var(--surface-3)] px-1 font-mono">
-                  Space
-                </kbd>
+              <span className="inline-flex items-center gap-1.5">
+                <kbd className="keycap-kbd">Space</kbd>
                 filter
               </span>
             )}
-            <span className="inline-flex items-center gap-1">
-              <kbd className="rounded border border-[var(--border-default)] bg-[var(--surface-3)] px-1 font-mono">
-                ⌫
-              </kbd>
+            <span className="inline-flex items-center gap-1.5">
+              <kbd className="keycap-kbd">⌫</kbd>
               remove filter
             </span>
           </span>
-          <span>
+          <span className="flex sm:hidden items-center gap-1.5 font-medium">
+            Tap a channel to connect.
+          </span>
+          <span className="font-mono">
             {cat.data ? `${cat.data.indexes.all_ids.length.toLocaleString()} channels` : "loading…"}
           </span>
         </div>
