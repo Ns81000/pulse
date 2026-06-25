@@ -409,6 +409,8 @@ function WatchPage() {
                   catalog={cat.data}
                   epg={epg.data}
                   failedChannelId={channel.id}
+                  limit={hasSchedule ? 6 : 8}
+                  hasSchedule={hasSchedule}
                 />
               )}
             </div>
@@ -423,17 +425,21 @@ function AlternativesVerticalList({
   catalog,
   epg,
   failedChannelId,
+  limit = 6,
+  hasSchedule,
 }: {
   catalog: Catalog;
   epg?: EPGData;
   failedChannelId: string;
+  limit?: number;
+  hasSchedule: boolean;
 }) {
   const navigate = useNavigate();
   const player = usePlayer();
 
   const ids = useMemo(() => {
     const failed = failedChannelId ? catalog.channels[failedChannelId] : null;
-    if (!failed) return catalog.indexes.all_ids.slice(0, 15);
+    if (!failed) return catalog.indexes.all_ids.slice(0, limit);
 
     const failedCats = new Set(failed.categories);
     const failedCountry = failed.country;
@@ -448,24 +454,27 @@ function AlternativesVerticalList({
       scored.push({ id, score });
     }
     scored.sort((a, b) => b.score - a.score);
-    const result = scored.slice(0, 15).map((s) => s.id);
-    if (result.length < 10) {
+    const result = scored.slice(0, limit).map((s) => s.id);
+    if (result.length < Math.min(10, limit)) {
       for (const id of catalog.indexes.all_ids) {
         if (id === failed.id) continue;
         if (!result.includes(id)) result.push(id);
-        if (result.length >= 15) break;
+        if (result.length >= limit) break;
       }
     }
     return result;
-  }, [catalog, failedChannelId]);
+  }, [catalog, failedChannelId, limit]);
 
   return (
     <div className="flex flex-col gap-2.5">
-      {ids.map((id) => {
+      {ids.map((id, i) => {
         const c = catalog.channels[id];
         if (!c) return null;
         const nowProg = epg?.programs[id]?.now;
         const code = c.country ? toFlagCode(c.country) : "";
+        const responsiveClass = hasSchedule
+          ? i >= 2 ? (i >= 4 ? "hidden 2xl:flex" : "hidden xl:flex") : "flex"
+          : i >= 4 ? (i >= 6 ? "hidden 2xl:flex" : "hidden xl:flex") : "flex";
         return (
           <button
             key={id}
@@ -494,7 +503,7 @@ function AlternativesVerticalList({
                 });
               }
             }}
-            className="flex items-start gap-3 w-full p-1.5 text-left rounded-lg hover:bg-[var(--surface-2)] transition-all duration-150 active:scale-[0.985]"
+            className={`${responsiveClass} items-start gap-3 w-full p-1.5 text-left rounded-lg hover:bg-[var(--surface-2)] transition-all duration-150 active:scale-[0.985]`}
           >
             {/* Aspect-video larger thumbnail */}
             <div className="relative aspect-video w-28 h-[63px] shrink-0 rounded-md bg-[var(--surface-base)] border border-[var(--border-subtle)] flex items-center justify-center overflow-hidden">
