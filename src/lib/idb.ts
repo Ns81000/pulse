@@ -16,6 +16,7 @@ export interface StreamHealthRecord {
   channelId: string;
   status: "online" | "blocked" | "timeout" | "error";
   checked_at: string;
+  workingIndex?: number;
 }
 
 let dbp: Promise<IDBPDatabase> | null = null;
@@ -102,13 +103,31 @@ export async function listHistory(): Promise<HistoryRecord[]> {
   return all.sort((a, b) => b.watched_at.localeCompare(a.watched_at));
 }
 
-export async function recordHealth(channelId: string, status: StreamHealthRecord["status"]) {
+export async function recordHealth(
+  channelId: string,
+  status: StreamHealthRecord["status"],
+  workingIndex?: number,
+) {
   const db = await getDB();
   if (!db) return;
+
+  let existingIndex = workingIndex;
+  if (existingIndex === undefined) {
+    try {
+      const existing = (await db.get("stream_health", channelId)) as StreamHealthRecord | undefined;
+      if (existing && existing.workingIndex !== undefined) {
+        existingIndex = existing.workingIndex;
+      }
+    } catch {
+      // ignore
+    }
+  }
+
   await db.put("stream_health", {
     channelId,
     status,
     checked_at: new Date().toISOString(),
+    workingIndex: existingIndex,
   });
   window.dispatchEvent(new CustomEvent("healthchange"));
 }

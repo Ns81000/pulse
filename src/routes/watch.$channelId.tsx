@@ -2,12 +2,18 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { ArrowLeft, Heart, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
-import { useCatalog, useEpg, checkStream } from "@/lib/data-hooks";
+import { useCatalog, useEpg, checkStream, getWorkingStreamIndex } from "@/lib/data-hooks";
 import { Player } from "@/components/Player";
 import { AlternativesShelf } from "@/components/AlternativesShelf";
 import { StatusBadge } from "@/components/StatusBadge";
 import { usePlayer } from "@/lib/player-context";
-import { addFavourite, removeFavourite, isFavourite as checkFav, recordHistory } from "@/lib/idb";
+import {
+  addFavourite,
+  removeFavourite,
+  isFavourite as checkFav,
+  recordHistory,
+  recordHealth,
+} from "@/lib/idb";
 import type { ChannelStatus } from "@/lib/types";
 import { streamErrorMsg } from "@/lib/stream-messages";
 
@@ -41,15 +47,63 @@ function WatchPage() {
     async (force = false) => {
       if (!channel) return;
       setStatus("checking");
-      const s = channel.streams[0];
-      const result = await checkStream(s.url, s.referrer, s.user_agent, force);
-      setStatus(result);
-      if (result === "online") {
-        open(channel);
-        await recordHistory(channel.id);
+
+      const cachedIndex = getWorkingStreamIndex(channel.id);
+      let statusResult: ChannelStatus = "error";
+      let workingIndex = cachedIndex;
+
+      const tryStream = async (idx: number): Promise<ChannelStatus> => {
+        const s = channel.streams[idx];
+        if (!s) return "error";
+
+        // Front-end Mixed Content protection:
+        if (
+          typeof window !== "undefined" &&
+          window.location.protocol === "https:" &&
+          s.url.startsWith("http://")
+        ) {
+          return "blocked";
+        }
+
+        return await checkStream(s.url, s.referrer, s.user_agent, force);
+      };
+
+      // Try the cached/last-working stream first
+      const res = await tryStream(workingIndex);
+      if (res === "online") {
+        statusResult = "online";
+      } else {
+        // Fallback to sequentially checking all other streams
+        let found = false;
+        for (let i = 0; i < channel.streams.length; i++) {
+          if (i === workingIndex) continue;
+          const r = await tryStream(i);
+          if (r === "online") {
+            workingIndex = i;
+            statusResult = "online";
+            found = true;
+            break;
+          } else {
+            statusResult = r;
+          }
+        }
+        if (!found) {
+          workingIndex = 0;
+        }
       }
-      // No toast here — the page renders an inline recovery block for errors,
-      // which is more informative and avoids duplicate feedback.
+
+      setStatus(statusResult);
+      if (statusResult === "online") {
+        open(channel, workingIndex);
+        await recordHealth(channel.id, "online", workingIndex);
+        await recordHistory(channel.id);
+      } else {
+        await recordHealth(
+          channel.id,
+          statusResult as Exclude<ChannelStatus, "idle" | "checking" | "recovering">,
+          workingIndex,
+        );
+      }
     },
     [channel, open],
   );

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import type { CatalogChannel } from "@/lib/types";
 import { usePlayer } from "@/lib/player-context";
+import { recordHealth } from "@/lib/idb";
 
 type LoadState = "connecting" | "ready" | "buffering" | "error";
 
@@ -28,11 +29,28 @@ export function Player({ channel, onFatalError, compact }: Props) {
   const hlsRef = useRef<HlsType | null>(null);
   const player = usePlayer();
 
+  const [activeStreamIdx, setActiveStreamIdx] = useState(player.workingStreamIndex);
   const [loadState, setLoadState] = useState<LoadState>("connecting");
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
   const [volume, setVolume] = useState(1);
   const [fullscreen, setFullscreen] = useState(false);
+
+  useEffect(() => {
+    setActiveStreamIdx(player.workingStreamIndex);
+  }, [player.workingStreamIndex]);
+
+  const tryNextStream = useCallback(() => {
+    if (activeStreamIdx < channel.streams.length - 1) {
+      console.warn(
+        `Stream ${activeStreamIdx} of channel ${channel.name} failed, trying fallback stream ${activeStreamIdx + 1}`,
+      );
+      setLoadState("connecting");
+      setActiveStreamIdx((prev) => prev + 1);
+      return true;
+    }
+    return false;
+  }, [activeStreamIdx, channel.streams.length, channel.name]);
   const [pip, setPip] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [levels, setLevels] = useState<{ index: number; height?: number; bitrate: number }[]>([]);
@@ -56,7 +74,7 @@ export function Player({ channel, onFatalError, compact }: Props) {
   useEffect(() => {
     const v = player.videoEl;
     if (!v) return;
-    const stream = channel.streams[0];
+    const stream = channel.streams[activeStreamIdx] || channel.streams[0];
     if (!stream) return;
 
     setLoadState("connecting");
@@ -125,6 +143,10 @@ export function Player({ channel, onFatalError, compact }: Props) {
               // ignore
             }
           }
+          // Self-healing fallback: try next stream before error state
+          if (tryNextStream()) {
+            return;
+          }
           setLoadState("error");
           onFatalError?.();
         });
@@ -132,6 +154,9 @@ export function Player({ channel, onFatalError, compact }: Props) {
         v.src = stream.url;
         attemptPlay();
       } else {
+        if (tryNextStream()) {
+          return;
+        }
         setLoadState("error");
         onFatalError?.();
       }
@@ -147,7 +172,7 @@ export function Player({ channel, onFatalError, compact }: Props) {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channel.id, player.videoEl]);
+  }, [channel.id, player.videoEl, activeStreamIdx, tryNextStream]);
 
   // Video event listeners
   useEffect(() => {
@@ -156,11 +181,18 @@ export function Player({ channel, onFatalError, compact }: Props) {
     const onPlay = () => {
       setPlaying(true);
       setLoadState("ready");
+      // Record this stream index as successfully working
+      if (activeStreamIdx !== player.workingStreamIndex) {
+        recordHealth(channel.id, "online", activeStreamIdx).catch(() => {});
+      }
     };
     const onPause = () => setPlaying(false);
     const onWaiting = () => setLoadState((s) => (s === "ready" ? "buffering" : s));
     const onPlaying = () => setLoadState("ready");
     const onErr = () => {
+      if (tryNextStream()) {
+        return;
+      }
       setLoadState("error");
       onFatalError?.();
     };
@@ -192,7 +224,14 @@ export function Player({ channel, onFatalError, compact }: Props) {
       v.removeEventListener("enterpictureinpicture", onEnterPip);
       v.removeEventListener("leavepictureinpicture", onLeavePip);
     };
-  }, [player.videoEl, onFatalError]);
+  }, [
+    player.videoEl,
+    onFatalError,
+    activeStreamIdx,
+    player.workingStreamIndex,
+    channel.id,
+    tryNextStream,
+  ]);
 
   // Fullscreen sync
   useEffect(() => {

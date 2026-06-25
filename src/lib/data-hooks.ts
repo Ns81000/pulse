@@ -44,6 +44,14 @@ export async function checkStream(
   user_agent: string | null,
   force = false,
 ): Promise<CheckStatus> {
+  // Client-side mixed content detection:
+  if (
+    typeof window !== "undefined" &&
+    window.location.protocol === "https:" &&
+    url.startsWith("http://")
+  ) {
+    return "blocked";
+  }
   if (!force) {
     const cached = verifiedCache.get(url);
     if (cached) {
@@ -134,6 +142,7 @@ if (typeof window !== "undefined" && !localStorage.getItem("tela-user-country"))
 
 // --- IN-MEMORY HEALTH REGISTRY ---
 let healthRegistry: Record<string, CheckStatus> = {};
+let workingIndexRegistry: Record<string, number> = {};
 const healthListeners = new Set<(h: typeof healthRegistry) => void>();
 
 if (typeof window !== "undefined") {
@@ -141,6 +150,9 @@ if (typeof window !== "undefined") {
   listHealth().then((records) => {
     for (const [id, r] of Object.entries(records)) {
       healthRegistry[id] = r.status;
+      if (r.workingIndex !== undefined) {
+        workingIndexRegistry[id] = r.workingIndex;
+      }
     }
     healthListeners.forEach((l) => l({ ...healthRegistry }));
   });
@@ -148,10 +160,15 @@ if (typeof window !== "undefined") {
   window.addEventListener("healthchange", () => {
     listHealth().then((records) => {
       const next: typeof healthRegistry = {};
+      const nextIdx: typeof workingIndexRegistry = {};
       for (const [id, r] of Object.entries(records)) {
         next[id] = r.status;
+        if (r.workingIndex !== undefined) {
+          nextIdx[id] = r.workingIndex;
+        }
       }
       healthRegistry = next;
+      workingIndexRegistry = nextIdx;
       healthListeners.forEach((l) => l({ ...healthRegistry }));
     });
   });
@@ -169,8 +186,12 @@ export function useStreamHealth() {
   return h;
 }
 
+export function getWorkingStreamIndex(channelId: string): number {
+  return workingIndexRegistry[channelId] ?? 0;
+}
+
 // --- BACKGROUND CHECKING QUEUE ---
-const checkQueue: { id: string; url: string; referrer: string | null; ua: string | null }[] = [];
+const checkQueue: { id: string; streams: CatalogChannel["streams"] }[] = [];
 const checkingSet = new Set<string>();
 let activePings = 0;
 const MAX_CONCURRENT_PINGS = 2;
@@ -181,23 +202,40 @@ function processQueue() {
   const next = checkQueue.shift();
   if (!next) return;
 
-  // Skip if checked very recently
-  const cachedStatus = verifiedCache.get(next.url);
-  if (
-    cachedStatus &&
-    Date.now() - cachedStatus.timestamp < (cachedStatus.status === "online" ? 30000 : 5000)
-  ) {
-    setTimeout(processQueue, 50);
-    return;
-  }
-
   activePings++;
   checkingSet.add(next.id);
 
-  checkStream(next.url, next.referrer, next.ua)
-    .then(async (status) => {
-      await recordHealth(next.id, status);
-    })
+  (async () => {
+    let finalStatus: CheckStatus = "error";
+    let workingIndex = 0;
+
+    for (let i = 0; i < next.streams.length; i++) {
+      const s = next.streams[i];
+      if (
+        typeof window !== "undefined" &&
+        window.location.protocol === "https:" &&
+        s.url.startsWith("http://")
+      ) {
+        finalStatus = "blocked";
+        continue;
+      }
+
+      try {
+        const res = await checkStream(s.url, s.referrer, s.user_agent);
+        if (res === "online") {
+          finalStatus = "online";
+          workingIndex = i;
+          break;
+        } else {
+          finalStatus = res;
+        }
+      } catch {
+        finalStatus = "error";
+      }
+    }
+
+    await recordHealth(next.id, finalStatus, workingIndex);
+  })()
     .catch(() => {
       // ignore
     })
@@ -216,18 +254,13 @@ function processQueue() {
   }
 }
 
-export function queueBackgroundCheck(
-  channelId: string,
-  url: string,
-  referrer: string | null,
-  user_agent: string | null,
-) {
+export function queueBackgroundCheck(channelId: string, streams: CatalogChannel["streams"]) {
   if (typeof window === "undefined") return;
   if (checkingSet.has(channelId)) return;
   if (healthRegistry[channelId]) return;
   if (checkQueue.some((q) => q.id === channelId)) return;
 
-  checkQueue.push({ id: channelId, url, referrer, ua: user_agent });
+  checkQueue.push({ id: channelId, streams });
 
   if (typeof window !== "undefined" && "requestIdleCallback" in window) {
     window.requestIdleCallback(() => processQueue());

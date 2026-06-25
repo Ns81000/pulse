@@ -15,7 +15,8 @@ type Mode = "inline" | "mini" | "hidden";
 
 interface PlayerState {
   channel: CatalogChannel | null;
-  open: (channel: CatalogChannel) => void;
+  workingStreamIndex: number;
+  open: (channel: CatalogChannel, streamIndex?: number) => void;
   close: () => void;
   videoEl: HTMLVideoElement | null;
   mountInto: (el: HTMLElement | null) => void;
@@ -28,6 +29,7 @@ const PlayerCtx = createContext<PlayerState | null>(null);
 
 export function PlayerProvider({ children }: { children: ReactNode }) {
   const [channel, setChannel] = useState<CatalogChannel | null>(null);
+  const [workingStreamIndex, setWorkingStreamIndex] = useState(0);
   const [mode, setMode] = useState<Mode>("hidden");
   const [hostId, setHostId] = useState(0);
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -38,8 +40,9 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     setMounted(true);
   }, []);
 
-  const open = useCallback((c: CatalogChannel) => {
+  const open = useCallback((c: CatalogChannel, streamIndex = 0) => {
     setChannel(c);
+    setWorkingStreamIndex(streamIndex);
     setMode("inline");
   }, []);
 
@@ -70,6 +73,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const value = useMemo<PlayerState>(
     () => ({
       channel,
+      workingStreamIndex,
       open,
       close,
       videoEl: videoRef.current,
@@ -78,7 +82,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       mode,
       setMode,
     }),
-    [channel, open, close, mountInto, hostId, mode],
+    [channel, workingStreamIndex, open, close, mountInto, hostId, mode],
   );
 
   return (

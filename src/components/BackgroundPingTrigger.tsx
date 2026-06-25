@@ -14,11 +14,9 @@ export function BackgroundPingTrigger({ channelIds, channels, limit = 8 }: Props
     const targets = channelIds.slice(0, limit);
     for (const id of targets) {
       const ch = channels[id];
-      if (!ch) continue;
-      const first = ch.streams[0];
-      if (!first) continue;
-      // Queue background check
-      queueBackgroundCheck(ch.id, first.url, first.referrer, first.user_agent);
+      if (!ch || !ch.streams || ch.streams.length === 0) continue;
+      // Queue background check for all streams of the channel
+      queueBackgroundCheck(ch.id, ch.streams);
     }
   }, [channelIds, channels, limit]);
 
