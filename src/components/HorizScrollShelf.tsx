@@ -68,7 +68,10 @@ export function HorizScrollShelf({ children }: Props) {
       {/* Left edge — fade + button */}
       <div
         className={`pointer-events-none absolute inset-y-0 left-0 z-10 flex items-center transition-opacity duration-200 sm:-left-1 ${showLeft ? "opacity-100" : "opacity-0"}`}
-        style={{ background: "linear-gradient(to right, var(--surface-base) 40%, transparent)", width: "4rem" }}
+        style={{
+          background: "linear-gradient(to right, var(--surface-base) 40%, transparent)",
+          width: "4rem",
+        }}
       >
         <button
           type="button"
@@ -83,7 +86,10 @@ export function HorizScrollShelf({ children }: Props) {
       {/* Right edge — fade + button */}
       <div
         className={`pointer-events-none absolute inset-y-0 right-0 z-10 flex items-center justify-end transition-opacity duration-200 sm:-right-1 ${showRight ? "opacity-100" : "opacity-0"}`}
-        style={{ background: "linear-gradient(to left, var(--surface-base) 40%, transparent)", width: "4rem" }}
+        style={{
+          background: "linear-gradient(to left, var(--surface-base) 40%, transparent)",
+          width: "4rem",
+        }}
       >
         <button
           type="button"

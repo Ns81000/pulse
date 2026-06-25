@@ -25,7 +25,8 @@ export function Header({ onSearchOpen }: { onSearchOpen?: () => void }) {
             const active = pathname === n.to || (n.to !== "/" && pathname.startsWith(n.to));
             return (
               <Link
-                key={n.to} to={n.to}
+                key={n.to}
+                to={n.to}
                 className={`rounded-md px-3 py-1.5 text-[13px] transition-colors ${
                   active
                     ? "text-[var(--text-primary)]"
@@ -46,7 +47,9 @@ export function Header({ onSearchOpen }: { onSearchOpen?: () => void }) {
           >
             <Search className="size-3.5" />
             <span className="flex-1 text-left">Search…</span>
-            <kbd className="hidden rounded border border-[var(--border-default)] bg-[var(--surface-3)] px-1.5 py-px font-mono text-[10px] sm:inline">Alt+K</kbd>
+            <kbd className="hidden rounded border border-[var(--border-default)] bg-[var(--surface-3)] px-1.5 py-px font-mono text-[10px] sm:inline">
+              Alt+K
+            </kbd>
           </button>
         </div>
       </div>

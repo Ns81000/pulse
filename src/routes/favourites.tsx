@@ -29,7 +29,9 @@ function FavPage() {
       const [favs, hist] = await Promise.all([listFavourites(), listHistory()]);
       setFavIds(favs.sort((a, b) => b.added_at.localeCompare(a.added_at)).map((f) => f.channelId));
       const seen = new Set<string>();
-      const dedup = hist.filter((h) => (seen.has(h.channelId) ? false : (seen.add(h.channelId), true)));
+      const dedup = hist.filter((h) =>
+        seen.has(h.channelId) ? false : (seen.add(h.channelId), true),
+      );
       setRecent(dedup.slice(0, 12).map((h) => h.channelId));
       setLoaded(true);
     };
@@ -41,7 +43,10 @@ function FavPage() {
 
   // Recommendations: channels sharing categories with history
   useEffect(() => {
-    if (!cat.data || recent.length === 0) { setRecommended([]); return; }
+    if (!cat.data || recent.length === 0) {
+      setRecommended([]);
+      return;
+    }
     const catScore = new Map<string, number>();
     recent.forEach((id, i) => {
       const c = cat.data!.channels[id];
@@ -65,7 +70,9 @@ function FavPage() {
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">Your library</h1>
+      <h1 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">
+        Your library
+      </h1>
       <p className="mt-1 text-[13px] text-[var(--text-secondary)]">
         Favourites, recent watches, and picks based on what you've watched.
       </p>
@@ -87,7 +94,9 @@ function FavPage() {
         ) : favIds.length === 0 ? (
           <div className="grid place-items-center rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] px-6 py-12 text-center">
             <p className="text-sm text-[var(--text-secondary)]">No favourites yet.</p>
-            <Link to="/browse" className="btn-primary mt-3">Find channels</Link>
+            <Link to="/browse" className="btn-primary mt-3">
+              Find channels
+            </Link>
           </div>
         ) : (
           cat.data && <ChannelGrid catalog={cat.data} epg={epg.data} channelIds={favIds} />

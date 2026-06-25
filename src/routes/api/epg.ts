@@ -23,18 +23,29 @@ function parseXmltvDate(s: string): Date | null {
   return new Date(`${y}-${mo}-${d}T${h}:${mi}:${se}${tzStr}`);
 }
 
-async function fetchAndParse(url: string, signal: AbortSignal): Promise<Record<string, { now: EPGEntry | null; next: EPGEntry | null }>> {
+async function fetchAndParse(
+  url: string,
+  signal: AbortSignal,
+): Promise<Record<string, { now: EPGEntry | null; next: EPGEntry | null }>> {
   const r = await fetch(url, { signal, headers: { "User-Agent": "IPTVEpgBuilder/1.0" } });
   if (!r.ok) return {};
-  let text = await r.text();
+  const text = await r.text();
   // Note: .gz auto-decompressed by fetch in most runtimes. Skip if we got binary.
   if (text.charCodeAt(0) === 0x1f) return {};
   const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "" });
   let parsed: any;
-  try { parsed = parser.parse(text); } catch { return {}; }
+  try {
+    parsed = parser.parse(text);
+  } catch {
+    return {};
+  }
   const tv = parsed?.tv;
   if (!tv) return {};
-  const programmes = Array.isArray(tv.programme) ? tv.programme : tv.programme ? [tv.programme] : [];
+  const programmes = Array.isArray(tv.programme)
+    ? tv.programme
+    : tv.programme
+      ? [tv.programme]
+      : [];
   const now = Date.now();
   const byCh: Record<string, EPGEntry[]> = {};
   for (const p of programmes) {
@@ -44,9 +55,9 @@ async function fetchAndParse(url: string, signal: AbortSignal): Promise<Record<s
     const end = parseXmltvDate(p.stop);
     if (!start || !end) continue;
     if (end.getTime() < now) continue;
-    const title = typeof p.title === "string" ? p.title : p.title?.["#text"] ?? "";
+    const title = typeof p.title === "string" ? p.title : (p.title?.["#text"] ?? "");
     if (!title) continue;
-    const category = typeof p.category === "string" ? p.category : p.category?.["#text"] ?? null;
+    const category = typeof p.category === "string" ? p.category : (p.category?.["#text"] ?? null);
     (byCh[ch] ??= []).push({
       title,
       start: start.toISOString(),
@@ -57,10 +68,12 @@ async function fetchAndParse(url: string, signal: AbortSignal): Promise<Record<s
   const out: Record<string, { now: EPGEntry | null; next: EPGEntry | null }> = {};
   for (const [ch, arr] of Object.entries(byCh)) {
     arr.sort((a, b) => a.start.localeCompare(b.start));
-    const live = arr.find((p) => new Date(p.start).getTime() <= now && new Date(p.end).getTime() >= now) ?? null;
+    const live =
+      arr.find((p) => new Date(p.start).getTime() <= now && new Date(p.end).getTime() >= now) ??
+      null;
     const next = live
-      ? arr.find((p) => new Date(p.start).getTime() > new Date(live.end).getTime() - 1) ?? null
-      : arr[0] ?? null;
+      ? (arr.find((p) => new Date(p.start).getTime() > new Date(live.end).getTime() - 1) ?? null)
+      : (arr[0] ?? null);
     out[ch] = { now: live, next };
   }
   return out;
@@ -118,9 +131,12 @@ export const Route = createFileRoute("/api/epg")({
             },
           });
         } catch (e) {
-          return new Response(JSON.stringify({ updated_at: new Date().toISOString(), programs: {} }), {
-            headers: { "content-type": "application/json" },
-          });
+          return new Response(
+            JSON.stringify({ updated_at: new Date().toISOString(), programs: {} }),
+            {
+              headers: { "content-type": "application/json" },
+            },
+          );
         }
       },
     },

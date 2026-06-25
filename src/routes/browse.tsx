@@ -4,7 +4,15 @@ import { z } from "zod";
 import { useCatalog, useEpg } from "@/lib/data-hooks";
 import { FilterPanel } from "@/components/FilterPanel";
 import { ChannelGrid } from "@/components/ChannelGrid";
-import { SlidersHorizontal, Search as SearchIcon, X, ChevronLeft, ChevronRight, ArrowUpDown, Check } from "lucide-react";
+import {
+  SlidersHorizontal,
+  Search as SearchIcon,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  ArrowUpDown,
+  Check,
+} from "lucide-react";
 import type { Catalog } from "@/lib/types";
 
 const search = z.object({
@@ -32,7 +40,11 @@ function CategoryBar({
   const categories = useMemo(
     () =>
       catalog.meta.categories
-        .map((c) => ({ id: c.id, name: c.name, count: catalog.indexes.by_category[c.id]?.length ?? 0 }))
+        .map((c) => ({
+          id: c.id,
+          name: c.name,
+          count: catalog.indexes.by_category[c.id]?.length ?? 0,
+        }))
         .filter((c) => c.count > 0)
         .sort((a, b) => b.count - a.count),
     [catalog],
@@ -84,10 +96,7 @@ function CategoryBar({
       onMouseLeave={() => setHovered(false)}
     >
       {/* Scrollable pill row */}
-      <div
-        ref={scrollRef}
-        className="flex gap-2 overflow-x-auto pb-1 no-scrollbar"
-      >
+      <div ref={scrollRef} className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
         {categories.map((c) => (
           <button
             key={c.id}
@@ -107,7 +116,10 @@ function CategoryBar({
       {/* Left edge — fade + button fused */}
       <div
         className={`pointer-events-none absolute inset-y-0 left-0 z-10 flex items-center transition-opacity duration-200 ${hovered && canScrollLeft ? "opacity-100" : "opacity-0"}`}
-        style={{ background: "linear-gradient(to right, var(--surface-base) 40%, transparent)", width: "3.5rem" }}
+        style={{
+          background: "linear-gradient(to right, var(--surface-base) 40%, transparent)",
+          width: "3.5rem",
+        }}
       >
         <button
           type="button"
@@ -122,7 +134,10 @@ function CategoryBar({
       {/* Right edge — fade + button fused */}
       <div
         className={`pointer-events-none absolute inset-y-0 right-0 z-10 flex items-center justify-end transition-opacity duration-200 ${hovered && canScrollRight ? "opacity-100" : "opacity-0"}`}
-        style={{ background: "linear-gradient(to left, var(--surface-base) 40%, transparent)", width: "3.5rem" }}
+        style={{
+          background: "linear-gradient(to left, var(--surface-base) 40%, transparent)",
+          width: "3.5rem",
+        }}
       >
         <button
           type="button"
@@ -139,7 +154,7 @@ function CategoryBar({
 
 const SORT_OPTIONS = [
   { value: "popular", label: "Popular" },
-  { value: "name",    label: "A → Z" },
+  { value: "name", label: "A → Z" },
   { value: "country", label: "Country" },
 ] as const;
 
@@ -175,7 +190,9 @@ function SortDropdown({ value, onChange }: { value: SortValue; onChange: (v: Sor
       >
         <ArrowUpDown className="size-3.5 shrink-0 text-[var(--text-tertiary)]" />
         <span>{active.label}</span>
-        <ChevronRight className={`size-3 shrink-0 text-[var(--text-tertiary)] transition-transform ${open ? "rotate-90" : "rotate-90 opacity-60"}`} />
+        <ChevronRight
+          className={`size-3 shrink-0 text-[var(--text-tertiary)] transition-transform ${open ? "rotate-90" : "rotate-90 opacity-60"}`}
+        />
       </button>
 
       {open && (
@@ -186,7 +203,10 @@ function SortDropdown({ value, onChange }: { value: SortValue; onChange: (v: Sor
               type="button"
               role="option"
               aria-selected={o.value === value}
-              onClick={() => { onChange(o.value); setOpen(false); }}
+              onClick={() => {
+                onChange(o.value);
+                setOpen(false);
+              }}
               className={`flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-[12px] transition-colors ${
                 o.value === value
                   ? "text-[var(--accent)]"
@@ -208,9 +228,15 @@ export const Route = createFileRoute("/browse")({
   head: () => ({
     meta: [
       { title: "Browse channels — Tela" },
-      { name: "description", content: "Filter thousands of live IPTV channels by category, language, and country." },
+      {
+        name: "description",
+        content: "Filter thousands of live IPTV channels by category, language, and country.",
+      },
       { property: "og:title", content: "Browse channels — Tela" },
-      { property: "og:description", content: "Filter thousands of live IPTV channels by category, language, and country." },
+      {
+        property: "og:description",
+        content: "Filter thousands of live IPTV channels by category, language, and country.",
+      },
     ],
   }),
   component: BrowsePage,
@@ -226,16 +252,25 @@ function BrowsePage() {
   const ids = useMemo(() => {
     if (!cat.data) return [];
     const sets: Set<string>[] = [];
-    if (selected.category) sets.push(new Set(cat.data.indexes.by_category[selected.category] ?? []));
+    if (selected.category)
+      sets.push(new Set(cat.data.indexes.by_category[selected.category] ?? []));
     if (selected.country) sets.push(new Set(cat.data.indexes.by_country[selected.country] ?? []));
-    if (selected.language) sets.push(new Set(cat.data.indexes.by_language[selected.language] ?? []));
-    let base = sets.length === 0 ? cat.data.indexes.all_ids : cat.data.indexes.all_ids.filter((id) => sets.every((s) => s.has(id)));
+    if (selected.language)
+      sets.push(new Set(cat.data.indexes.by_language[selected.language] ?? []));
+    let base =
+      sets.length === 0
+        ? cat.data.indexes.all_ids
+        : cat.data.indexes.all_ids.filter((id) => sets.every((s) => s.has(id)));
     const q = selected.q?.trim().toLowerCase();
     if (q) base = base.filter((id) => cat.data!.channels[id]?.name.toLowerCase().includes(q));
     if (selected.sort === "name") {
-      base = base.slice().sort((a, b) => cat.data!.channels[a].name.localeCompare(cat.data!.channels[b].name));
+      base = base
+        .slice()
+        .sort((a, b) => cat.data!.channels[a].name.localeCompare(cat.data!.channels[b].name));
     } else if (selected.sort === "country") {
-      base = base.slice().sort((a, b) => cat.data!.channels[a].country.localeCompare(cat.data!.channels[b].country));
+      base = base
+        .slice()
+        .sort((a, b) => cat.data!.channels[a].country.localeCompare(cat.data!.channels[b].country));
     }
     return base;
   }, [cat.data, selected]);
@@ -264,16 +299,24 @@ function BrowsePage() {
               className="input-field !pl-9"
             />
             {selected.q && (
-              <button onClick={() => update({ q: undefined })} aria-label="Clear" className="absolute right-2 top-1/2 grid size-6 -translate-y-1/2 place-items-center rounded text-[var(--text-tertiary)] hover:text-[var(--text-primary)]">
+              <button
+                onClick={() => update({ q: undefined })}
+                aria-label="Clear"
+                className="absolute right-2 top-1/2 grid size-6 -translate-y-1/2 place-items-center rounded text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
+              >
                 <X className="size-3.5" />
               </button>
             )}
           </div>
           <SortDropdown
-              value={(selected.sort ?? "popular") as SortValue}
-              onChange={(v) => update({ sort: v })}
-            />
-          <button type="button" onClick={() => setMobileFiltersOpen((o) => !o)} className="btn-ghost inline-flex items-center gap-1.5 sm:hidden">
+            value={(selected.sort ?? "popular") as SortValue}
+            onChange={(v) => update({ sort: v })}
+          />
+          <button
+            type="button"
+            onClick={() => setMobileFiltersOpen((o) => !o)}
+            className="btn-ghost inline-flex items-center gap-1.5 sm:hidden"
+          >
             <SlidersHorizontal className="size-3.5" />
           </button>
         </div>
@@ -293,13 +336,19 @@ function BrowsePage() {
       {cat.isLoading && (
         <div className="mb-4 flex gap-2 overflow-hidden">
           {Array.from({ length: 10 }).map((_, i) => (
-            <div key={i} className="shimmer h-7 w-16 shrink-0 rounded-full" style={{ width: `${56 + (i % 3) * 16}px` }} />
+            <div
+              key={i}
+              className="shimmer h-7 w-16 shrink-0 rounded-full"
+              style={{ width: `${56 + (i % 3) * 16}px` }}
+            />
           ))}
         </div>
       )}
 
       <div className="flex gap-6">
-        <aside className={`${mobileFiltersOpen ? "block" : "hidden"} sm:block w-full shrink-0 sm:w-[260px]`}>
+        <aside
+          className={`${mobileFiltersOpen ? "block" : "hidden"} sm:block w-full shrink-0 sm:w-[260px]`}
+        >
           {cat.isLoading && (
             <div className="space-y-4 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] p-4">
               {/* Filter title */}
@@ -311,7 +360,10 @@ function BrowsePage() {
                 {Array.from({ length: 6 }).map((_, i) => (
                   <div key={i} className="flex items-center gap-2">
                     <div className="shimmer h-4 w-5 rounded-[2px]" />
-                    <div className="shimmer h-2.5 rounded-full" style={{ width: `${60 + (i % 4) * 20}px` }} />
+                    <div
+                      className="shimmer h-2.5 rounded-full"
+                      style={{ width: `${60 + (i % 4) * 20}px` }}
+                    />
                     <div className="shimmer ml-auto h-2 w-6 rounded-full" />
                   </div>
                 ))}
@@ -322,14 +374,33 @@ function BrowsePage() {
                 <div className="shimmer h-8 w-full rounded-lg" />
                 {Array.from({ length: 6 }).map((_, i) => (
                   <div key={i} className="flex items-center gap-2">
-                    <div className="shimmer h-2.5 rounded-full" style={{ width: `${70 + (i % 3) * 18}px` }} />
+                    <div
+                      className="shimmer h-2.5 rounded-full"
+                      style={{ width: `${70 + (i % 3) * 18}px` }}
+                    />
                     <div className="shimmer ml-auto h-2 w-6 rounded-full" />
                   </div>
                 ))}
               </div>
             </div>
           )}
-          {cat.data && <FilterPanel catalog={cat.data} selected={selected} onChange={(next) => navigate({ search: (p: S) => ({ ...p, category: next.category, language: next.language, country: next.country }), replace: false })} />}
+          {cat.data && (
+            <FilterPanel
+              catalog={cat.data}
+              selected={selected}
+              onChange={(next) =>
+                navigate({
+                  search: (p: S) => ({
+                    ...p,
+                    category: next.category,
+                    language: next.language,
+                    country: next.country,
+                  }),
+                  replace: false,
+                })
+              }
+            />
+          )}
         </aside>
         <div className={`${mobileFiltersOpen ? "hidden" : "block"} sm:block min-w-0 flex-1`}>
           {cat.isLoading && (

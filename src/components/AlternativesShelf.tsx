@@ -12,7 +12,13 @@ interface Props {
   ids?: string[];
 }
 
-export function AlternativesShelf({ catalog, epg, title = "Try these instead", failedChannelId, ids: explicit }: Props) {
+export function AlternativesShelf({
+  catalog,
+  epg,
+  title = "Try these instead",
+  failedChannelId,
+  ids: explicit,
+}: Props) {
   const { favSet, refresh: refreshFavs } = useFavourites();
   const flagByCountry = useMemo(() => {
     const m = new Map<string, string>();
@@ -39,7 +45,7 @@ export function AlternativesShelf({ catalog, epg, title = "Try these instead", f
       scored.push({ id, score });
     }
     scored.sort((a, b) => b.score - a.score);
-    let result = scored.slice(0, 12).map((s) => s.id);
+    const result = scored.slice(0, 12).map((s) => s.id);
     if (result.length < 8) {
       // Fallback: catalog order
       for (const id of catalog.indexes.all_ids) {

@@ -1,8 +1,14 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import {
-  Search as SearchIcon, Tv, Globe2, Tag, Languages,
-  CornerDownLeft, X, Clock,
+  Search as SearchIcon,
+  Tv,
+  Globe2,
+  Tag,
+  Languages,
+  CornerDownLeft,
+  X,
+  Clock,
 } from "lucide-react";
 import { useCatalog } from "@/lib/data-hooks";
 import { usePlayer } from "@/lib/player-context";
@@ -35,7 +41,7 @@ type Row = {
 
 type FilterPill = {
   type: "country" | "category" | "language";
-  code: string;   // country code / category id / language code
+  code: string; // country code / category id / language code
   label: string;
   countryCode?: string; // for flag image
 };
@@ -282,7 +288,9 @@ export function SearchModal({ open, onClose }: Props) {
   }, [cat.data, debouncedQ, pills, pillSets, pinnedTypes, playChannel, addPill]);
 
   // Reset active on every query change
-  useEffect(() => { setActive(0); }, [debouncedQ, pills]);
+  useEffect(() => {
+    setActive(0);
+  }, [debouncedQ, pills]);
 
   // Unified navigable list — search results OR recent history
   const isShowingRecent = !debouncedQ.trim() && pills.length === 0;
@@ -309,7 +317,10 @@ export function SearchModal({ open, onClose }: Props) {
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") { onClose(); return; }
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
 
       // Backspace on empty input removes last pill
       if (e.key === "Backspace" && q === "" && pills.length > 0) {
@@ -348,7 +359,10 @@ export function SearchModal({ open, onClose }: Props) {
     let idx = 0;
     for (const row of rows) {
       let s = groups.find((g) => g.name === row.group);
-      if (!s) { s = { name: row.group, rows: [] }; groups.push(s); }
+      if (!s) {
+        s = { name: row.group, rows: [] };
+        groups.push(s);
+      }
       s.rows.push({ row, flatIdx: idx++ });
     }
     return groups;
@@ -368,11 +382,12 @@ export function SearchModal({ open, onClose }: Props) {
 
       {/* Modal panel */}
       <div className="relative w-full max-w-2xl overflow-hidden rounded-2xl border border-[var(--border-default)] bg-[var(--surface-1)] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)]">
-
         {/* Input row with pills */}
         <div
           className="flex min-h-[52px] flex-wrap items-center gap-1.5 border-b border-[var(--border-subtle)] px-3 py-2.5"
-          onMouseDown={(e) => { if (e.target === e.currentTarget) inputRef.current?.focus(); }}
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) inputRef.current?.focus();
+          }}
         >
           <SearchIcon className="size-4 shrink-0 text-[var(--text-tertiary)]" />
 
@@ -398,7 +413,10 @@ export function SearchModal({ open, onClose }: Props) {
                 <span>{pill.label}</span>
                 <button
                   type="button"
-                  onMouseDown={(e) => { e.preventDefault(); removePill(pill.type); }}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    removePill(pill.type);
+                  }}
                   className="ml-0.5 rounded hover:text-[var(--text-primary)]"
                   aria-label={`Remove ${pill.label} filter`}
                 >
@@ -413,7 +431,11 @@ export function SearchModal({ open, onClose }: Props) {
             ref={inputRef}
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder={pills.length === 0 ? "Search channels, countries, categories, languages…" : "Search channels…"}
+            placeholder={
+              pills.length === 0
+                ? "Search channels, countries, categories, languages…"
+                : "Search channels…"
+            }
             className="min-w-[140px] flex-1 bg-transparent text-[15px] text-[var(--text-primary)] outline-none placeholder:text-[var(--text-tertiary)]"
           />
 
@@ -421,7 +443,11 @@ export function SearchModal({ open, onClose }: Props) {
           {q && (
             <button
               type="button"
-              onMouseDown={(e) => { e.preventDefault(); setQ(""); inputRef.current?.focus(); }}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                setQ("");
+                inputRef.current?.focus();
+              }}
               className="shrink-0 rounded p-0.5 text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
               aria-label="Clear"
             >
@@ -440,7 +466,6 @@ export function SearchModal({ open, onClose }: Props) {
 
         {/* Results list */}
         <div ref={listRef} className="max-h-[58vh] overflow-y-auto p-2">
-
           {/* Loading */}
           {cat.isLoading && (
             <div className="px-4 py-8 text-center">
@@ -470,8 +495,13 @@ export function SearchModal({ open, onClose }: Props) {
                     <button
                       key={id}
                       data-idx={idx}
-                      onMouseEnter={() => { if (!isUsingKeyboard.current) setActive(idx); }}
-                      onMouseMove={() => { isUsingKeyboard.current = false; setActive(idx); }}
+                      onMouseEnter={() => {
+                        if (!isUsingKeyboard.current) setActive(idx);
+                      }}
+                      onMouseMove={() => {
+                        isUsingKeyboard.current = false;
+                        setActive(idx);
+                      }}
                       onClick={() => playChannel(id)}
                       className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-[13.5px] transition-colors ${
                         isActive
@@ -490,7 +520,9 @@ export function SearchModal({ open, onClose }: Props) {
                           className="shrink-0 rounded-[2px] object-cover opacity-80"
                         />
                       )}
-                      {isActive && <CornerDownLeft className="size-3 shrink-0 text-[var(--text-tertiary)]" />}
+                      {isActive && (
+                        <CornerDownLeft className="size-3 shrink-0 text-[var(--text-tertiary)]" />
+                      )}
                     </button>
                   );
                 })
@@ -501,7 +533,8 @@ export function SearchModal({ open, onClose }: Props) {
           {/* No results */}
           {!cat.isLoading && (debouncedQ.trim() || pills.length > 0) && rows.length === 0 && (
             <p className="px-4 py-10 text-center text-[13px] text-[var(--text-tertiary)]">
-              No matches{debouncedQ ? ` for "${debouncedQ}"` : ""}{pills.length > 0 ? " with active filters" : ""}
+              No matches{debouncedQ ? ` for "${debouncedQ}"` : ""}
+              {pills.length > 0 ? " with active filters" : ""}
             </p>
           )}
 
@@ -540,7 +573,9 @@ export function SearchModal({ open, onClose }: Props) {
                       <Icon className="size-3.5 shrink-0 text-[var(--text-tertiary)]" />
                       <span className="flex-1 truncate">{row.label}</span>
                       {row.sub && (
-                        <span className="shrink-0 text-[11.5px] text-[var(--text-tertiary)]">{row.sub}</span>
+                        <span className="shrink-0 text-[11.5px] text-[var(--text-tertiary)]">
+                          {row.sub}
+                        </span>
                       )}
                       {flagCode && (
                         <img
@@ -572,21 +607,29 @@ export function SearchModal({ open, onClose }: Props) {
         <div className="flex items-center justify-between border-t border-[var(--border-subtle)] px-4 py-2 text-[10.5px] text-[var(--text-tertiary)]">
           <span className="flex items-center gap-3">
             <span className="inline-flex items-center gap-1">
-              <kbd className="rounded border border-[var(--border-default)] bg-[var(--surface-3)] px-1 font-mono">↑↓</kbd>
+              <kbd className="rounded border border-[var(--border-default)] bg-[var(--surface-3)] px-1 font-mono">
+                ↑↓
+              </kbd>
               navigate
             </span>
             <span className="inline-flex items-center gap-1">
-              <kbd className="rounded border border-[var(--border-default)] bg-[var(--surface-3)] px-1 font-mono">↵</kbd>
+              <kbd className="rounded border border-[var(--border-default)] bg-[var(--surface-3)] px-1 font-mono">
+                ↵
+              </kbd>
               open
             </span>
             {activeRow?.isFilter && (
               <span className="inline-flex items-center gap-1">
-                <kbd className="rounded border border-[var(--border-default)] bg-[var(--surface-3)] px-1 font-mono">Space</kbd>
+                <kbd className="rounded border border-[var(--border-default)] bg-[var(--surface-3)] px-1 font-mono">
+                  Space
+                </kbd>
                 filter
               </span>
             )}
             <span className="inline-flex items-center gap-1">
-              <kbd className="rounded border border-[var(--border-default)] bg-[var(--surface-3)] px-1 font-mono">⌫</kbd>
+              <kbd className="rounded border border-[var(--border-default)] bg-[var(--surface-3)] px-1 font-mono">
+                ⌫
+              </kbd>
               remove filter
             </span>
           </span>

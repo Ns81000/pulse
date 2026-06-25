@@ -20,7 +20,7 @@ function WatchPage() {
   const navigate = useNavigate();
   const cat = useCatalog();
   const epg = useEpg();
-  const player = usePlayer();
+  const { open } = usePlayer();
 
   const [status, setStatus] = useState<ChannelStatus>("checking");
   const [fav, setFav] = useState(false);
@@ -32,22 +32,27 @@ function WatchPage() {
   }, [cat.data, channel]);
   const catNames = useMemo(() => {
     if (!cat.data || !channel) return [];
-    return channel.categories.map((id) => cat.data!.meta.categories.find((c) => c.id === id)?.name ?? id);
+    return channel.categories.map(
+      (id) => cat.data!.meta.categories.find((c) => c.id === id)?.name ?? id,
+    );
   }, [cat.data, channel]);
 
-  const runCheck = useCallback(async () => {
-    if (!channel) return;
-    setStatus("checking");
-    const s = channel.streams[0];
-    const result = await checkStream(s.url, s.referrer, s.user_agent);
-    setStatus(result);
-    if (result === "online") {
-      player.open(channel);
-      await recordHistory(channel.id);
-    }
-    // No toast here — the page renders an inline recovery block for errors,
-    // which is more informative and avoids duplicate feedback.
-  }, [channel, player]);
+  const runCheck = useCallback(
+    async (force = false) => {
+      if (!channel) return;
+      setStatus("checking");
+      const s = channel.streams[0];
+      const result = await checkStream(s.url, s.referrer, s.user_agent, force);
+      setStatus(result);
+      if (result === "online") {
+        open(channel);
+        await recordHistory(channel.id);
+      }
+      // No toast here — the page renders an inline recovery block for errors,
+      // which is more informative and avoids duplicate feedback.
+    },
+    [channel, open],
+  );
 
   useEffect(() => {
     if (!channel) {
@@ -69,10 +74,11 @@ function WatchPage() {
 
   const onFatalPlayerError = useCallback(() => {
     setStatus("recovering");
+    runCheck(true);
     toast.error("Playback failed", {
       description: "The stream stopped unexpectedly.",
       duration: 8000,
-      action: { label: "Try again", onClick: () => runCheck() },
+      action: { label: "Try again", onClick: () => runCheck(true) },
     });
   }, [runCheck]);
 
@@ -96,20 +102,26 @@ function WatchPage() {
       <div className="mx-auto max-w-xl py-12 text-center">
         <h1 className="font-display text-xl">Channel not found</h1>
         <p className="mt-2 text-sm text-[var(--text-tertiary)]">It may have been removed.</p>
-        <Link to="/browse" className="btn-primary mt-4 inline-flex">Browse channels</Link>
+        <Link to="/browse" className="btn-primary mt-4 inline-flex">
+          Browse channels
+        </Link>
       </div>
     );
   }
 
-  const showPlayer = status === "online" || status === "checking";
-  const showRecovery = status === "blocked" || status === "timeout" || status === "error" || status === "recovering";
+  const showPlayer = status === "online";
+  const showRecovery = status === "blocked" || status === "timeout" || status === "error";
+  const showLoading = status === "checking" || status === "recovering";
 
   const now = epg.data?.programs[channel.id]?.now;
   const next = epg.data?.programs[channel.id]?.next;
 
   return (
     <div className="mx-auto max-w-5xl">
-      <button onClick={() => navigate({ to: "/browse" })} className="mb-4 inline-flex items-center gap-1.5 text-[12px] text-[var(--text-tertiary)] hover:text-[var(--text-primary)]">
+      <button
+        onClick={() => navigate({ to: "/browse" })}
+        className="mb-4 inline-flex items-center gap-1.5 text-[12px] text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
+      >
         <ArrowLeft className="size-3.5" /> Back
       </button>
 
@@ -119,14 +131,34 @@ function WatchPage() {
         </div>
       )}
 
+      {showLoading && (
+        <div className="shimmer relative aspect-video w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-1)]">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+            <div className="size-8 animate-spin rounded-full border-2 border-[var(--border-default)] border-t-[var(--accent)]" />
+            <p className="text-[12px] text-[var(--text-tertiary)] font-medium">
+              {status === "checking"
+                ? "Verifying stream connection..."
+                : "Re-connecting to stream..."}
+            </p>
+          </div>
+        </div>
+      )}
+
       {showRecovery && (
         <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-1)] p-6">
           <div className="flex items-start gap-3">
             <StatusBadge status={status} size="md" />
             <div>
-              <h2 className="font-display text-base font-medium">This channel isn't responding right now.</h2>
-              <p className="mt-1 text-[13px] text-[var(--text-tertiary)]">Public IPTV links come and go. Try an alternative below — they're picked from channels in the same category.</p>
-              <button onClick={runCheck} className="btn-ghost mt-3 text-[12px]">Try again</button>
+              <h2 className="font-display text-base font-medium">
+                This channel isn't responding right now.
+              </h2>
+              <p className="mt-1 text-[13px] text-[var(--text-tertiary)]">
+                Public IPTV links come and go. Try an alternative below — they're picked from
+                channels in the same category.
+              </p>
+              <button onClick={() => runCheck(true)} className="btn-ghost mt-3 text-[12px]">
+                Try again
+              </button>
             </div>
           </div>
         </div>
@@ -135,19 +167,29 @@ function WatchPage() {
       <header className="mt-5 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4 sm:flex sm:flex-wrap sm:justify-between">
         <div className="min-w-0 flex-1">
           <div className="flex min-w-0 flex-wrap items-center gap-2">
-            <h1 className="truncate font-display text-2xl font-semibold tracking-tight">{channel.name}</h1>
-            {flag && <span className="text-xl leading-none" aria-hidden>{flag}</span>}
+            <h1 className="truncate font-display text-2xl font-semibold tracking-tight">
+              {channel.name}
+            </h1>
+            {flag && (
+              <span className="text-xl leading-none" aria-hidden>
+                {flag}
+              </span>
+            )}
             <StatusBadge status={status} />
           </div>
           {now ? (
             <div className="mt-3 text-[13px]">
               <p className="text-[var(--text-primary)]">
-                <span className="mr-1.5 font-mono text-[10px] uppercase tracking-wider text-[var(--text-tertiary)]">Now</span>
+                <span className="mr-1.5 font-mono text-[10px] uppercase tracking-wider text-[var(--text-tertiary)]">
+                  Now
+                </span>
                 <span className="font-medium">{now.title}</span>
               </p>
               {next && (
                 <p className="mt-1 text-[12.5px] text-[var(--text-tertiary)]">
-                  <span className="mr-1.5 font-mono text-[10px] uppercase tracking-wider">Next</span>
+                  <span className="mr-1.5 font-mono text-[10px] uppercase tracking-wider">
+                    Next
+                  </span>
                   {next.title}
                 </p>
               )}
@@ -156,26 +198,44 @@ function WatchPage() {
           {catNames.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-1.5">
               {catNames.map((n) => (
-                <span key={n} className="rounded-full bg-[var(--surface-2)] px-2.5 py-1 text-[11px] text-[var(--text-tertiary)]">{n}</span>
+                <span
+                  key={n}
+                  className="rounded-full bg-[var(--surface-2)] px-2.5 py-1 text-[11px] text-[var(--text-tertiary)]"
+                >
+                  {n}
+                </span>
               ))}
             </div>
           )}
         </div>
         <div className="flex shrink-0 gap-2">
           <button onClick={toggleFav} className="btn-ghost inline-flex items-center gap-1.5">
-            <Heart className={`size-3.5 ${fav ? "fill-[var(--accent)] text-[var(--accent)]" : ""}`} />
+            <Heart
+              className={`size-3.5 ${fav ? "fill-[var(--accent)] text-[var(--accent)]" : ""}`}
+            />
             <span className="hidden sm:inline">{fav ? "Favourited" : "Favourite"}</span>
           </button>
           {channel.website && (
-            <a href={channel.website} target="_blank" rel="noreferrer" className="btn-ghost inline-flex items-center gap-1.5">
-              <ExternalLink className="size-3.5" /><span className="hidden sm:inline">Site</span>
+            <a
+              href={channel.website}
+              target="_blank"
+              rel="noreferrer"
+              className="btn-ghost inline-flex items-center gap-1.5"
+            >
+              <ExternalLink className="size-3.5" />
+              <span className="hidden sm:inline">Site</span>
             </a>
           )}
         </div>
       </header>
 
       {cat.data && (
-        <AlternativesShelf catalog={cat.data} epg={epg.data} failedChannelId={channel.id} title={showRecovery ? "Working alternatives" : "More like this"} />
+        <AlternativesShelf
+          catalog={cat.data}
+          epg={epg.data}
+          failedChannelId={channel.id}
+          title={showRecovery ? "Working alternatives" : "More like this"}
+        />
       )}
     </div>
   );

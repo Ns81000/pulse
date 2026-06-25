@@ -67,23 +67,27 @@ function FacetGroup({
                 }`}
               >
                 <span className="flex min-w-0 items-center gap-2">
-                  {isCountry && o.id ? (() => {
-                    const code = toFlagCode(o.id);
-                    if (!code) return null;
-                    return (
-                      <img
-                        src={`https://flagcdn.com/w20/${code}.png`}
-                        srcSet={`https://flagcdn.com/w40/${code}.png 2x`}
-                        width={20}
-                        height={15}
-                        alt={o.name}
-                        className="shrink-0 rounded-[2px] object-cover"
-                      />
-                    );
-                  })() : null}
+                  {isCountry && o.id
+                    ? (() => {
+                        const code = toFlagCode(o.id);
+                        if (!code) return null;
+                        return (
+                          <img
+                            src={`https://flagcdn.com/w20/${code}.png`}
+                            srcSet={`https://flagcdn.com/w40/${code}.png 2x`}
+                            width={20}
+                            height={15}
+                            alt={o.name}
+                            className="shrink-0 rounded-[2px] object-cover"
+                          />
+                        );
+                      })()
+                    : null}
                   <span className="truncate">{o.name}</span>
                 </span>
-                <span className="ml-2 shrink-0 text-[10px] text-[var(--text-tertiary)]">{o.count}</span>
+                <span className="ml-2 shrink-0 text-[10px] text-[var(--text-tertiary)]">
+                  {o.count}
+                </span>
               </button>
             ))}
             {filtered.length === 0 && (
@@ -100,7 +104,11 @@ export function FilterPanel({ catalog, selected, onChange }: Props) {
   const langs = useMemo(
     () =>
       catalog.meta.languages
-        .map((l) => ({ id: l.code, name: l.name, count: catalog.indexes.by_language[l.code]?.length ?? 0 }))
+        .map((l) => ({
+          id: l.code,
+          name: l.name,
+          count: catalog.indexes.by_language[l.code]?.length ?? 0,
+        }))
         .filter((l) => l.count > 0)
         .sort((a, b) => b.count - a.count),
     [catalog],
@@ -128,7 +136,9 @@ export function FilterPanel({ catalog, selected, onChange }: Props) {
         {hasAny && (
           <button
             type="button"
-            onClick={() => onChange({ category: undefined, language: undefined, country: undefined })}
+            onClick={() =>
+              onChange({ category: undefined, language: undefined, country: undefined })
+            }
             className="inline-flex items-center gap-1 text-[11px] text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
           >
             <X className="size-3" />

@@ -12,7 +12,7 @@ import { streamErrorMsg } from "@/lib/stream-messages";
 // iptv-org uses non-ISO codes for some countries — map them to flagcdn's ISO codes
 const CODE_MAP: Record<string, string> = {
   uk: "gb", // United Kingdom
-  int: "",  // International — no flag
+  int: "", // International — no flag
 };
 
 function toFlagCode(code: string): string {
@@ -30,7 +30,15 @@ interface Props {
   categoryName?: (id: string) => string;
 }
 
-function ChannelCardBase({ channel, flag, countryName, epg, isFavourite, onFavouriteChange, categoryName }: Props) {
+function ChannelCardBase({
+  channel,
+  flag,
+  countryName,
+  epg,
+  isFavourite,
+  onFavouriteChange,
+  categoryName,
+}: Props) {
   const navigate = useNavigate();
   const player = usePlayer();
   const [status, setStatus] = useState<ChannelStatus>("idle");
@@ -86,7 +94,12 @@ function ChannelCardBase({ channel, flag, countryName, epg, isFavourite, onFavou
       role="button"
       tabIndex={0}
       onClick={onClick}
-      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick();
+        }
+      }}
       className="surface-card group relative flex w-full cursor-pointer flex-col gap-2 p-3 text-left fade-in focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
     >
       <div className="relative flex aspect-video items-center justify-center overflow-hidden rounded-md bg-[var(--surface-base)]">
@@ -107,7 +120,9 @@ function ChannelCardBase({ channel, flag, countryName, epg, isFavourite, onFavou
           aria-label={isFavourite ? "Remove favourite" : "Add favourite"}
           className="absolute right-2 top-2 grid size-7 place-items-center rounded-full transition-opacity"
         >
-          <Heart className={`size-3.5 ${isFavourite ? "fill-[var(--accent)] text-[var(--accent)]" : "text-white"}`} />
+          <Heart
+            className={`size-3.5 ${isFavourite ? "fill-[var(--accent)] text-[var(--accent)]" : "text-white"}`}
+          />
         </button>
         {status !== "idle" && status !== "recovering" && (
           <div className="absolute left-2 top-2">
@@ -117,22 +132,26 @@ function ChannelCardBase({ channel, flag, countryName, epg, isFavourite, onFavou
       </div>
 
       <div className="flex min-w-0 items-start justify-between gap-2">
-        <h3 className="truncate font-display text-[13.5px] font-medium text-[var(--text-primary)]">{channel.name}</h3>
-        {channel.country ? (() => {
-          const code = toFlagCode(channel.country);
-          if (!code) return null;
-          return (
-            <img
-              src={`https://flagcdn.com/w20/${code}.png`}
-              srcSet={`https://flagcdn.com/w40/${code}.png 2x`}
-              width={20}
-              height={15}
-              alt={countryName ?? channel.country}
-              title={countryName ?? channel.country}
-              className="mt-0.5 shrink-0 rounded-[2px] object-cover opacity-90"
-            />
-          );
-        })() : null}
+        <h3 className="truncate font-display text-[13.5px] font-medium text-[var(--text-primary)]">
+          {channel.name}
+        </h3>
+        {channel.country
+          ? (() => {
+              const code = toFlagCode(channel.country);
+              if (!code) return null;
+              return (
+                <img
+                  src={`https://flagcdn.com/w20/${code}.png`}
+                  srcSet={`https://flagcdn.com/w40/${code}.png 2x`}
+                  width={20}
+                  height={15}
+                  alt={countryName ?? channel.country}
+                  title={countryName ?? channel.country}
+                  className="mt-0.5 shrink-0 rounded-[2px] object-cover opacity-90"
+                />
+              );
+            })()
+          : null}
       </div>
 
       {epg?.now ? (
@@ -145,7 +164,10 @@ function ChannelCardBase({ channel, flag, countryName, epg, isFavourite, onFavou
       {cats.length > 0 && (
         <div className="flex flex-wrap gap-1">
           {cats.map((c) => (
-            <span key={c} className="rounded-full bg-[var(--surface-2)] px-2 py-0.5 text-[10px] text-[var(--text-tertiary)]">
+            <span
+              key={c}
+              className="rounded-full bg-[var(--surface-2)] px-2 py-0.5 text-[10px] text-[var(--text-tertiary)]"
+            >
               {categoryName?.(c) ?? c}
             </span>
           ))}

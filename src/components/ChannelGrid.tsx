@@ -78,9 +78,7 @@ export function ChannelGrid({ catalog, epg, channelIds }: Props) {
           );
         })}
       </div>
-      {limit < channelIds.length && (
-        <div id="grid-sentinel" className="h-16 w-full" />
-      )}
+      {limit < channelIds.length && <div id="grid-sentinel" className="h-16 w-full" />}
       <p className="mt-6 text-center text-[11px] text-[var(--text-tertiary)]">
         Showing {visible.length} of {channelIds.length}
       </p>

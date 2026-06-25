@@ -1,6 +1,11 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
-  Outlet, Link, createRootRouteWithContext, useRouter, HeadContent, Scripts,
+  Outlet,
+  Link,
+  createRootRouteWithContext,
+  useRouter,
+  HeadContent,
+  Scripts,
 } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { Toaster } from "sonner";
@@ -16,10 +21,16 @@ function NotFoundComponent() {
     <div className="grid min-h-screen place-items-center bg-[var(--surface-base)] px-4">
       <div className="max-w-md text-center">
         <h1 className="font-display text-6xl font-semibold tracking-tight">404</h1>
-        <p className="mt-3 text-sm text-[var(--text-secondary)]">That page isn't here. Try the catalog or head home.</p>
+        <p className="mt-3 text-sm text-[var(--text-secondary)]">
+          That page isn't here. Try the catalog or head home.
+        </p>
         <div className="mt-6 flex justify-center gap-2">
-          <Link to="/" className="btn-primary">Home</Link>
-          <Link to="/browse" className="btn-ghost">Browse channels</Link>
+          <Link to="/" className="btn-primary">
+            Home
+          </Link>
+          <Link to="/browse" className="btn-ghost">
+            Browse channels
+          </Link>
         </div>
       </div>
     </div>
@@ -29,15 +40,29 @@ function NotFoundComponent() {
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
-  useEffect(() => { reportLovableError(error, { boundary: "tanstack_root_error_component" }); }, [error]);
+  useEffect(() => {
+    reportLovableError(error, { boundary: "tanstack_root_error_component" });
+  }, [error]);
   return (
     <div className="grid min-h-screen place-items-center bg-[var(--surface-base)] px-4">
       <div className="max-w-md text-center">
         <h1 className="font-display text-xl font-semibold">Something went wrong</h1>
-        <p className="mt-2 text-sm text-[var(--text-secondary)]">The page didn't load. Try again or head home.</p>
+        <p className="mt-2 text-sm text-[var(--text-secondary)]">
+          The page didn't load. Try again or head home.
+        </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
-          <button onClick={() => { router.invalidate(); reset(); }} className="btn-primary">Try again</button>
-          <a href="/" className="btn-ghost">Home</a>
+          <button
+            onClick={() => {
+              router.invalidate();
+              reset();
+            }}
+            className="btn-primary"
+          >
+            Try again
+          </button>
+          <a href="/" className="btn-ghost">
+            Home
+          </a>
         </div>
       </div>
     </div>
@@ -51,9 +76,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { name: "theme-color", content: "#010102" },
       { title: "Tela — Watch the world live" },
-      { name: "description", content: "Browse and watch thousands of free, public IPTV channels. Verified live, every click." },
+      {
+        name: "description",
+        content:
+          "Browse and watch thousands of free, public IPTV channels. Verified live, every click.",
+      },
       { property: "og:title", content: "Tela — Watch the world live" },
-      { property: "og:description", content: "Browse and watch thousands of free, public IPTV channels." },
+      {
+        property: "og:description",
+        content: "Browse and watch thousands of free, public IPTV channels.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -71,8 +103,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <head><HeadContent /></head>
-      <body>{children}<Scripts /></body>
+      <head>
+        <HeadContent />
+      </head>
+      <body>
+        {children}
+        <Scripts />
+      </body>
     </html>
   );
 }

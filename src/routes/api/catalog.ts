@@ -42,14 +42,32 @@ interface RawStream {
   label?: string | null;
 }
 
-interface RawBlock { channel: string; reason: string }
-interface RawLogo { channel: string; feed?: string | null; url: string; format?: string }
-interface RawMeta { id?: string; code?: string; name: string; flag?: string }
+interface RawBlock {
+  channel: string;
+  reason: string;
+}
+interface RawLogo {
+  channel: string;
+  feed?: string | null;
+  url: string;
+  format?: string;
+}
+interface RawMeta {
+  id?: string;
+  code?: string;
+  name: string;
+  flag?: string;
+}
 
 function flagFromCode(code: string): string {
   if (!code || code.length !== 2) return "";
   const A = 127397;
-  return String.fromCodePoint(...code.toUpperCase().split("").map((c) => c.charCodeAt(0) + A));
+  return String.fromCodePoint(
+    ...code
+      .toUpperCase()
+      .split("")
+      .map((c) => c.charCodeAt(0) + A),
+  );
 }
 
 async function fetchJson<T>(url: string): Promise<T> {
@@ -59,16 +77,17 @@ async function fetchJson<T>(url: string): Promise<T> {
 }
 
 async function buildCatalog(): Promise<Catalog> {
-  const [channels, feeds, streams, categories, languages, countries, blocklist, logos] = await Promise.all([
-    fetchJson<RawChannel[]>(ENDPOINTS.channels),
-    fetchJson<RawFeed[]>(ENDPOINTS.feeds).catch(() => [] as RawFeed[]),
-    fetchJson<RawStream[]>(ENDPOINTS.streams),
-    fetchJson<RawMeta[]>(ENDPOINTS.categories),
-    fetchJson<RawMeta[]>(ENDPOINTS.languages),
-    fetchJson<RawMeta[]>(ENDPOINTS.countries),
-    fetchJson<RawBlock[]>(ENDPOINTS.blocklist),
-    fetchJson<RawLogo[]>(ENDPOINTS.logos).catch(() => [] as RawLogo[]),
-  ]);
+  const [channels, feeds, streams, categories, languages, countries, blocklist, logos] =
+    await Promise.all([
+      fetchJson<RawChannel[]>(ENDPOINTS.channels),
+      fetchJson<RawFeed[]>(ENDPOINTS.feeds).catch(() => [] as RawFeed[]),
+      fetchJson<RawStream[]>(ENDPOINTS.streams),
+      fetchJson<RawMeta[]>(ENDPOINTS.categories),
+      fetchJson<RawMeta[]>(ENDPOINTS.languages),
+      fetchJson<RawMeta[]>(ENDPOINTS.countries),
+      fetchJson<RawBlock[]>(ENDPOINTS.blocklist),
+      fetchJson<RawLogo[]>(ENDPOINTS.logos).catch(() => [] as RawLogo[]),
+    ]);
 
   const blocked = new Set<string>();
   for (const b of blocklist) blocked.add(b.channel);
@@ -78,7 +97,10 @@ async function buildCatalog(): Promise<Catalog> {
   for (const f of feeds) {
     if (!f.channel || !f.languages) continue;
     let s = langsByChannel.get(f.channel);
-    if (!s) { s = new Set(); langsByChannel.set(f.channel, s); }
+    if (!s) {
+      s = new Set();
+      langsByChannel.set(f.channel, s);
+    }
     for (const l of f.languages) s.add(l);
   }
 
@@ -136,13 +158,19 @@ async function buildCatalog(): Promise<Catalog> {
     for (const lang of langs) (by_language[lang] ??= []).push(c.id);
   }
 
-  const metaCategories = categories.map((x) => ({ id: x.id ?? "", name: x.name })).filter((x) => x.id);
-  const metaLanguages = languages.map((x) => ({ code: x.code ?? "", name: x.name })).filter((x) => x.code);
-  const metaCountries = countries.map((x) => ({
-    code: x.code ?? "",
-    name: x.name,
-    flag: x.flag || flagFromCode(x.code ?? ""),
-  })).filter((x) => x.code);
+  const metaCategories = categories
+    .map((x) => ({ id: x.id ?? "", name: x.name }))
+    .filter((x) => x.id);
+  const metaLanguages = languages
+    .map((x) => ({ code: x.code ?? "", name: x.name }))
+    .filter((x) => x.code);
+  const metaCountries = countries
+    .map((x) => ({
+      code: x.code ?? "",
+      name: x.name,
+      flag: x.flag || flagFromCode(x.code ?? ""),
+    }))
+    .filter((x) => x.code);
 
   return {
     updated_at: new Date().toISOString(),
@@ -167,7 +195,8 @@ export const Route = createFileRoute("/api/catalog")({
           return new Response(JSON.stringify(cached.data), {
             headers: {
               "content-type": "application/json",
-              "cache-control": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+              "cache-control":
+                "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
             },
           });
         } catch (e) {

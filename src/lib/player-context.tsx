@@ -1,5 +1,11 @@
 import {
-  createContext, useContext, useState, useCallback, useEffect, useRef, useMemo,
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+  useMemo,
   type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
@@ -28,7 +34,9 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const stageRef = useRef<HTMLDivElement | null>(null);
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const open = useCallback((c: CatalogChannel) => {
     setChannel(c);
@@ -40,7 +48,11 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     setMode("hidden");
     const v = videoRef.current;
     if (v) {
-      try { v.pause(); v.removeAttribute("src"); v.load(); } catch {}
+      try {
+        v.pause();
+        v.removeAttribute("src");
+        v.load();
+      } catch {}
     }
   }, []);
 
@@ -55,30 +67,48 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     setHostId((n) => n + 1);
   }, []);
 
-  const value = useMemo<PlayerState>(() => ({
-    channel, open, close,
-    videoEl: videoRef.current,
-    mountInto, hostId, mode, setMode,
-  }), [channel, open, close, mountInto, hostId, mode]);
+  const value = useMemo<PlayerState>(
+    () => ({
+      channel,
+      open,
+      close,
+      videoEl: videoRef.current,
+      mountInto,
+      hostId,
+      mode,
+      setMode,
+    }),
+    [channel, open, close, mountInto, hostId, mode],
+  );
 
   return (
     <PlayerCtx.Provider value={value}>
       {children}
       {/* Hidden stage that owns the <video> element when not mounted in a host */}
-      {mounted && createPortal(
-        <div
-          ref={stageRef}
-          aria-hidden
-          style={{ position: "fixed", left: -99999, top: -99999, width: 1, height: 1, overflow: "hidden" }}
-        >
-          <video
-            ref={(el) => { videoRef.current = el; }}
-            playsInline
-            // No `controls` — we render our own UI
-          />
-        </div>,
-        document.body,
-      )}
+      {mounted &&
+        createPortal(
+          <div
+            ref={stageRef}
+            aria-hidden
+            style={{
+              position: "fixed",
+              left: -99999,
+              top: -99999,
+              width: 1,
+              height: 1,
+              overflow: "hidden",
+            }}
+          >
+            <video
+              ref={(el) => {
+                videoRef.current = el;
+              }}
+              playsInline
+              // No `controls` — we render our own UI
+            />
+          </div>,
+          document.body,
+        )}
     </PlayerCtx.Provider>
   );
 }

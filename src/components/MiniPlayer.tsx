@@ -36,7 +36,8 @@ export function MiniPlayer() {
   const restore = () => navigate({ to: "/watch/$channelId", params: { channelId: channel.id } });
   const togglePlay = () => {
     if (!videoEl) return;
-    if (videoEl.paused) videoEl.play().catch(() => {}); else videoEl.pause();
+    if (videoEl.paused) videoEl.play().catch(() => {});
+    else videoEl.pause();
   };
 
   return (
@@ -56,17 +57,33 @@ export function MiniPlayer() {
         </button>
       </div>
       <div className="flex items-center gap-2 border-t border-[var(--border-subtle)] px-3 py-2">
-        <button onClick={togglePlay} aria-label={playing ? "Pause" : "Play"} className="grid size-7 shrink-0 place-items-center rounded-md text-[var(--text-secondary)] hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]">
-          {playing ? <Pause className="size-3.5" fill="currentColor" /> : <Play className="size-3.5 translate-x-px" fill="currentColor" />}
+        <button
+          onClick={togglePlay}
+          aria-label={playing ? "Pause" : "Play"}
+          className="grid size-7 shrink-0 place-items-center rounded-md text-[var(--text-secondary)] hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]"
+        >
+          {playing ? (
+            <Pause className="size-3.5" fill="currentColor" />
+          ) : (
+            <Play className="size-3.5 translate-x-px" fill="currentColor" />
+          )}
         </button>
         <div className="min-w-0 flex-1">
           <p className="truncate text-[12.5px] font-medium">{channel.name}</p>
           <p className="text-[10.5px] text-[var(--text-tertiary)]">Tap to restore</p>
         </div>
-        <button onClick={restore} aria-label="Restore" className="grid size-7 shrink-0 place-items-center rounded-md text-[var(--text-secondary)] hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]">
+        <button
+          onClick={restore}
+          aria-label="Restore"
+          className="grid size-7 shrink-0 place-items-center rounded-md text-[var(--text-secondary)] hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]"
+        >
           <Maximize2 className="size-3.5" />
         </button>
-        <button onClick={close} aria-label="Close" className="grid size-7 shrink-0 place-items-center rounded-md text-[var(--text-secondary)] hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]">
+        <button
+          onClick={close}
+          aria-label="Close"
+          className="grid size-7 shrink-0 place-items-center rounded-md text-[var(--text-secondary)] hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]"
+        >
           <X className="size-3.5" />
         </button>
       </div>

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import type { Catalog, EPGData } from "./types";
+import type { Catalog, EPGData, ChannelStatus } from "./types";
 
 async function fetchCatalog(): Promise<Catalog> {
   const r = await fetch("/api/catalog");
@@ -31,13 +31,54 @@ export function useEpg() {
   });
 }
 
-export async function checkStream(url: string, referrer: string | null, user_agent: string | null) {
-  const r = await fetch("/api/check-stream", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ url, referrer, user_agent }),
-  });
-  if (!r.ok) return "error" as const;
-  const j = (await r.json()) as { status: "online" | "blocked" | "timeout" | "error" };
-  return j.status;
+type CheckStatus = Exclude<ChannelStatus, "idle" | "checking" | "recovering">;
+
+const verifiedCache = new Map<string, { status: CheckStatus; timestamp: number }>();
+const activeChecks = new Map<string, Promise<CheckStatus>>();
+
+export async function checkStream(
+  url: string,
+  referrer: string | null,
+  user_agent: string | null,
+  force = false,
+): Promise<CheckStatus> {
+  if (!force) {
+    const cached = verifiedCache.get(url);
+    if (cached) {
+      const ttl = cached.status === "online" ? 30000 : 5000;
+      if (Date.now() - cached.timestamp < ttl) {
+        return cached.status;
+      }
+      verifiedCache.delete(url);
+    }
+  }
+
+  // Deduplicate active checks
+  const active = activeChecks.get(url);
+  if (active) {
+    return active;
+  }
+
+  const promise = (async (): Promise<CheckStatus> => {
+    try {
+      const r = await fetch("/api/check-stream", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ url, referrer, user_agent }),
+      });
+      if (!r.ok) return "error";
+      const j = (await r.json()) as { status: CheckStatus };
+
+      // Cache the result
+      verifiedCache.set(url, { status: j.status, timestamp: Date.now() });
+      return j.status;
+    } catch {
+      return "error";
+    } finally {
+      activeChecks.delete(url);
+    }
+  })();
+
+  activeChecks.set(url, promise);
+  return promise;
 }
