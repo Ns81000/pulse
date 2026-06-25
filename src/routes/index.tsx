@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo } from "react";
 import {
   useCatalog,
-  useEpg,
   useUserCountry,
   useStreamHealth,
   sortChannels,
@@ -49,7 +48,6 @@ function HorizScroll({ children }: { children: React.ReactNode }) {
 
 function Index() {
   const cat = useCatalog();
-  const epg = useEpg();
   const { favSet, refresh: refreshFavs } = useFavourites();
   const userCountry = useUserCountry();
   const health = useStreamHealth();
@@ -60,13 +58,6 @@ function Index() {
     const catName = (id: string) => cat.data!.meta.categories.find((c) => c.id === id)?.name ?? id;
     return { flagBy, catName };
   }, [cat.data]);
-
-  const onNowIds = useMemo(() => {
-    if (!cat.data || !epg.data) return [];
-    const activeEpgIds = cat.data.indexes.all_ids.filter((id) => epg.data!.programs[id]?.now);
-    const sorted = sortChannels(activeEpgIds, cat.data.channels, userCountry, health);
-    return sorted.slice(0, 14);
-  }, [cat.data, epg.data, userCountry, health]);
 
   const popularByCategory = useMemo(() => {
     if (!cat.data) return [] as { id: string; name: string; ids: string[] }[];
@@ -84,12 +75,11 @@ function Index() {
 
   const visibleIdsForBackgroundCheck = useMemo(() => {
     const ids = new Set<string>();
-    for (const id of onNowIds.slice(0, 6)) ids.add(id);
     for (const shelf of popularByCategory) {
       for (const id of shelf.ids.slice(0, 3)) ids.add(id);
     }
     return Array.from(ids);
-  }, [onNowIds, popularByCategory]);
+  }, [popularByCategory]);
 
   return (
     <div>
@@ -113,9 +103,6 @@ function Index() {
           <div className="mt-7 flex flex-wrap gap-2">
             <Link to="/browse" className="btn-primary inline-flex items-center gap-1.5">
               Browse channels <ArrowRight className="size-3.5" />
-            </Link>
-            <Link to="/guide" className="btn-ghost">
-              Live guide
             </Link>
           </div>
           <div className="mt-10 flex flex-wrap gap-x-8 gap-y-2 font-mono text-[11.5px] text-[var(--text-tertiary)]">
@@ -183,28 +170,6 @@ function Index() {
             channels={cat.data.channels}
             limit={24}
           />
-          {onNowIds.length > 0 && (
-            <Shelf title="On now">
-              <HorizScroll>
-                {onNowIds.map((id) => {
-                  const c = cat.data!.channels[id];
-                  return (
-                    <div key={id} className="w-[210px] shrink-0">
-                      <ChannelCard
-                        channel={c}
-                        flag={featured.flagBy.get(c.country)}
-                        epg={epg.data?.programs[id]}
-                        categoryName={featured.catName}
-                        isFavourite={favSet.has(id)}
-                        onFavouriteChange={refreshFavs}
-                      />
-                    </div>
-                  );
-                })}
-              </HorizScroll>
-            </Shelf>
-          )}
-
           {popularByCategory.map((shelf) => (
             <Shelf key={shelf.id} title={shelf.name}>
               <HorizScroll>
@@ -216,7 +181,6 @@ function Index() {
                       <ChannelCard
                         channel={c}
                         flag={featured.flagBy.get(c.country)}
-                        epg={epg.data?.programs[id]}
                         categoryName={featured.catName}
                         isFavourite={favSet.has(id)}
                         onFavouriteChange={refreshFavs}

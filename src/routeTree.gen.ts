@@ -11,12 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SearchRouteImport } from './routes/search'
-import { Route as GuideRouteImport } from './routes/guide'
 import { Route as FavouritesRouteImport } from './routes/favourites'
 import { Route as BrowseRouteImport } from './routes/browse'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WatchChannelIdRouteImport } from './routes/watch.$channelId'
-import { Route as ApiEpgRouteImport } from './routes/api/epg'
 import { Route as ApiCheckStreamRouteImport } from './routes/api/check-stream'
 import { Route as ApiCatalogRouteImport } from './routes/api/catalog'
 
@@ -28,11 +26,6 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GuideRoute = GuideRouteImport.update({
-  id: '/guide',
-  path: '/guide',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FavouritesRoute = FavouritesRouteImport.update({
@@ -55,11 +48,6 @@ const WatchChannelIdRoute = WatchChannelIdRouteImport.update({
   path: '/watch/$channelId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiEpgRoute = ApiEpgRouteImport.update({
-  id: '/api/epg',
-  path: '/api/epg',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiCheckStreamRoute = ApiCheckStreamRouteImport.update({
   id: '/api/check-stream',
   path: '/api/check-stream',
@@ -75,24 +63,20 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/browse': typeof BrowseRoute
   '/favourites': typeof FavouritesRoute
-  '/guide': typeof GuideRoute
   '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/catalog': typeof ApiCatalogRoute
   '/api/check-stream': typeof ApiCheckStreamRoute
-  '/api/epg': typeof ApiEpgRoute
   '/watch/$channelId': typeof WatchChannelIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/browse': typeof BrowseRoute
   '/favourites': typeof FavouritesRoute
-  '/guide': typeof GuideRoute
   '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/catalog': typeof ApiCatalogRoute
   '/api/check-stream': typeof ApiCheckStreamRoute
-  '/api/epg': typeof ApiEpgRoute
   '/watch/$channelId': typeof WatchChannelIdRoute
 }
 export interface FileRoutesById {
@@ -100,12 +84,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/browse': typeof BrowseRoute
   '/favourites': typeof FavouritesRoute
-  '/guide': typeof GuideRoute
   '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/catalog': typeof ApiCatalogRoute
   '/api/check-stream': typeof ApiCheckStreamRoute
-  '/api/epg': typeof ApiEpgRoute
   '/watch/$channelId': typeof WatchChannelIdRoute
 }
 export interface FileRouteTypes {
@@ -114,36 +96,30 @@ export interface FileRouteTypes {
     | '/'
     | '/browse'
     | '/favourites'
-    | '/guide'
     | '/search'
     | '/sitemap.xml'
     | '/api/catalog'
     | '/api/check-stream'
-    | '/api/epg'
     | '/watch/$channelId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/browse'
     | '/favourites'
-    | '/guide'
     | '/search'
     | '/sitemap.xml'
     | '/api/catalog'
     | '/api/check-stream'
-    | '/api/epg'
     | '/watch/$channelId'
   id:
     | '__root__'
     | '/'
     | '/browse'
     | '/favourites'
-    | '/guide'
     | '/search'
     | '/sitemap.xml'
     | '/api/catalog'
     | '/api/check-stream'
-    | '/api/epg'
     | '/watch/$channelId'
   fileRoutesById: FileRoutesById
 }
@@ -151,12 +127,10 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BrowseRoute: typeof BrowseRoute
   FavouritesRoute: typeof FavouritesRoute
-  GuideRoute: typeof GuideRoute
   SearchRoute: typeof SearchRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiCatalogRoute: typeof ApiCatalogRoute
   ApiCheckStreamRoute: typeof ApiCheckStreamRoute
-  ApiEpgRoute: typeof ApiEpgRoute
   WatchChannelIdRoute: typeof WatchChannelIdRoute
 }
 
@@ -174,13 +148,6 @@ declare module '@tanstack/react-router' {
       path: '/search'
       fullPath: '/search'
       preLoaderRoute: typeof SearchRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/guide': {
-      id: '/guide'
-      path: '/guide'
-      fullPath: '/guide'
-      preLoaderRoute: typeof GuideRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/favourites': {
@@ -211,13 +178,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WatchChannelIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/epg': {
-      id: '/api/epg'
-      path: '/api/epg'
-      fullPath: '/api/epg'
-      preLoaderRoute: typeof ApiEpgRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/check-stream': {
       id: '/api/check-stream'
       path: '/api/check-stream'
@@ -239,12 +199,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BrowseRoute: BrowseRoute,
   FavouritesRoute: FavouritesRoute,
-  GuideRoute: GuideRoute,
   SearchRoute: SearchRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiCatalogRoute: ApiCatalogRoute,
   ApiCheckStreamRoute: ApiCheckStreamRoute,
-  ApiEpgRoute: ApiEpgRoute,
   WatchChannelIdRoute: WatchChannelIdRoute,
 }
 export const routeTree = rootRouteImport

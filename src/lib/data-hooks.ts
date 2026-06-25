@@ -1,17 +1,11 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import type { Catalog, EPGData, ChannelStatus, CatalogChannel } from "./types";
+import type { Catalog, ChannelStatus, CatalogChannel } from "./types";
 import { listHealth, recordHealth } from "./idb";
 
 async function fetchCatalog(): Promise<Catalog> {
   const r = await fetch("/api/catalog");
   if (!r.ok) throw new Error("Catalog fetch failed");
-  return r.json();
-}
-
-async function fetchEpg(): Promise<EPGData> {
-  const r = await fetch("/api/epg");
-  if (!r.ok) return { updated_at: new Date().toISOString(), programs: {} };
   return r.json();
 }
 
@@ -21,15 +15,6 @@ export function useCatalog() {
     queryFn: fetchCatalog,
     staleTime: 1000 * 60 * 60 * 12,
     gcTime: 1000 * 60 * 60 * 24,
-  });
-}
-
-export function useEpg() {
-  return useQuery({
-    queryKey: ["epg"],
-    queryFn: fetchEpg,
-    staleTime: 1000 * 60 * 60 * 3,
-    gcTime: 1000 * 60 * 60 * 12,
   });
 }
 

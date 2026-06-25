@@ -1,17 +1,16 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { ChannelCard } from "./ChannelCard";
-import type { Catalog, EPGData } from "@/lib/types";
+import type { Catalog } from "@/lib/types";
 import { useFavourites } from "@/hooks/use-favourites";
 
 interface Props {
   catalog: Catalog;
-  epg?: EPGData;
   channelIds: string[];
 }
 
 const PAGE = 60;
 
-export function ChannelGrid({ catalog, epg, channelIds }: Props) {
+export function ChannelGrid({ catalog, channelIds }: Props) {
   const [limit, setLimit] = useState(PAGE);
   const { favSet, refresh: refreshFavs } = useFavourites();
 
@@ -70,7 +69,6 @@ export function ChannelGrid({ catalog, epg, channelIds }: Props) {
               channel={ch}
               flag={flagByCountry.get(ch.country)}
               countryName={countryNameByCode.get(ch.country)}
-              epg={epg?.programs[id]}
               isFavourite={favSet.has(id)}
               onFavouriteChange={refreshFavs}
               categoryName={catNameById}

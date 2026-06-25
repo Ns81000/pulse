@@ -1,11 +1,10 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Search, Tv, Compass, Heart, Home } from "lucide-react";
+import { Search, Tv, Heart, Home } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const NAV = [
   { to: "/", label: "Home", icon: Home },
   { to: "/browse", label: "Browse", icon: Tv },
-  { to: "/guide", label: "Guide", icon: Compass },
   { to: "/favourites", label: "Library", icon: Heart },
 ] as const;
 

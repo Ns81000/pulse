@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { ArrowLeft, Heart, ExternalLink, Tv } from "lucide-react";
 import { toast } from "sonner";
-import { useCatalog, useEpg, checkStream, getWorkingStreamIndex } from "@/lib/data-hooks";
+import { useCatalog, checkStream, getWorkingStreamIndex } from "@/lib/data-hooks";
 import { Player } from "@/components/Player";
 import { AlternativesShelf } from "@/components/AlternativesShelf";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -14,7 +14,7 @@ import {
   recordHistory,
   recordHealth,
 } from "@/lib/idb";
-import type { ChannelStatus, Catalog, EPGData } from "@/lib/types";
+import type { ChannelStatus, Catalog } from "@/lib/types";
 import { streamErrorMsg } from "@/lib/stream-messages";
 
 // iptv-org country mapping for flagcdn
@@ -36,7 +36,6 @@ function WatchPage() {
   const { channelId } = Route.useParams();
   const navigate = useNavigate();
   const cat = useCatalog();
-  const epg = useEpg();
   const { open } = usePlayer();
 
   const [status, setStatus] = useState<ChannelStatus>("checking");
@@ -182,10 +181,6 @@ function WatchPage() {
   const showRecovery = status === "blocked" || status === "timeout" || status === "error";
   const showLoading = status === "checking" || status === "recovering";
 
-  const now = epg.data?.programs[channel.id]?.now;
-  const next = epg.data?.programs[channel.id]?.next;
-  const hasSchedule = !!(now || next);
-
   return (
     <div className="mx-auto max-w-[1600px] w-full px-1">
       <button
@@ -196,9 +191,7 @@ function WatchPage() {
       </button>
 
       {/* Grid container: Cinema layout on desktop (lg and above), stacked on mobile */}
-      <div
-        className={`grid grid-cols-1 gap-6 ${hasSchedule ? "lg:grid-cols-[1fr_360px] xl:grid-cols-[1fr_400px]" : "lg:grid-cols-[1fr_320px]"}`}
-      >
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
         {/* Left column: Player screen & Metadata Details */}
         <div className="space-y-5 min-w-0">
           {showPlayer && (
@@ -300,33 +293,6 @@ function WatchPage() {
                 )}
               </div>
             </header>
-
-            {/* Mobile EPG timeline view inline */}
-            {hasSchedule && (
-              <div className="mt-5 border-t border-[var(--border-subtle)] pt-4 block lg:hidden">
-                <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--text-tertiary)] font-semibold">
-                  Broadcast Schedule
-                </p>
-                {now && (
-                  <div className="mt-2.5 text-[13px] space-y-2">
-                    <p className="text-[var(--text-primary)]">
-                      <span className="mr-2 font-mono text-[9px] font-bold uppercase text-[var(--accent)] bg-[var(--accent-subtle)] px-1 py-0.5 rounded">
-                        Now
-                      </span>
-                      <span className="font-medium">{now.title}</span>
-                    </p>
-                    {next && (
-                      <p className="text-[12.5px] text-[var(--text-tertiary)]">
-                        <span className="mr-2 font-mono text-[9px] font-medium uppercase border border-[var(--border-default)] px-1 py-0.5 rounded">
-                          Next
-                        </span>
-                        {next.title}
-                      </p>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
           </div>
 
           {/* Alternatives Shelf (Only visible on mobile view layout) */}
@@ -334,7 +300,6 @@ function WatchPage() {
             {cat.data && (
               <AlternativesShelf
                 catalog={cat.data}
-                epg={epg.data}
                 failedChannelId={channel.id}
                 title={showRecovery ? "Working alternatives" : "More like this"}
               />
@@ -342,62 +307,8 @@ function WatchPage() {
           </div>
         </div>
 
-        {/* Right column: EPG & Recommendations Sidebar (Visible on desktop only) */}
+        {/* Right column: Recommendations Sidebar (Visible on desktop only) */}
         <div className="hidden lg:flex flex-col gap-5 min-w-0">
-          {/* EPG Sidebar widget */}
-          {hasSchedule && (
-            <div className="py-1 border-b border-[var(--border-subtle)] pb-5">
-              <h3 className="font-mono text-[10px] font-semibold uppercase tracking-wider text-[var(--text-tertiary)] mb-4">
-                Broadcast Schedule
-              </h3>
-              <div className="space-y-4">
-                {now && (
-                  <div className="relative pl-4 border-l-2 border-[var(--accent)] py-1">
-                    <span className="absolute -left-[5px] top-[14px] size-2 rounded-full bg-[var(--accent)] animate-pulse" />
-                    <p className="text-[9px] uppercase font-mono tracking-wider text-[var(--accent)] font-semibold">
-                      Now playing
-                    </p>
-                    <h4 className="text-[13.5px] font-medium text-[var(--text-primary)] mt-0.5 leading-snug">
-                      {now.title}
-                    </h4>
-                    <p className="text-[11px] text-[var(--text-tertiary)] mt-1 font-mono">
-                      {new Date(now.start).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}{" "}
-                      -{" "}
-                      {new Date(now.end).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </p>
-                  </div>
-                )}
-                {next && (
-                  <div className="relative pl-4 border-l-2 border-[var(--border-default)] py-1">
-                    <p className="text-[9px] uppercase font-mono tracking-wider text-[var(--text-tertiary)]">
-                      Up next
-                    </p>
-                    <h4 className="text-[13.5px] font-medium text-[var(--text-secondary)] mt-0.5 leading-snug">
-                      {next.title}
-                    </h4>
-                    <p className="text-[11px] text-[var(--text-tertiary)] mt-1 font-mono">
-                      {new Date(next.start).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}{" "}
-                      -{" "}
-                      {new Date(next.end).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
           {/* Alternatives Sidebar widget */}
           <div className="py-1 flex flex-col">
             <h3 className="mb-3 font-mono text-[10.5px] font-bold uppercase tracking-[0.14em] text-[var(--text-tertiary)] shrink-0">
@@ -407,10 +318,8 @@ function WatchPage() {
               {cat.data && (
                 <AlternativesVerticalList
                   catalog={cat.data}
-                  epg={epg.data}
                   failedChannelId={channel.id}
-                  limit={hasSchedule ? 6 : 8}
-                  hasSchedule={hasSchedule}
+                  limit={8}
                 />
               )}
             </div>
@@ -423,16 +332,12 @@ function WatchPage() {
 
 function AlternativesVerticalList({
   catalog,
-  epg,
   failedChannelId,
   limit = 6,
-  hasSchedule,
 }: {
   catalog: Catalog;
-  epg?: EPGData;
   failedChannelId: string;
   limit?: number;
-  hasSchedule: boolean;
 }) {
   const navigate = useNavigate();
   const player = usePlayer();
@@ -467,14 +372,10 @@ function AlternativesVerticalList({
 
   return (
     <div className="flex flex-col gap-2.5">
-      {ids.map((id, i) => {
+      {ids.map((id) => {
         const c = catalog.channels[id];
         if (!c) return null;
-        const nowProg = epg?.programs[id]?.now;
         const code = c.country ? toFlagCode(c.country) : "";
-        const responsiveClass = hasSchedule
-          ? i >= 2 ? (i >= 4 ? "hidden 2xl:flex" : "hidden xl:flex") : "flex"
-          : i >= 4 ? (i >= 6 ? "hidden 2xl:flex" : "hidden xl:flex") : "flex";
         return (
           <button
             key={id}
@@ -503,7 +404,7 @@ function AlternativesVerticalList({
                 });
               }
             }}
-            className={`${responsiveClass} items-start gap-3 w-full p-1.5 text-left rounded-lg hover:bg-[var(--surface-2)] transition-all duration-150 active:scale-[0.985]`}
+            className="flex items-start gap-3 w-full p-1.5 text-left rounded-lg hover:bg-[var(--surface-2)] transition-all duration-150 active:scale-[0.985]"
           >
             {/* Aspect-video larger thumbnail */}
             <div className="relative aspect-video w-28 h-[63px] shrink-0 rounded-md bg-[var(--surface-base)] border border-[var(--border-subtle)] flex items-center justify-center overflow-hidden">
@@ -528,14 +429,13 @@ function AlternativesVerticalList({
                   />
                 )}
               </div>
-              {nowProg ? (
+              {c.categories.length > 0 ? (
                 <p className="truncate text-[11.5px] text-[var(--text-secondary)] mt-1.5 font-medium">
-                  <span className="mr-1 inline-block size-1.5 -translate-y-[2.5px] rounded-full bg-[var(--status-online)]" />
-                  {nowProg.title}
+                  {c.categories[0]}
                 </p>
               ) : (
                 <p className="text-[10px] text-[var(--text-disabled)] mt-1.5 font-mono text-[9px] uppercase tracking-wide">
-                  No schedule data
+                  No category
                 </p>
               )}
             </div>

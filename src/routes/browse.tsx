@@ -3,7 +3,6 @@ import { useMemo, useState, useRef, useCallback, useEffect } from "react";
 import { z } from "zod";
 import {
   useCatalog,
-  useEpg,
   useUserCountry,
   useStreamHealth,
   sortChannels,
@@ -254,7 +253,6 @@ function BrowsePage() {
   const navigate = useNavigate({ from: "/browse" });
   const selected = Route.useSearch();
   const cat = useCatalog();
-  const epg = useEpg();
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const userCountry = useUserCountry();
   const health = useStreamHealth();
@@ -474,7 +472,7 @@ function BrowsePage() {
           {cat.data && (
             <>
               <BackgroundPingTrigger channelIds={ids} channels={cat.data.channels} limit={12} />
-              <ChannelGrid catalog={cat.data} epg={epg.data} channelIds={ids} />
+              <ChannelGrid catalog={cat.data} channelIds={ids} />
             </>
           )}
         </div>

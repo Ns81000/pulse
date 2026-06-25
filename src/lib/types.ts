@@ -42,14 +42,3 @@ export interface Catalog {
   };
 }
 
-export interface EPGEntry {
-  title: string;
-  start: string;
-  end: string;
-  category: string | null;
-}
-
-export interface EPGData {
-  updated_at: string;
-  programs: Record<string, { now: EPGEntry | null; next: EPGEntry | null }>;
-}

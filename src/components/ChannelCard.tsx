@@ -3,7 +3,7 @@ import { useState, useCallback, memo } from "react";
 import { Heart, Tv } from "lucide-react";
 import { toast } from "sonner";
 import { StatusBadge } from "./StatusBadge";
-import type { CatalogChannel, ChannelStatus, EPGEntry } from "@/lib/types";
+import type { CatalogChannel, ChannelStatus } from "@/lib/types";
 import { checkStream } from "@/lib/data-hooks";
 import { usePlayer } from "@/lib/player-context";
 import { addFavourite, removeFavourite } from "@/lib/idb";
@@ -24,7 +24,6 @@ interface Props {
   channel: CatalogChannel;
   flag?: string;
   countryName?: string;
-  epg?: { now: EPGEntry | null; next: EPGEntry | null };
   isFavourite?: boolean;
   onFavouriteChange?: () => void;
   categoryName?: (id: string) => string;
@@ -34,7 +33,6 @@ function ChannelCardBase({
   channel,
   flag,
   countryName,
-  epg,
   isFavourite,
   onFavouriteChange,
   categoryName,
@@ -153,13 +151,6 @@ function ChannelCardBase({
             })()
           : null}
       </div>
-
-      {epg?.now ? (
-        <p className="line-clamp-1 text-[11px] text-[var(--text-tertiary)]">
-          <span className="mr-1 inline-block size-1 -translate-y-[2px] rounded-full bg-[var(--status-online)]" />
-          {epg.now.title}
-        </p>
-      ) : null}
 
       {cats.length > 0 && (
         <div className="flex flex-wrap gap-1">

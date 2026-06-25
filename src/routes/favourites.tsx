@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
-import { useCatalog, useEpg } from "@/lib/data-hooks";
+import { useCatalog } from "@/lib/data-hooks";
 import { listFavourites, listHistory } from "@/lib/idb";
 import { ChannelGrid } from "@/components/ChannelGrid";
 import { AlternativesShelf } from "@/components/AlternativesShelf";
@@ -18,7 +18,6 @@ export const Route = createFileRoute("/favourites")({
 
 function FavPage() {
   const cat = useCatalog();
-  const epg = useEpg();
   const [favIds, setFavIds] = useState<string[]>([]);
   const [recent, setRecent] = useState<string[]>([]);
   const [recommended, setRecommended] = useState<string[]>([]);
@@ -99,7 +98,7 @@ function FavPage() {
             </Link>
           </div>
         ) : (
-          cat.data && <ChannelGrid catalog={cat.data} epg={epg.data} channelIds={favIds} />
+          cat.data && <ChannelGrid catalog={cat.data} channelIds={favIds} />
         )}
       </section>
 
@@ -108,7 +107,7 @@ function FavPage() {
           <h2 className="mb-4 font-display text-[13px] font-medium uppercase tracking-[0.14em] text-[var(--text-secondary)]">
             Recently watched
           </h2>
-          <AlternativesShelf catalog={cat.data} epg={epg.data} ids={recent} title="" />
+          <AlternativesShelf catalog={cat.data} ids={recent} title="" />
         </section>
       )}
 
@@ -133,7 +132,7 @@ function FavPage() {
           <h2 className="mb-4 font-display text-[13px] font-medium uppercase tracking-[0.14em] text-[var(--text-secondary)]">
             Because you watched
           </h2>
-          <AlternativesShelf catalog={cat.data} epg={epg.data} ids={recommended} title="" />
+          <AlternativesShelf catalog={cat.data} ids={recommended} title="" />
         </section>
       )}
     </div>

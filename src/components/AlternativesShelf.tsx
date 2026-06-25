@@ -2,11 +2,10 @@ import { useMemo } from "react";
 import { ChannelCard } from "./ChannelCard";
 import { HorizScrollShelf } from "./HorizScrollShelf";
 import { useFavourites } from "@/hooks/use-favourites";
-import type { Catalog, EPGData } from "@/lib/types";
+import type { Catalog } from "@/lib/types";
 
 interface Props {
   catalog: Catalog;
-  epg?: EPGData;
   title?: string;
   failedChannelId?: string;
   ids?: string[];
@@ -14,7 +13,6 @@ interface Props {
 
 export function AlternativesShelf({
   catalog,
-  epg,
   title = "Try these instead",
   failedChannelId,
   ids: explicit,
@@ -73,7 +71,6 @@ export function AlternativesShelf({
               <ChannelCard
                 channel={c}
                 flag={flagByCountry.get(c.country)}
-                epg={epg?.programs[id]}
                 isFavourite={favSet.has(id)}
                 onFavouriteChange={refreshFavs}
               />
