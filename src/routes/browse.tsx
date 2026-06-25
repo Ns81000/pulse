@@ -1,9 +1,16 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState, useRef, useCallback, useEffect } from "react";
 import { z } from "zod";
-import { useCatalog, useEpg } from "@/lib/data-hooks";
+import {
+  useCatalog,
+  useEpg,
+  useUserCountry,
+  useStreamHealth,
+  sortChannels,
+} from "@/lib/data-hooks";
 import { FilterPanel } from "@/components/FilterPanel";
 import { ChannelGrid } from "@/components/ChannelGrid";
+import { BackgroundPingTrigger } from "@/components/BackgroundPingTrigger";
 import {
   SlidersHorizontal,
   Search as SearchIcon,
@@ -248,6 +255,8 @@ function BrowsePage() {
   const cat = useCatalog();
   const epg = useEpg();
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const userCountry = useUserCountry();
+  const health = useStreamHealth();
 
   // 1. On mount: Restore saved search filters if the current URL has no filters
   useEffect(() => {
@@ -314,9 +323,12 @@ function BrowsePage() {
       base = base
         .slice()
         .sort((a, b) => cat.data!.channels[a].country.localeCompare(cat.data!.channels[b].country));
+    } else {
+      // Default (popular): sort by health & user country
+      base = sortChannels(base, cat.data.channels, userCountry, health);
     }
     return base;
-  }, [cat.data, selected]);
+  }, [cat.data, selected, userCountry, health]);
 
   type S = z.infer<typeof search>;
   const update = (patch: Partial<S>) => {
@@ -457,7 +469,12 @@ function BrowsePage() {
               ))}
             </div>
           )}
-          {cat.data && <ChannelGrid catalog={cat.data} epg={epg.data} channelIds={ids} />}
+          {cat.data && (
+            <>
+              <BackgroundPingTrigger channelIds={ids} channels={cat.data.channels} limit={12} />
+              <ChannelGrid catalog={cat.data} epg={epg.data} channelIds={ids} />
+            </>
+          )}
         </div>
       </div>
     </div>

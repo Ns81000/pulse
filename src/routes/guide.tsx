@@ -1,7 +1,14 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, useRef } from "react";
 import { Tv } from "lucide-react";
-import { useCatalog, useEpg } from "@/lib/data-hooks";
+import {
+  useCatalog,
+  useEpg,
+  useUserCountry,
+  useStreamHealth,
+  sortChannels,
+} from "@/lib/data-hooks";
+import { BackgroundPingTrigger } from "@/components/BackgroundPingTrigger";
 
 export const Route = createFileRoute("/guide")({
   head: () => ({
@@ -29,20 +36,29 @@ function GuidePage() {
   const [now, setNow] = useState(() => new Date());
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  const userCountry = useUserCountry();
+  const health = useStreamHealth();
+
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 60_000);
     return () => clearInterval(t);
   }, []);
 
-  // Default to user's country guess based on browser locale
+  // Default to user's country guess
   useEffect(() => {
     if (country || !cat.data) return;
-    try {
-      const loc = (Intl.DateTimeFormat().resolvedOptions().locale || "").split("-");
-      const cc = (loc[1] || "").toUpperCase();
-      if (cc && cat.data.indexes.by_country[cc]) setCountry(cc);
-    } catch {}
-  }, [cat.data, country]);
+    if (userCountry && cat.data.indexes.by_country[userCountry]) {
+      setCountry(userCountry);
+    } else {
+      try {
+        const loc = (Intl.DateTimeFormat().resolvedOptions().locale || "").split("-");
+        const cc = (loc[1] || "").toUpperCase();
+        if (cc && cat.data.indexes.by_country[cc]) setCountry(cc);
+      } catch {
+        // Ignore locale parsing errors
+      }
+    }
+  }, [cat.data, country, userCountry]);
 
   const countriesWithEpg = useMemo(() => {
     if (!cat.data || !epg.data)
@@ -70,6 +86,11 @@ function GuidePage() {
         next: { title: string; start: Date; end: Date } | null;
       }[];
     const base = country ? (cat.data.indexes.by_country[country] ?? []) : cat.data.indexes.all_ids;
+
+    // Filter first, then sort, then take top 80
+    const activeEpgIds = base.filter((id) => epg.data!.programs[id]?.now);
+    const sorted = sortChannels(activeEpgIds, cat.data.channels, userCountry, health);
+
     const out: {
       id: string;
       name: string;
@@ -77,7 +98,7 @@ function GuidePage() {
       now: { title: string; start: Date; end: Date };
       next: { title: string; start: Date; end: Date } | null;
     }[] = [];
-    for (const id of base) {
+    for (const id of sorted) {
       const p = epg.data.programs[id];
       if (!p?.now) continue;
       const ch = cat.data.channels[id];
@@ -94,7 +115,7 @@ function GuidePage() {
       if (out.length >= 80) break;
     }
     return out;
-  }, [cat.data, epg.data, country]);
+  }, [cat.data, epg.data, country, userCountry, health]);
 
   // Timeline window: from current hour - 1 to + 5 hours
   const windowStart = useMemo(() => {
@@ -220,6 +241,11 @@ function GuidePage() {
 
       {!loading && !empty && (
         <div className="overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-1)]">
+          <BackgroundPingTrigger
+            channelIds={channels.map((c) => c.id)}
+            channels={cat.data!.channels}
+            limit={10}
+          />
           <div className="flex">
             {/* Channel rail */}
             <div className="shrink-0 border-r border-[var(--border-subtle)]">

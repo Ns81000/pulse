@@ -1,9 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo } from "react";
-import { useCatalog, useEpg } from "@/lib/data-hooks";
+import {
+  useCatalog,
+  useEpg,
+  useUserCountry,
+  useStreamHealth,
+  sortChannels,
+} from "@/lib/data-hooks";
 import { ChannelCard } from "@/components/ChannelCard";
 import { HorizScrollShelf } from "@/components/HorizScrollShelf";
 import { useFavourites } from "@/hooks/use-favourites";
+import { BackgroundPingTrigger } from "@/components/BackgroundPingTrigger";
 import { ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -44,6 +51,8 @@ function Index() {
   const cat = useCatalog();
   const epg = useEpg();
   const { favSet, refresh: refreshFavs } = useFavourites();
+  const userCountry = useUserCountry();
+  const health = useStreamHealth();
 
   const featured = useMemo(() => {
     if (!cat.data) return null;
@@ -54,25 +63,33 @@ function Index() {
 
   const onNowIds = useMemo(() => {
     if (!cat.data || !epg.data) return [];
-    const out: string[] = [];
-    for (const id of cat.data.indexes.all_ids) {
-      if (epg.data.programs[id]?.now) {
-        out.push(id);
-        if (out.length >= 14) break;
-      }
-    }
-    return out;
-  }, [cat.data, epg.data]);
+    const activeEpgIds = cat.data.indexes.all_ids.filter((id) => epg.data!.programs[id]?.now);
+    const sorted = sortChannels(activeEpgIds, cat.data.channels, userCountry, health);
+    return sorted.slice(0, 14);
+  }, [cat.data, epg.data, userCountry, health]);
 
   const popularByCategory = useMemo(() => {
     if (!cat.data) return [] as { id: string; name: string; ids: string[] }[];
     const PRIORITIES = ["news", "sports", "movies", "entertainment", "music", "documentary"];
-    return PRIORITIES.map((id) => ({
-      id,
-      name: cat.data!.meta.categories.find((c) => c.id === id)?.name ?? id,
-      ids: (cat.data!.indexes.by_category[id] ?? []).slice(0, 12),
-    })).filter((s) => s.ids.length > 0);
-  }, [cat.data]);
+    return PRIORITIES.map((id) => {
+      const categoryIds = cat.data!.indexes.by_category[id] ?? [];
+      const sorted = sortChannels(categoryIds, cat.data!.channels, userCountry, health);
+      return {
+        id,
+        name: cat.data!.meta.categories.find((c) => c.id === id)?.name ?? id,
+        ids: sorted.slice(0, 12),
+      };
+    }).filter((s) => s.ids.length > 0);
+  }, [cat.data, userCountry, health]);
+
+  const visibleIdsForBackgroundCheck = useMemo(() => {
+    const ids = new Set<string>();
+    for (const id of onNowIds.slice(0, 6)) ids.add(id);
+    for (const shelf of popularByCategory) {
+      for (const id of shelf.ids.slice(0, 3)) ids.add(id);
+    }
+    return Array.from(ids);
+  }, [onNowIds, popularByCategory]);
 
   return (
     <div>
@@ -161,6 +178,11 @@ function Index() {
 
       {cat.data && featured && (
         <>
+          <BackgroundPingTrigger
+            channelIds={visibleIdsForBackgroundCheck}
+            channels={cat.data.channels}
+            limit={24}
+          />
           {onNowIds.length > 0 && (
             <Shelf title="On now">
               <HorizScroll>

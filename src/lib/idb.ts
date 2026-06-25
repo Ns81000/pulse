@@ -1,7 +1,7 @@
 import { openDB, type IDBPDatabase } from "idb";
 
 const DB_NAME = "iptv-local";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 export interface FavouriteRecord {
   channelId: string;
@@ -12,6 +12,11 @@ export interface HistoryRecord {
   watched_at: string;
   duration_ms: number;
 }
+export interface StreamHealthRecord {
+  channelId: string;
+  status: "online" | "blocked" | "timeout" | "error";
+  checked_at: string;
+}
 
 let dbp: Promise<IDBPDatabase> | null = null;
 
@@ -19,16 +24,23 @@ export function getDB() {
   if (typeof window === "undefined") return null;
   if (!dbp) {
     dbp = openDB(DB_NAME, DB_VERSION, {
-      upgrade(db) {
-        if (!db.objectStoreNames.contains("favourites")) {
-          db.createObjectStore("favourites", { keyPath: "channelId" });
+      upgrade(db, oldVersion) {
+        if (oldVersion < 1) {
+          if (!db.objectStoreNames.contains("favourites")) {
+            db.createObjectStore("favourites", { keyPath: "channelId" });
+          }
+          if (!db.objectStoreNames.contains("history")) {
+            const s = db.createObjectStore("history", { keyPath: "watched_at" });
+            s.createIndex("by_channel", "channelId");
+          }
+          if (!db.objectStoreNames.contains("preferences")) {
+            db.createObjectStore("preferences", { keyPath: "key" });
+          }
         }
-        if (!db.objectStoreNames.contains("history")) {
-          const s = db.createObjectStore("history", { keyPath: "watched_at" });
-          s.createIndex("by_channel", "channelId");
-        }
-        if (!db.objectStoreNames.contains("preferences")) {
-          db.createObjectStore("preferences", { keyPath: "key" });
+        if (oldVersion < 2) {
+          if (!db.objectStoreNames.contains("stream_health")) {
+            db.createObjectStore("stream_health", { keyPath: "channelId" });
+          }
         }
       },
     });
@@ -88,4 +100,26 @@ export async function listHistory(): Promise<HistoryRecord[]> {
   if (!db) return [];
   const all = (await db.getAll("history")) as HistoryRecord[];
   return all.sort((a, b) => b.watched_at.localeCompare(a.watched_at));
+}
+
+export async function recordHealth(channelId: string, status: StreamHealthRecord["status"]) {
+  const db = await getDB();
+  if (!db) return;
+  await db.put("stream_health", {
+    channelId,
+    status,
+    checked_at: new Date().toISOString(),
+  });
+  window.dispatchEvent(new CustomEvent("healthchange"));
+}
+
+export async function listHealth(): Promise<Record<string, StreamHealthRecord>> {
+  const db = await getDB();
+  if (!db) return {};
+  const all = (await db.getAll("stream_health")) as StreamHealthRecord[];
+  const out: Record<string, StreamHealthRecord> = {};
+  for (const r of all) {
+    out[r.channelId] = r;
+  }
+  return out;
 }
