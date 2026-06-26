@@ -1,2 +1,1 @@
-var e = () => null;
-export { e as component };
+var e=()=>null;export{e as component};
