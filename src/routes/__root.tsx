@@ -154,7 +154,7 @@ function RouteTransition({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     setPhase("enter");
-    const t = setTimeout(() => setPhase("idle"), 220);
+    const t = setTimeout(() => setPhase("idle"), 280);
     return () => clearTimeout(t);
   }, [pathname]);
 
