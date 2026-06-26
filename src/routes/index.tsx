@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useLayoutEffect } from "react";
 import { ImmersiveLanding } from "@/components/landing/ImmersiveLanding";
 import { useCatalog, useUserCountry, useStreamHealth, sortChannels } from "@/lib/data-hooks";
 import { ChannelCard } from "@/components/ChannelCard";
@@ -49,6 +49,19 @@ function Index() {
   const health = useStreamHealth();
 
   const [showLanding, setShowLanding] = useState(false);
+
+  useLayoutEffect(() => {
+    const viewed = localStorage.getItem("pulse_landing_viewed");
+    if (!viewed) {
+      document.documentElement.setAttribute("data-landing-active", "true");
+      return () => {
+        document.documentElement.removeAttribute("data-landing-active");
+      };
+    }
+
+    document.documentElement.removeAttribute("data-landing-active");
+    return undefined;
+  }, []);
 
   useEffect(() => {
     // Only show if the user hasn't seen the landing page

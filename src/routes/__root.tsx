@@ -120,20 +120,6 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  var viewed = localStorage.getItem('pulse_landing_viewed');
-                  if (!viewed && window.location.pathname === '/') {
-                    document.documentElement.setAttribute('data-landing-active', 'true');
-                  }
-                } catch (e) {}
-              })();
-            `,
-          }}
-        />
       </head>
       <body>
         {children}
