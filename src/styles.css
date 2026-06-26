@@ -469,14 +469,28 @@
   opacity: 0;
   transition: opacity 200ms ease;
   pointer-events: none;
+  z-index: 10;
 }
-.player-wrap:hover .player-controls,
+/* Controls show only when JS adds controls-visible — hover no longer overrides */
 .player-wrap.controls-visible .player-controls {
   opacity: 1;
+  pointer-events: none; /* the wrapper is none; individual buttons override below */
+}
+.player-controls button,
+.player-controls input {
   pointer-events: auto;
 }
-.player-controls button {
+.player-controls > div:last-child {
   pointer-events: auto;
+}
+
+/* Hide cursor in fullscreen when controls are hidden */
+.player-wrap:fullscreen:not(.controls-visible) {
+  cursor: none;
+}
+/* Webkit fullscreen */
+.player-wrap:-webkit-full-screen:not(.controls-visible) {
+  cursor: none;
 }
 
 .ctrl-btn {
