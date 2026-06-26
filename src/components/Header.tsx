@@ -51,14 +51,24 @@ export function Header({ onSearchOpen }: { onSearchOpen?: () => void }) {
         </nav>
 
         <div className="ml-auto flex items-center gap-2">
+          {/* Desktop search button */}
           <button
             type="button"
             onClick={onSearchOpen}
-            className="inline-flex items-center gap-2 rounded-lg border border-[var(--border-default)] bg-[var(--surface-2)] px-3 py-1.5 text-[12.5px] text-[var(--text-tertiary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] sm:min-w-[220px]"
+            className="hidden sm:inline-flex items-center gap-2 rounded-lg border border-[var(--border-default)] bg-[var(--surface-2)] px-3 py-1.5 text-[12.5px] text-[var(--text-tertiary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] min-w-[220px]"
           >
             <Search className="size-3.5" />
             <span className="flex-1 text-left">Search…</span>
-            <kbd className="keycap-kbd hidden sm:inline-flex">{shortcutText}</kbd>
+            <kbd className="keycap-kbd">{shortcutText}</kbd>
+          </button>
+          {/* Mobile search icon button */}
+          <button
+            type="button"
+            onClick={onSearchOpen}
+            aria-label="Search"
+            className="sm:hidden flex size-9 items-center justify-center rounded-xl border border-[var(--border-default)] bg-[var(--surface-2)] text-[var(--text-secondary)] transition-all active:scale-90 active:bg-[var(--surface-3)]"
+          >
+            <Search className="size-4.5" />
           </button>
         </div>
       </div>
