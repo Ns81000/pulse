@@ -3,8 +3,25 @@ import { useQuery } from "@tanstack/react-query";
 import type { Catalog, ChannelStatus, CatalogChannel } from "./types";
 import { listHealth, recordHealth } from "./idb";
 
+function getAbsoluteUrl(path: string): string {
+  if (typeof window !== "undefined") {
+    return path;
+  }
+  const isServer = typeof process !== "undefined" && process.env;
+  const productionUrl = isServer ? process.env.VERCEL_PROJECT_PRODUCTION_URL : undefined;
+  const vercelUrl = isServer ? process.env.VERCEL_URL : undefined;
+  const port = isServer ? process.env.PORT : undefined;
+
+  const host = productionUrl
+    ? `https://${productionUrl}`
+    : vercelUrl
+      ? `https://${vercelUrl}`
+      : `http://localhost:${port || 3000}`;
+  return `${host}${path}`;
+}
+
 async function fetchCatalog(): Promise<Catalog> {
-  const r = await fetch("/api/catalog");
+  const r = await fetch(getAbsoluteUrl("/api/catalog"));
   if (!r.ok) throw new Error("Catalog fetch failed");
   return r.json();
 }
@@ -58,7 +75,7 @@ export async function checkStream(
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 8000);
     try {
-      const r = await fetch("/api/check-stream", {
+      const r = await fetch(getAbsoluteUrl("/api/check-stream"), {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ url, referrer, user_agent }),
