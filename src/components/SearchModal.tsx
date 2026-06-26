@@ -148,7 +148,7 @@ export function SearchModal({ open, onClose }: Props) {
 
   // Trending: full hybrid sort (health + geo), then 1 per category for variety
   const trendingChannels = useMemo(() => {
-    if (!cat.data) return [];
+    if (!open || !cat.data) return [];
     // Run the same sort used everywhere else in the app
     const sorted = sortChannels(
       cat.data.indexes.all_ids,
@@ -173,7 +173,8 @@ export function SearchModal({ open, onClose }: Props) {
       result.push(id);
     }
     return result;
-  }, [cat.data, health, userCountry]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, cat.data, userCountry]);
 
   // Queue background pings for trending channels so health updates reactively
   useEffect(() => {

@@ -19,10 +19,10 @@ export interface StreamHealthRecord {
   workingIndex?: number;
 }
 
-let dbp: Promise<IDBPDatabase> | null = null;
+let dbp: Promise<IDBPDatabase | null> | null = null;
 
-export function getDB() {
-  if (typeof window === "undefined") return null;
+export function getDB(): Promise<IDBPDatabase | null> {
+  if (typeof window === "undefined") return Promise.resolve(null);
   if (!dbp) {
     dbp = openDB(DB_NAME, DB_VERSION, {
       upgrade(db, oldVersion) {
@@ -44,6 +44,9 @@ export function getDB() {
           }
         }
       },
+    }).catch(() => {
+      dbp = null;
+      return null;
     });
   }
   return dbp;
@@ -78,13 +81,12 @@ export async function isFavourite(channelId: string): Promise<boolean> {
 export async function recordHistory(channelId: string, duration_ms = 0) {
   const db = await getDB();
   if (!db) return;
-  await db.put("history", {
+  const tx = db.transaction("history", "readwrite");
+  await tx.store.put({
     channelId,
     watched_at: new Date().toISOString(),
     duration_ms,
   });
-  // Prune to last 200
-  const tx = db.transaction("history", "readwrite");
   const all = await tx.store.getAll();
   if (all.length > 200) {
     all.sort((a, b) => a.watched_at.localeCompare(b.watched_at));

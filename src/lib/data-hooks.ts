@@ -55,12 +55,16 @@ export async function checkStream(
   }
 
   const promise = (async (): Promise<CheckStatus> => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
     try {
       const r = await fetch("/api/check-stream", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ url, referrer, user_agent }),
+        signal: controller.signal,
       });
+      clearTimeout(timeout);
       if (!r.ok) return "error";
       const j = (await r.json()) as { status: CheckStatus };
 
@@ -68,6 +72,7 @@ export async function checkStream(
       verifiedCache.set(url, { status: j.status, timestamp: Date.now() });
       return j.status;
     } catch {
+      clearTimeout(timeout);
       return "error";
     } finally {
       activeChecks.delete(url);
@@ -94,8 +99,9 @@ let activeCountry =
 const countryListeners = new Set<(c: string) => void>();
 
 export function useUserCountry() {
-  const [c, setC] = useState(activeCountry);
+  const [c, setC] = useState("US");
   useEffect(() => {
+    setC(activeCountry);
     const handler = (newC: string) => setC(newC);
     countryListeners.add(handler);
     return () => {
@@ -169,6 +175,27 @@ export function useStreamHealth() {
     };
   }, []);
   return h;
+}
+
+export function useChannelHealth(channelId: string): ChannelStatus {
+  const [status, setStatus] = useState<ChannelStatus>(healthRegistry[channelId] ?? "idle");
+
+  useEffect(() => {
+    const handler = (next: typeof healthRegistry) => {
+      const nextStatus = next[channelId] ?? "idle";
+      setStatus((prev) => (prev === nextStatus ? prev : nextStatus));
+    };
+    healthListeners.add(handler);
+
+    const current = healthRegistry[channelId] ?? "idle";
+    setStatus((prev) => (prev === current ? prev : current));
+
+    return () => {
+      healthListeners.delete(handler);
+    };
+  }, [channelId]);
+
+  return status;
 }
 
 export function getWorkingStreamIndex(channelId: string): number {

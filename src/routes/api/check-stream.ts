@@ -100,7 +100,7 @@ async function check(url: string, referrer: string | null, ua: string | null): P
       ct.includes("octet-stream") ||
       ct.includes("mp2t");
 
-    return looksLikeStream ? "online" : "online"; // assume online if 2xx and not HTML
+    return looksLikeStream ? "online" : "error";
   } catch (e: unknown) {
     clearTimeout(t);
     if (e instanceof Error && e.name === "AbortError") return "timeout";

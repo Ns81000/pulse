@@ -4,9 +4,9 @@ import { Heart, Tv } from "lucide-react";
 import { toast } from "sonner";
 import { StatusBadge } from "./StatusBadge";
 import type { CatalogChannel, ChannelStatus } from "@/lib/types";
-import { checkStream } from "@/lib/data-hooks";
+import { checkStream, useChannelHealth } from "@/lib/data-hooks";
 import { usePlayer } from "@/lib/player-context";
-import { addFavourite, removeFavourite } from "@/lib/idb";
+import { addFavourite, removeFavourite, recordHealth } from "@/lib/idb";
 import { streamErrorMsg } from "@/lib/stream-messages";
 
 // iptv-org uses non-ISO codes for some countries — map them to flagcdn's ISO codes
@@ -39,16 +39,20 @@ function ChannelCardBase({
 }: Props) {
   const navigate = useNavigate();
   const player = usePlayer();
-  const [status, setStatus] = useState<ChannelStatus>("idle");
+  const dbStatus = useChannelHealth(channel.id);
+  const [localStatus, setLocalStatus] = useState<ChannelStatus | null>(null);
+  const status = localStatus || dbStatus;
   const [imgError, setImgError] = useState(false);
 
   const onClick = useCallback(async () => {
     if (status === "checking") return;
-    setStatus("checking");
+    setLocalStatus("checking");
     const first = channel.streams[0];
     const toastId = `stream-${channel.id}`;
+    toast.loading(`Testing connection for ${channel.name}...`, { id: toastId });
     const result = await checkStream(first.url, first.referrer, first.user_agent);
-    setStatus(result);
+    await recordHealth(channel.id, result, 0);
+    setLocalStatus(null);
     if (result === "online") {
       toast.dismiss(toastId);
       player.open(channel);

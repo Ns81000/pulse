@@ -82,10 +82,10 @@ async function buildCatalog(): Promise<Catalog> {
       fetchJson<RawChannel[]>(ENDPOINTS.channels),
       fetchJson<RawFeed[]>(ENDPOINTS.feeds).catch(() => [] as RawFeed[]),
       fetchJson<RawStream[]>(ENDPOINTS.streams),
-      fetchJson<RawMeta[]>(ENDPOINTS.categories),
-      fetchJson<RawMeta[]>(ENDPOINTS.languages),
-      fetchJson<RawMeta[]>(ENDPOINTS.countries),
-      fetchJson<RawBlock[]>(ENDPOINTS.blocklist),
+      fetchJson<RawMeta[]>(ENDPOINTS.categories).catch(() => [] as RawMeta[]),
+      fetchJson<RawMeta[]>(ENDPOINTS.languages).catch(() => [] as RawMeta[]),
+      fetchJson<RawMeta[]>(ENDPOINTS.countries).catch(() => [] as RawMeta[]),
+      fetchJson<RawBlock[]>(ENDPOINTS.blocklist).catch(() => [] as RawBlock[]),
       fetchJson<RawLogo[]>(ENDPOINTS.logos).catch(() => [] as RawLogo[]),
     ]);
 

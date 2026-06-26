@@ -284,7 +284,7 @@ export function Player({ channel, onFatalError, compact }: Props) {
         await el.requestFullscreen();
         // Lock to landscape on mobile after entering fullscreen
         try {
-          await screen.orientation.lock("landscape");
+          await (screen.orientation as any).lock("landscape");
         } catch { /* desktop or unsupported browser — silently ignored */ }
       }
     } catch {}

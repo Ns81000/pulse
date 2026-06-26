@@ -33,6 +33,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [mode, setMode] = useState<Mode>("hidden");
   const [hostId, setHostId] = useState(0);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [videoElState, setVideoElState] = useState<HTMLVideoElement | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
   const [mounted, setMounted] = useState(false);
 
@@ -76,13 +77,13 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       workingStreamIndex,
       open,
       close,
-      videoEl: videoRef.current,
+      videoEl: videoElState,
       mountInto,
       hostId,
       mode,
       setMode,
     }),
-    [channel, workingStreamIndex, open, close, mountInto, hostId, mode],
+    [channel, workingStreamIndex, open, close, videoElState, mountInto, hostId, mode],
   );
 
   return (
@@ -106,6 +107,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
             <video
               ref={(el) => {
                 videoRef.current = el;
+                setVideoElState(el);
               }}
               playsInline
               // No `controls` — we render our own UI

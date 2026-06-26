@@ -31,6 +31,9 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') return;
   if (url.origin !== self.location.origin) return;
 
+  // Skip API routes — always fetch fresh from network
+  if (url.pathname.startsWith('/api/')) return;
+
   // Network-first for navigation (HTML pages) — always fresh
   if (request.mode === 'navigate') {
     event.respondWith(

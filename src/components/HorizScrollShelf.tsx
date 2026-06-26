@@ -29,9 +29,7 @@ export function HorizScrollShelf({ children }: Props) {
       el.removeEventListener("scroll", updateState);
       ro.disconnect();
     };
-  }, [updateState]);
-
-  // Native wheel listener — must be non-passive to call preventDefault()
+  }, [updateState]);  // Native wheel listener — must be non-passive to call preventDefault()
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
@@ -52,7 +50,6 @@ export function HorizScrollShelf({ children }: Props) {
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
   }, []);
-
   const scroll = useCallback((dir: "left" | "right") => {
     scrollRef.current?.scrollBy({ left: dir === "left" ? -480 : 480, behavior: "smooth" });
   }, []);

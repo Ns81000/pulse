@@ -9,7 +9,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, useState, useRef, type ReactNode } from "react";
-import { Toaster } from "sonner";
+import { Toaster, toast } from "sonner";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -179,6 +179,35 @@ function RootComponent() {
         navigator.serviceWorker.register("/sw.js").catch(() => {});
       });
     }
+  }, []);
+
+  useEffect(() => {
+    const handleOnline = () => {
+      toast.success("Back online", {
+        id: "network-status",
+        description: "Connections restored.",
+        duration: 3000,
+      });
+    };
+    const handleOffline = () => {
+      toast.error("Network Connection Lost", {
+        id: "network-status",
+        description: "You are currently offline. Stream checks and playback may fail.",
+        duration: Infinity,
+      });
+    };
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      handleOffline();
+    }
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
   }, []);
 
   useEffect(() => {

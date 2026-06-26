@@ -95,7 +95,8 @@ function Index() {
         ids: sorted.slice(0, 12),
       };
     }).filter((s) => s.ids.length > 0);
-  }, [cat.data, userCountry, health]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cat.data, userCountry]);
 
   const visibleIdsForBackgroundCheck = useMemo(() => {
     const ids = new Set<string>();

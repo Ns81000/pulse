@@ -81,20 +81,27 @@ function CategoryBar({
     if (!el) return;
     el.scrollBy({ left: dir === "left" ? -240 : 240, behavior: "smooth" });
   }, []);
-
   // Native wheel listener — non-passive so preventDefault works
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
     const onWheel = (e: WheelEvent) => {
       if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
-      e.preventDefault();
-      el.scrollBy({ left: e.deltaY, behavior: "auto" });
+
+      const canScrollLeft = el.scrollLeft > 1;
+      const canScrollRight = el.scrollLeft + el.clientWidth < el.scrollWidth - 1;
+
+      const scrollingLeft = e.deltaY < 0;
+      const scrollingRight = e.deltaY > 0;
+
+      if ((scrollingLeft && canScrollLeft) || (scrollingRight && canScrollRight)) {
+        e.preventDefault();
+        el.scrollBy({ left: e.deltaY, behavior: "auto" });
+      }
     };
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
   }, []);
-
   return (
     <div
       className="relative"
@@ -326,7 +333,8 @@ function BrowsePage() {
       base = sortChannels(base, cat.data.channels, userCountry, health);
     }
     return base;
-  }, [cat.data, selected, userCountry, health]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cat.data, selected, userCountry]);
 
   type S = z.infer<typeof search>;
   const update = (patch: Partial<S>) => {

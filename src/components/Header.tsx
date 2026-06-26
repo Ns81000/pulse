@@ -19,7 +19,7 @@ export function Header({ onSearchOpen }: { onSearchOpen?: () => void }) {
   }, []);
 
   return (
-    <header className="sticky top-0 z-30 border-b border-[var(--border-subtle)] bg-[color:var(--surface-base)]/80 backdrop-blur-md">
+    <header className="sticky top-0 z-30 border-b border-[var(--border-subtle)] bg-[color:var(--surface-base)]/80 backdrop-blur-md pt-[env(safe-area-inset-top)]">
       <div className="mx-auto flex h-14 max-w-[1600px] items-center gap-4 px-4 sm:px-6">
         <Link
           to="/"
