@@ -70,10 +70,31 @@ function flagFromCode(code: string): string {
   );
 }
 
+function formatError(error: unknown): string {
+  if (error instanceof Error) return error.stack ?? error.message;
+  try {
+    return JSON.stringify(error);
+  } catch {
+    return String(error);
+  }
+}
+
 async function fetchJson<T>(url: string): Promise<T> {
-  const r = await fetch(url, { headers: { "User-Agent": "PulseCatalog/1.0" } });
-  if (!r.ok) throw new Error(`Failed ${url}: ${r.status}`);
-  return r.json() as Promise<T>;
+  try {
+    const r = await fetch(url, { headers: { "User-Agent": "PulseCatalog/1.0" } });
+    if (!r.ok) {
+      const message = `Failed ${url}: ${r.status}`;
+      console.error("[api/catalog] upstream response error", { url, status: r.status });
+      throw new Error(message);
+    }
+    return (await r.json()) as T;
+  } catch (error) {
+    console.error("[api/catalog] fetchJson failed", {
+      url,
+      error: formatError(error),
+    });
+    throw error;
+  }
 }
 
 async function buildCatalog(): Promise<Catalog> {
@@ -188,9 +209,19 @@ export const Route = createFileRoute("/api/catalog")({
     handlers: {
       GET: async () => {
         try {
+          console.info("[api/catalog] request start");
           if (!cached || Date.now() - cached.at > TTL_MS) {
+            console.info("[api/catalog] rebuilding catalog");
             const data = await buildCatalog();
             cached = { at: Date.now(), data };
+            console.info("[api/catalog] catalog rebuild complete", {
+              channels: Object.keys(data.channels).length,
+              updated_at: data.updated_at,
+            });
+          } else {
+            console.info("[api/catalog] serving cached catalog", {
+              ageMs: Date.now() - cached.at,
+            });
           }
           return new Response(JSON.stringify(cached.data), {
             headers: {
@@ -200,6 +231,9 @@ export const Route = createFileRoute("/api/catalog")({
             },
           });
         } catch (e) {
+          console.error("[api/catalog] request failed", {
+            error: formatError(e),
+          });
           return new Response(JSON.stringify({ error: String(e) }), {
             status: 502,
             headers: { "content-type": "application/json" },
