@@ -168,11 +168,12 @@
     transition:
       background 160ms ease,
       border-color 160ms ease,
-      transform 160ms ease;
+      transform 120ms cubic-bezier(0.23, 1, 0.32, 1);
   }
   .surface-card:hover {
     background: var(--surface-2);
     border-color: var(--border-default);
+    transform: translateY(-1px);
   }
 
   .btn-primary {
@@ -184,7 +185,7 @@
     font-weight: 500;
     transition:
       background 150ms ease,
-      transform 80ms ease;
+      transform 100ms cubic-bezier(0.23, 1, 0.32, 1);
     border: 0;
     cursor: pointer;
     letter-spacing: -0.01em;
@@ -193,7 +194,7 @@
     background: var(--accent-hover);
   }
   .btn-primary:active {
-    transform: scale(0.98);
+    transform: scale(0.96);
   }
   .btn-primary:disabled {
     opacity: 0.5;
@@ -434,6 +435,46 @@
       transform: scale(1.1);
     }
   }
+  @keyframes routeEnter {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes heroItem {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes dropdownEnter {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+  @keyframes staggerIn {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -450,6 +491,27 @@
 }
 .slide-up {
   animation: slide-up 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Route page transition */
+.route-enter {
+  animation: routeEnter 280ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+/* Hero stagger items */
+.hero-item {
+  animation: heroItem 400ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+/* Dropdown origin-aware enter */
+.dropdown-enter {
+  animation: dropdownEnter 180ms cubic-bezier(0.23, 1, 0.32, 1) both;
+  transform-origin: top right;
+}
+
+/* Mobile filter drawer stagger items */
+.stagger-item {
+  animation: staggerIn 260ms cubic-bezier(0.23, 1, 0.32, 1) both;
 }
 
 .no-scrollbar::-webkit-scrollbar {

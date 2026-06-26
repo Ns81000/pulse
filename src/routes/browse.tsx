@@ -202,7 +202,7 @@ function SortDropdown({ value, onChange }: { value: SortValue; onChange: (v: Sor
       </button>
 
       {open && (
-        <div className="absolute right-0 top-[calc(100%+6px)] z-50 min-w-[130px] overflow-hidden rounded-lg border border-[var(--border-default)] bg-[var(--surface-2)] py-1 shadow-xl">
+        <div className="absolute right-0 top-[calc(100%+6px)] z-50 min-w-[130px] overflow-hidden rounded-lg border border-[var(--border-default)] bg-[var(--surface-2)] py-1 shadow-xl dropdown-enter">
           {SORT_OPTIONS.map((o) => (
             <button
               key={o.value}

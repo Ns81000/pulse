@@ -104,13 +104,13 @@ function Index() {
         <div className="hidden sm:flex items-center justify-between gap-4 px-12 py-14">
           {/* Left: text content */}
           <div className="relative z-10 flex-1">
-              <p className="font-mono text-[10.5px] font-medium uppercase tracking-[0.22em] text-[var(--text-tertiary)]">
+              <p className="font-mono text-[10.5px] font-medium uppercase tracking-[0.22em] text-[var(--text-tertiary)] hero-item" style={{ animationDelay: '0ms' }}>
                 Free · No account · Verified live
               </p>
-              <h1 className="mt-4 font-display font-bold text-[var(--text-primary)]" style={{ fontSize: "4rem", letterSpacing: "-0.04em", lineHeight: 1.1 }}>
+              <h1 className="mt-4 font-display font-bold text-[var(--text-primary)] hero-item" style={{ fontSize: "4rem", letterSpacing: "-0.04em", lineHeight: 1.1, animationDelay: '60ms' }}>
                 Pulse
               </h1>
-              <div className="mt-2">
+              <div className="mt-2 hero-item" style={{ animationDelay: '110ms' }}>
                 <p className="font-mono text-[12px] font-medium tracking-[0.35em] text-[var(--text-tertiary)] uppercase">
                   Feel Everything
                 </p>
@@ -118,12 +118,12 @@ function Index() {
                 <div className="mt-1 h-[2px] w-9 rounded-full bg-[var(--accent)]" />
               </div>
 
-              <div className="mt-7 flex flex-wrap gap-2">
+              <div className="mt-7 flex flex-wrap gap-2 hero-item" style={{ animationDelay: '170ms' }}>
                 <Link to="/browse" className="btn-primary inline-flex items-center gap-1.5">
                   Browse channels <ArrowRight className="size-3.5" />
                 </Link>
               </div>
-              <div className="mt-6 flex flex-wrap gap-x-8 gap-y-2 font-mono text-[11.5px] text-[var(--text-tertiary)]">
+              <div className="mt-6 flex flex-wrap gap-x-8 gap-y-2 font-mono text-[11.5px] text-[var(--text-tertiary)] hero-item" style={{ animationDelay: '220ms' }}>
                 {cat.data && (
                   <>
                     <span><strong className="text-[var(--text-primary)]">{cat.data.indexes.all_ids.length.toLocaleString()}</strong> channels</span>
@@ -136,7 +136,7 @@ function Index() {
           </div>
 
           {/* Right: dot matrix decoration */}
-          <div className="shrink-0 opacity-80" aria-hidden="true">
+          <div className="shrink-0 opacity-80 hero-item" aria-hidden="true" style={{ animationDelay: '140ms' }}>
             <svg width="160" height="160" viewBox="-7 -7 131 131" xmlns="http://www.w3.org/2000/svg">
               <circle cx="0" cy="0" r="7" fill="#34343a"/>
               <circle cx="0" cy="22" r="7" fill="#e5484d"/>

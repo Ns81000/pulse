@@ -84,7 +84,7 @@ function Section({
               type="button"
               onClick={() => onSelect(isActive ? undefined : o.id)}
               style={{ animationDelay: `${i * 18}ms` }}
-              className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition-all duration-150 active:scale-[0.98] ${
+              className={`stagger-item flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition-all duration-150 active:scale-[0.98] ${
                 isActive
                   ? "bg-[var(--accent-subtle)] text-[var(--accent)]"
                   : "text-[var(--text-secondary)] active:bg-[var(--surface-3)]"

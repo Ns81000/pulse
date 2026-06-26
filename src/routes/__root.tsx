@@ -4,10 +4,11 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState, useRef, type ReactNode } from "react";
 import { Toaster } from "sonner";
 
 import appCss from "../styles.css?url";
@@ -121,6 +122,31 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+function RouteTransition({ children }: { children: ReactNode }) {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const [displayKey, setDisplayKey] = useState(pathname);
+  const [phase, setPhase] = useState<"enter" | "idle">("idle");
+  const prevPathRef = useRef(pathname);
+
+  useEffect(() => {
+    if (pathname === prevPathRef.current) return;
+    prevPathRef.current = pathname;
+    setDisplayKey(pathname);
+    setPhase("enter");
+    const t = setTimeout(() => setPhase("idle"), 320);
+    return () => clearTimeout(t);
+  }, [pathname]);
+
+  return (
+    <div
+      key={displayKey}
+      className={phase === "enter" ? "route-enter" : ""}
+    >
+      {children}
+    </div>
+  );
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const [searchOpen, setSearchOpen] = useState(false);
@@ -144,7 +170,9 @@ function RootComponent() {
         <div className="min-h-screen bg-[var(--surface-base)] pb-[calc(env(safe-area-inset-bottom)+64px)] sm:pb-0">
           <Header onSearchOpen={() => setSearchOpen(true)} />
           <main className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6">
-            <Outlet />
+            <RouteTransition>
+              <Outlet />
+            </RouteTransition>
           </main>
           <BottomTabBar />
           <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
