@@ -30,6 +30,7 @@ export function useCatalog() {
   return useQuery({
     queryKey: ["catalog"],
     queryFn: fetchCatalog,
+    enabled: typeof window !== "undefined",
     staleTime: 1000 * 60 * 60 * 12,
     gcTime: 1000 * 60 * 60 * 24,
   });
