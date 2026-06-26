@@ -1,10 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { ArrowLeft, Heart, ExternalLink, Tv } from "lucide-react";
 import { toast } from "sonner";
 import { useCatalog, checkStream, getWorkingStreamIndex } from "@/lib/data-hooks";
 import { Player } from "@/components/Player";
-import { AlternativesShelf } from "@/components/AlternativesShelf";
 import { StatusBadge } from "@/components/StatusBadge";
 import { usePlayer } from "@/lib/player-context";
 import {
@@ -295,13 +294,13 @@ function WatchPage() {
             </header>
           </div>
 
-          {/* Alternatives Shelf (Only visible on mobile view layout) */}
-          <div className="block lg:hidden mt-6">
+          {/* Alternatives — 2-col grid on mobile, fills remaining space exactly */}
+          <div className="block lg:hidden" id="mobile-alts-section">
             {cat.data && (
-              <AlternativesShelf
+              <MobileAlternativesGrid
                 catalog={cat.data}
                 failedChannelId={channel.id}
-                title={showRecovery ? "Working alternatives" : "More like this"}
+                showRecovery={showRecovery}
               />
             )}
           </div>
@@ -325,6 +324,152 @@ function WatchPage() {
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function MobileAlternativesGrid({
+  catalog,
+  failedChannelId,
+  showRecovery,
+}: {
+  catalog: Catalog;
+  failedChannelId: string;
+  showRecovery: boolean;
+}) {
+  const navigate = useNavigate();
+  const player = usePlayer();
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [limit, setLimit] = useState(4); // default 2 rows
+
+  // Calculate how many 2-col card rows fit in the remaining viewport space
+  useEffect(() => {
+    const calculate = () => {
+      const el = sectionRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const viewportH = window.innerHeight;
+      const bottomTabH = 56 + 16; // tab bar + safe area approx
+      const headerH = 32; // section header
+      const gapH = 8;
+      const available = viewportH - rect.top - bottomTabH - headerH;
+      // Each card: aspect-video thumb (~(screenW/2 - 20) * 9/16) + name + cat ≈ 130px
+      const cardH = Math.round((window.innerWidth / 2 - 20) * (9 / 16)) + 48;
+      const rows = Math.max(1, Math.floor((available) / (cardH + gapH)));
+      setLimit(rows * 2); // 2 columns
+    };
+    calculate();
+    window.addEventListener("resize", calculate);
+    return () => window.removeEventListener("resize", calculate);
+  }, []);
+
+  const ids = useMemo(() => {
+    const failed = failedChannelId ? catalog.channels[failedChannelId] : null;
+    if (!failed) return catalog.indexes.all_ids.slice(0, limit);
+    const failedCats = new Set(failed.categories);
+    const failedCountry = failed.country;
+    const scored: { id: string; score: number }[] = [];
+    for (const id of catalog.indexes.all_ids) {
+      if (id === failed.id) continue;
+      const c = catalog.channels[id];
+      if (!c) continue;
+      const overlap = c.categories.filter((x: string) => failedCats.has(x)).length;
+      if (overlap === 0) continue;
+      const score = overlap * 10 + (c.country === failedCountry ? 5 : 0);
+      scored.push({ id, score });
+    }
+    scored.sort((a, b) => b.score - a.score);
+    const result = scored.slice(0, limit).map((s) => s.id);
+    if (result.length < limit) {
+      for (const id of catalog.indexes.all_ids) {
+        if (id === failed.id || result.includes(id)) continue;
+        result.push(id);
+        if (result.length >= limit) break;
+      }
+    }
+    return result.slice(0, limit);
+  }, [catalog, failedChannelId, limit]);
+
+  return (
+    <div ref={sectionRef}>
+      <h3 className="mb-3 font-mono text-[10.5px] font-bold uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
+        {showRecovery ? "Working alternatives" : "More like this"}
+      </h3>
+      <div className="grid grid-cols-2 gap-2">
+        {ids.map((id) => {
+          const c = catalog.channels[id];
+          if (!c) return null;
+          const code = c.country ? toFlagCode(c.country) : "";
+          const catName = catalog.meta.categories.find(
+            (ca) => ca.id === c.categories[0]
+          )?.name ?? c.categories[0] ?? "";
+          return (
+            <button
+              key={id}
+              onClick={async () => {
+                const first = c.streams[0];
+                const toastId = `stream-${c.id}`;
+                toast.loading(`Connecting…`, { id: toastId });
+                const result = await checkStream(first.url, first.referrer, first.user_agent);
+                if (result === "online") {
+                  toast.dismiss(toastId);
+                  player.open(c);
+                  navigate({ to: "/watch/$channelId", params: { channelId: c.id } });
+                } else {
+                  toast.error(c.name, {
+                    id: toastId,
+                    description: streamErrorMsg(result),
+                    duration: 6000,
+                    action: {
+                      label: "Open anyway",
+                      onClick: () => {
+                        toast.dismiss(toastId);
+                        player.open(c);
+                        navigate({ to: "/watch/$channelId", params: { channelId: c.id } });
+                      },
+                    },
+                  });
+                }
+              }}
+              className="flex flex-col overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-1)] text-left transition-all active:scale-[0.97] active:bg-[var(--surface-2)]"
+            >
+              {/* Thumbnail */}
+              <div className="relative aspect-video w-full bg-[var(--surface-2)] flex items-center justify-center">
+                {c.logo_url ? (
+                  <img
+                    src={c.logo_url}
+                    alt={c.name}
+                    className="max-h-[60%] max-w-[60%] object-contain"
+                  />
+                ) : (
+                  <Tv className="size-6 text-[var(--text-tertiary)]" />
+                )}
+              </div>
+              {/* Info */}
+              <div className="flex items-center gap-1.5 px-2.5 py-2">
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[12px] font-semibold text-[var(--text-primary)]">
+                    {c.name}
+                  </p>
+                  {catName && (
+                    <p className="truncate text-[10px] text-[var(--text-tertiary)] mt-0.5">
+                      {catName}
+                    </p>
+                  )}
+                </div>
+                {code && (
+                  <img
+                    src={`https://flagcdn.com/w20/${code}.png`}
+                    width={14} height={10}
+                    alt={c.country}
+                    className="shrink-0 rounded-[2px] object-cover"
+                  />
+                )}
+              </div>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
