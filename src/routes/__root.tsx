@@ -75,13 +75,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { name: "theme-color", content: "#010102" },
-      { title: "Tela — Watch the world live" },
+      { title: "Pulse — Feel Everything" },
       {
         name: "description",
         content:
           "Browse and watch thousands of free, public IPTV channels. Verified live, every click.",
       },
-      { property: "og:title", content: "Tela — Watch the world live" },
+      { property: "og:title", content: "Pulse — Feel Everything" },
       {
         property: "og:description",
         content: "Browse and watch thousands of free, public IPTV channels.",
@@ -91,6 +91,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
       { rel: "preconnect", href: "https://iptv-org.github.io" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },

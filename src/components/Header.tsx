@@ -23,12 +23,48 @@ export function Header({ onSearchOpen }: { onSearchOpen?: () => void }) {
       <div className="mx-auto flex h-14 max-w-[1600px] items-center gap-4 px-4 sm:px-6">
         <Link
           to="/"
-          className="flex shrink-0 items-center gap-2 transition-transform active:scale-98"
+          className="flex shrink-0 items-center gap-2.5 transition-transform active:scale-98"
         >
-          <div className="grid size-6 place-items-center rounded-md bg-gradient-to-br from-[#ff4a54] to-[#9e1a22] shadow-[0_0_8px_rgba(229,72,77,0.3)]">
-            <span className="font-mono text-[10px] font-bold text-white">T</span>
-          </div>
-          <span className="font-display text-[15px] font-semibold tracking-tight">Tela</span>
+          {/* Pulse dot matrix mark — exact pattern from pulse_dot_matrix_final.svg */}
+          <svg width="22" height="22" viewBox="44 30 130 130" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="44" cy="30" r="7" fill="#34343a"/>
+            <circle cx="44" cy="52" r="7" fill="#e5484d"/>
+            <circle cx="44" cy="74" r="7" fill="#e5484d"/>
+            <circle cx="44" cy="96" r="7" fill="#e5484d"/>
+            <circle cx="44" cy="118" r="7" fill="#e5484d"/>
+            <circle cx="44" cy="140" r="7" fill="#e5484d"/>
+            <circle cx="66" cy="30" r="7" fill="#34343a"/>
+            <circle cx="66" cy="52" r="7" fill="#34343a"/>
+            <circle cx="66" cy="74" r="7" fill="#e5484d"/>
+            <circle cx="66" cy="96" r="7" fill="#34343a"/>
+            <circle cx="66" cy="118" r="7" fill="#34343a"/>
+            <circle cx="66" cy="140" r="7" fill="#e5484d"/>
+            <circle cx="88" cy="30" r="7" fill="#34343a"/>
+            <circle cx="88" cy="52" r="7" fill="#34343a"/>
+            <circle cx="88" cy="74" r="7" fill="#34343a"/>
+            <circle cx="88" cy="96" r="7" fill="#34343a"/>
+            <circle cx="88" cy="118" r="7" fill="#34343a"/>
+            <circle cx="88" cy="140" r="7" fill="#e5484d"/>
+            <circle cx="110" cy="30" r="7" fill="#e5484d"/>
+            <circle cx="110" cy="52" r="7" fill="#e5484d"/>
+            <circle cx="110" cy="74" r="7" fill="#e5484d"/>
+            <circle cx="110" cy="96" r="7" fill="#e5484d"/>
+            <circle cx="110" cy="118" r="7" fill="#e5484d"/>
+            <circle cx="110" cy="140" r="7" fill="#e5484d"/>
+            <circle cx="132" cy="30" r="7" fill="#e5484d"/>
+            <circle cx="132" cy="52" r="7" fill="#34343a"/>
+            <circle cx="132" cy="74" r="7" fill="#34343a"/>
+            <circle cx="132" cy="96" r="7" fill="#e5484d"/>
+            <circle cx="132" cy="118" r="7" fill="#34343a"/>
+            <circle cx="132" cy="140" r="7" fill="#e5484d"/>
+            <circle cx="154" cy="30" r="7" fill="#34343a"/>
+            <circle cx="154" cy="52" r="7" fill="#e5484d"/>
+            <circle cx="154" cy="74" r="7" fill="#e5484d"/>
+            <circle cx="154" cy="96" r="7" fill="#34343a"/>
+            <circle cx="154" cy="118" r="7" fill="#e5484d"/>
+            <circle cx="154" cy="140" r="7" fill="#34343a"/>
+          </svg>
+          <span className="font-display text-[15px] font-semibold tracking-tight">Pulse</span>
         </Link>
 
         <nav className="hidden items-center gap-0.5 sm:flex">
@@ -92,12 +128,7 @@ export function BottomTabBar() {
                   active ? "text-[var(--accent)]" : "text-[var(--text-tertiary)]"
                 }`}
               >
-                <div className="relative flex flex-col items-center">
-                  <Icon className="size-[18px]" strokeWidth={active ? 2.2 : 1.8} />
-                  {active && (
-                    <span className="absolute -bottom-1.5 size-1 rounded-full bg-[var(--accent)] shadow-[0_0_6px_var(--accent)]" />
-                  )}
-                </div>
+                <Icon className="size-[18px]" strokeWidth={active ? 2.2 : 1.8} />
                 <span className="mt-1.5 text-[9.5px] font-medium tracking-wide">{n.label}</span>
               </Link>
             </li>
