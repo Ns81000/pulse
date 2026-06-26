@@ -233,12 +233,12 @@ export const Route = createFileRoute("/browse")({
   validateSearch: search,
   head: () => ({
     meta: [
-      { title: "Browse channels — Tela" },
+      { title: "Browse — Pulse" },
       {
         name: "description",
         content: "Filter thousands of live IPTV channels by category, language, and country.",
       },
-      { property: "og:title", content: "Browse channels — Tela" },
+      { property: "og:title", content: "Browse — Pulse" },
       {
         property: "og:description",
         content: "Filter thousands of live IPTV channels by category, language, and country.",
@@ -267,7 +267,7 @@ function BrowsePage() {
       selected.sort
     );
     if (!hasParams) {
-      const savedStr = sessionStorage.getItem("tela-browse-search");
+      const savedStr = sessionStorage.getItem("pulse-browse-search");
       if (savedStr) {
         try {
           const saved = JSON.parse(savedStr);
@@ -293,9 +293,9 @@ function BrowsePage() {
       selected.sort
     );
     if (hasParams) {
-      sessionStorage.setItem("tela-browse-search", JSON.stringify(selected));
+      sessionStorage.setItem("pulse-browse-search", JSON.stringify(selected));
     } else {
-      sessionStorage.removeItem("tela-browse-search");
+      sessionStorage.removeItem("pulse-browse-search");
     }
   }, [selected]);
 

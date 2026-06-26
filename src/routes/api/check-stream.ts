@@ -4,7 +4,7 @@ type Status = "online" | "blocked" | "timeout" | "error";
 
 async function check(url: string, referrer: string | null, ua: string | null): Promise<Status> {
   const headers: Record<string, string> = {
-    "User-Agent": ua || "Mozilla/5.0 (compatible; TelaChecker/1.0)",
+    "User-Agent": ua || "Mozilla/5.0 (compatible; PulseChecker/1.0)",
     Range: "bytes=0-1023",
   };
   if (referrer) headers["Referer"] = referrer;

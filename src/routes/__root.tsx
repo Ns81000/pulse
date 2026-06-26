@@ -120,6 +120,20 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var viewed = localStorage.getItem('pulse_landing_viewed');
+                  if (!viewed && window.location.pathname === '/') {
+                    document.documentElement.setAttribute('data-landing-active', 'true');
+                  }
+                } catch (e) {}
+              })();
+            `
+          }}
+        />
       </head>
       <body>
         {children}
@@ -130,23 +144,23 @@ function RootShell({ children }: { children: ReactNode }) {
 }
 
 function RouteTransition({ children }: { children: ReactNode }) {
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const [displayKey, setDisplayKey] = useState(pathname);
-  const [phase, setPhase] = useState<"enter" | "idle">("idle");
-  const prevPathRef = useRef(pathname);
+  const pathname = useRouterState({
+    select: (s) => {
+      const lastMatch = s.matches[s.matches.length - 1];
+      return lastMatch ? lastMatch.pathname : s.location.pathname;
+    },
+  });
+  const [phase, setPhase] = useState<"enter" | "idle">("enter");
 
   useEffect(() => {
-    if (pathname === prevPathRef.current) return;
-    prevPathRef.current = pathname;
-    setDisplayKey(pathname);
     setPhase("enter");
-    const t = setTimeout(() => setPhase("idle"), 320);
+    const t = setTimeout(() => setPhase("idle"), 220);
     return () => clearTimeout(t);
   }, [pathname]);
 
   return (
     <div
-      key={displayKey}
+      key={pathname}
       className={phase === "enter" ? "route-enter" : ""}
     >
       {children}

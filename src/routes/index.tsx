@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { ImmersiveLanding } from "@/components/landing/ImmersiveLanding";
 import {
   useCatalog,
   useUserCountry,
@@ -52,6 +53,29 @@ function Index() {
   const userCountry = useUserCountry();
   const health = useStreamHealth();
 
+  const [showLanding, setShowLanding] = useState(false);
+
+  useEffect(() => {
+    // Only show if the user hasn't seen the landing page
+    const viewed = localStorage.getItem("pulse_landing_viewed");
+    if (!viewed) {
+      setShowLanding(true);
+      document.body.style.overflow = "hidden";
+    } else {
+      document.documentElement.removeAttribute("data-landing-active");
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
+  const handleCloseLanding = () => {
+    localStorage.setItem("pulse_landing_viewed", "true");
+    setShowLanding(false);
+    document.body.style.overflow = "";
+    document.documentElement.removeAttribute("data-landing-active");
+  };
+
   const featured = useMemo(() => {
     if (!cat.data) return null;
     const flagBy = new Map(cat.data.meta.countries.map((c) => [c.code, c.flag]));
@@ -83,6 +107,7 @@ function Index() {
 
   return (
     <div>
+      {showLanding && <ImmersiveLanding onClose={handleCloseLanding} />}
       <section className="relative overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-1)]">
         {/* ── Subtle noise texture for depth ── */}
         <div 

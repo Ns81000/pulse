@@ -438,11 +438,13 @@
   @keyframes routeEnter {
     from {
       opacity: 0;
-      transform: translateY(6px);
+      transform: scale(0.995);
+      filter: blur(1px);
     }
     to {
       opacity: 1;
-      transform: translateY(0);
+      transform: scale(1);
+      filter: blur(0);
     }
   }
   @keyframes heroItem {
@@ -495,7 +497,7 @@
 
 /* Route page transition */
 .route-enter {
-  animation: routeEnter 280ms cubic-bezier(0.23, 1, 0.32, 1) both;
+  animation: routeEnter 220ms cubic-bezier(0.215, 0.61, 0.355, 1) both;
 }
 
 /* Hero stagger items */
@@ -717,4 +719,13 @@
   background: rgba(1, 1, 2, 0.8);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+}
+
+/* Hydration flash prevention for landing page */
+html[data-landing-active="true"] header,
+html[data-landing-active="true"] .glassmorphic-blur,
+html[data-landing-active="true"] section,
+html[data-landing-active="true"] .mt-12,
+html[data-landing-active="true"] .pwa-banner {
+  display: none !important;
 }

@@ -71,7 +71,7 @@ function flagFromCode(code: string): string {
 }
 
 async function fetchJson<T>(url: string): Promise<T> {
-  const r = await fetch(url, { headers: { "User-Agent": "TelaCatalog/1.0" } });
+  const r = await fetch(url, { headers: { "User-Agent": "PulseCatalog/1.0" } });
   if (!r.ok) throw new Error(`Failed ${url}: ${r.status}`);
   return r.json() as Promise<T>;
 }

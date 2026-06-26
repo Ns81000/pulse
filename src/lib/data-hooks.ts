@@ -90,7 +90,7 @@ if (typeof window !== "undefined") {
 }
 
 let activeCountry =
-  typeof window !== "undefined" ? localStorage.getItem("tela-user-country") || countryGuess : "US";
+  typeof window !== "undefined" ? localStorage.getItem("pulse-user-country") || countryGuess : "US";
 const countryListeners = new Set<(c: string) => void>();
 
 export function useUserCountry() {
@@ -106,7 +106,7 @@ export function useUserCountry() {
 }
 
 // Background GeoIP refinement
-if (typeof window !== "undefined" && !localStorage.getItem("tela-user-country")) {
+if (typeof window !== "undefined" && !localStorage.getItem("pulse-user-country")) {
   (async () => {
     try {
       const r = await fetch("https://ipapi.co/json/");
@@ -114,7 +114,7 @@ if (typeof window !== "undefined" && !localStorage.getItem("tela-user-country"))
         const j = (await r.json()) as { country_code?: string };
         const code = (j.country_code || "").toUpperCase();
         if (code && code.length === 2) {
-          localStorage.setItem("tela-user-country", code);
+          localStorage.setItem("pulse-user-country", code);
           activeCountry = code;
           countryListeners.forEach((l) => l(code));
         }

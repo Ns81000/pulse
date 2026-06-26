@@ -35,10 +35,17 @@ function WatchPage() {
   const { channelId } = Route.useParams();
   const navigate = useNavigate();
   const cat = useCatalog();
-  const { open } = usePlayer();
+  const { open, close } = usePlayer();
 
   const [status, setStatus] = useState<ChannelStatus>("checking");
   const [fav, setFav] = useState(false);
+
+  // Stop playback when leaving the watch page
+  useEffect(() => {
+    return () => {
+      close();
+    };
+  }, [close]);
 
   const channel = cat.data?.channels[channelId];
   const flagCode = useMemo(() => {

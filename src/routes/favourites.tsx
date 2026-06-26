@@ -9,7 +9,7 @@ import { AlternativesShelf } from "@/components/AlternativesShelf";
 export const Route = createFileRoute("/favourites")({
   head: () => ({
     meta: [
-      { title: "Favourites — Tela" },
+      { title: "Library — Pulse" },
       { name: "description", content: "Your saved IPTV channels and recent watch history." },
     ],
   }),
