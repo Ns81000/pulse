@@ -10,8 +10,8 @@ import {
 import { FilterPanel } from "@/components/FilterPanel";
 import { ChannelGrid } from "@/components/ChannelGrid";
 import { BackgroundPingTrigger } from "@/components/BackgroundPingTrigger";
+import { MobileFilterDrawer, MobileFilterTrigger } from "@/components/MobileFilterDrawer";
 import {
-  SlidersHorizontal,
   Search as SearchIcon,
   X,
   ChevronLeft,
@@ -20,7 +20,6 @@ import {
   Check,
 } from "lucide-react";
 import type { Catalog } from "@/lib/types";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 
 const search = z.object({
   category: z.string().optional(),
@@ -366,13 +365,10 @@ function BrowsePage() {
             value={(selected.sort ?? "popular") as SortValue}
             onChange={(v) => update({ sort: v })}
           />
-          <button
-            type="button"
+          <MobileFilterTrigger
+            activeCount={[selected.category, selected.language, selected.country].filter(Boolean).length}
             onClick={() => setMobileFiltersOpen(true)}
-            className="btn-ghost inline-flex items-center gap-1.5 sm:hidden active:scale-95 transition-transform"
-          >
-            <SlidersHorizontal className="size-3.5" />
-          </button>
+          />
         </div>
       </div>
 
@@ -479,34 +475,26 @@ function BrowsePage() {
       </div>
 
       {/* Mobile Filters Bottom Sheet Drawer */}
-      <Drawer open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
-        <DrawerContent className="px-5 pb-8 pt-2 max-h-[85vh] overflow-y-auto bg-[var(--surface-1)] border-[var(--border-subtle)]">
-          <DrawerHeader className="text-left px-0 pb-3 border-b border-[var(--border-subtle)]">
-            <DrawerTitle className="font-display text-base font-semibold text-[var(--text-primary)]">
-              Filter Channels
-            </DrawerTitle>
-          </DrawerHeader>
-          <div className="mt-4 overflow-y-auto no-scrollbar pb-6">
-            {cat.data && (
-              <FilterPanel
-                catalog={cat.data}
-                selected={selected}
-                onChange={(next) => {
-                  navigate({
-                    search: (p: S) => ({
-                      ...p,
-                      category: next.category,
-                      language: next.language,
-                      country: next.country,
-                    }),
-                    replace: false,
-                  });
-                }}
-              />
-            )}
-          </div>
-        </DrawerContent>
-      </Drawer>
+      {cat.data && (
+        <MobileFilterDrawer
+          open={mobileFiltersOpen}
+          onOpenChange={setMobileFiltersOpen}
+          catalog={cat.data}
+          selected={selected}
+          resultCount={ids.length}
+          onChange={(next) => {
+            navigate({
+              search: (p: S) => ({
+                ...p,
+                category: next.category,
+                language: next.language,
+                country: next.country,
+              }),
+              replace: false,
+            });
+          }}
+        />
+      )}
     </div>
   );
 }
