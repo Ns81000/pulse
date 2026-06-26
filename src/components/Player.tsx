@@ -51,7 +51,24 @@ export function Player({ channel, onFatalError, compact }: Props) {
     }
     return false;
   }, [activeStreamIdx, channel.streams.length, channel.name]);
-  const [pip, setPip] = useState(false);
+  const [showVolumeSlider, setShowVolumeSlider] = useState(false);
+  const volumeRef = useRef<HTMLDivElement>(null);
+
+  // Close volume slider when clicking outside (mobile)
+  useEffect(() => {
+    if (!showVolumeSlider) return;
+    const handler = (e: MouseEvent | TouchEvent) => {
+      if (volumeRef.current && !volumeRef.current.contains(e.target as Node)) {
+        setShowVolumeSlider(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    document.addEventListener("touchstart", handler);
+    return () => {
+      document.removeEventListener("mousedown", handler);
+      document.removeEventListener("touchstart", handler);
+    };
+  }, [showVolumeSlider]);
   const [showSettings, setShowSettings] = useState(false);
   const [levels, setLevels] = useState<{ index: number; height?: number; bitrate: number }[]>([]);
   const [currentLevel, setCurrentLevel] = useState(-1);
@@ -392,10 +409,18 @@ export function Player({ channel, onFatalError, compact }: Props) {
             )}
           </button>
 
-          <div className="group flex items-center gap-2">
+          <div ref={volumeRef} className="group relative flex items-center gap-2">
             <button
               aria-label={muted ? "Unmute" : "Mute"}
-              onClick={toggleMute}
+              onClick={() => {
+                // Mobile: toggle slider; desktop: also toggle mute
+                const isTouchDevice = window.matchMedia("(hover: none)").matches;
+                if (isTouchDevice) {
+                  setShowVolumeSlider((s) => !s);
+                } else {
+                  toggleMute();
+                }
+              }}
               className="ctrl-btn"
             >
               {muted || volume === 0 ? (
@@ -404,6 +429,7 @@ export function Player({ channel, onFatalError, compact }: Props) {
                 <Volume2 className="size-4" />
               )}
             </button>
+            {/* Desktop: show on hover via group | Mobile: show on click via showVolumeSlider */}
             <input
               type="range"
               min={0}
@@ -411,7 +437,8 @@ export function Player({ channel, onFatalError, compact }: Props) {
               step={0.05}
               value={muted ? 0 : volume}
               onChange={(e) => onVolume(Number(e.target.value))}
-              className="vol-slider hidden sm:block"
+              className="vol-slider hidden group-hover:block sm:group-hover:block"
+              style={{ display: showVolumeSlider ? "block" : undefined }}
               aria-label="Volume"
             />
           </div>
