@@ -1,0 +1,236 @@
+import {
+  At as e,
+  F as t,
+  Mt as n,
+  b as r,
+  f as i,
+  o as a,
+  p as o,
+  w as s,
+} from "./stream-messages-xGwTYkSz.js";
+import { n as c, t as l } from "./use-favourites-D-e0KHYb.js";
+import { t as u } from "./ChannelGrid-D-CAoj2D.js";
+import { t as d } from "./HorizScrollShelf-Uxm9SGB0.js";
+var f = n(e(), 1),
+  p = t();
+function m({ catalog: e, title: t = `Try these instead`, failedChannelId: n, ids: r }) {
+  let { favSet: i, refresh: a } = l(),
+    o = (0, f.useMemo)(() => {
+      let t = new Map();
+      return (e.meta.countries.forEach((e) => t.set(e.code, e.flag)), t);
+    }, [e]),
+    s = (0, f.useMemo)(() => {
+      if (r) return r.slice(0, 12);
+      let t = n ? e.channels[n] : null;
+      if (!t) return e.indexes.all_ids.slice(0, 12);
+      let i = new Set(t.categories),
+        a = t.country,
+        o = [];
+      for (let n of e.indexes.all_ids) {
+        if (n === t.id) continue;
+        let r = e.channels[n];
+        if (!r) continue;
+        let s = r.categories.filter((e) => i.has(e)).length;
+        if (s === 0) continue;
+        let c = s * 10 + (r.country === a ? 5 : 0);
+        o.push({ id: n, score: c });
+      }
+      o.sort((e, t) => t.score - e.score);
+      let s = o.slice(0, 12).map((e) => e.id);
+      if (s.length < 8) {
+        for (let n of e.indexes.all_ids)
+          if (n !== t.id && (s.includes(n) || s.push(n), s.length >= 12)) break;
+      }
+      return s;
+    }, [e, n, r]);
+  return s.length === 0
+    ? null
+    : (0, p.jsxs)(`section`, {
+        className: `mt-6`,
+        children: [
+          (0, p.jsx)(`h2`, {
+            className: `mb-3 font-display text-sm font-medium uppercase tracking-wider text-[var(--text-secondary)]`,
+            children: t,
+          }),
+          (0, p.jsx)(d, {
+            children: s.map((t) => {
+              let n = e.channels[t];
+              return n
+                ? (0, p.jsx)(
+                    `div`,
+                    {
+                      className: `w-[200px] shrink-0`,
+                      children: (0, p.jsx)(c, {
+                        channel: n,
+                        flag: o.get(n.country),
+                        isFavourite: i.has(t),
+                        onFavouriteChange: a,
+                      }),
+                    },
+                    t,
+                  )
+                : null;
+            }),
+          }),
+        ],
+      });
+}
+function h() {
+  let e = a(),
+    [t, n] = (0, f.useState)([]),
+    [c, l] = (0, f.useState)([]),
+    [d, h] = (0, f.useState)([]),
+    [g, _] = (0, f.useState)(!1);
+  return (
+    (0, f.useEffect)(() => {
+      let e = async () => {
+        let [e, t] = await Promise.all([i(), o()]);
+        n(e.sort((e, t) => t.added_at.localeCompare(e.added_at)).map((e) => e.channelId));
+        let r = new Set();
+        (l(
+          t
+            .filter((e) => (r.has(e.channelId) ? !1 : (r.add(e.channelId), !0)))
+            .slice(0, 12)
+            .map((e) => e.channelId),
+        ),
+          _(!0));
+      };
+      return (
+        e(),
+        window.addEventListener(`favchange`, e),
+        () => window.removeEventListener(`favchange`, e)
+      );
+    }, []),
+    (0, f.useEffect)(() => {
+      if (!e.data || c.length === 0) {
+        h([]);
+        return;
+      }
+      let n = new Map();
+      c.forEach((t, r) => {
+        let i = e.data.channels[t];
+        if (!i) return;
+        let a = 1 - r * 0.05;
+        i.categories.forEach((e) => n.set(e, (n.get(e) ?? 0) + a));
+      });
+      let r = new Set(c),
+        i = new Set(t),
+        a = [];
+      for (let t of e.data.indexes.all_ids) {
+        if (r.has(t) || i.has(t)) continue;
+        let o = e.data.channels[t],
+          s = 0;
+        for (let e of o.categories) s += n.get(e) ?? 0;
+        s > 0 && a.push({ id: t, s });
+      }
+      (a.sort((e, t) => t.s - e.s), h(a.slice(0, 12).map((e) => e.id)));
+    }, [e.data, c, t]),
+    (0, p.jsxs)(`div`, {
+      children: [
+        (0, p.jsx)(`h1`, {
+          className: `font-display text-2xl font-semibold tracking-tight sm:text-3xl`,
+          children: `Your library`,
+        }),
+        (0, p.jsx)(`p`, {
+          className: `mt-1 text-[13px] text-[var(--text-secondary)]`,
+          children: `Favourites, recent watches, and picks based on what you've watched.`,
+        }),
+        (0, p.jsxs)(`section`, {
+          className: `mt-8`,
+          children: [
+            (0, p.jsxs)(`h2`, {
+              className: `mb-4 flex items-center gap-2 font-display text-[13px] font-medium uppercase tracking-[0.14em] text-[var(--text-secondary)]`,
+              children: [(0, p.jsx)(r, { className: `size-3.5` }), ` Favourites`],
+            }),
+            g
+              ? t.length === 0
+                ? (0, p.jsxs)(`div`, {
+                    className: `grid place-items-center rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-1)] px-6 py-12 text-center`,
+                    children: [
+                      (0, p.jsx)(`p`, {
+                        className: `text-sm text-[var(--text-secondary)]`,
+                        children: `No favourites yet.`,
+                      }),
+                      (0, p.jsx)(s, {
+                        to: `/browse`,
+                        className: `btn-primary mt-3`,
+                        children: `Find channels`,
+                      }),
+                    ],
+                  })
+                : e.data && (0, p.jsx)(u, { catalog: e.data, channelIds: t })
+              : (0, p.jsx)(`div`, {
+                  className: `grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6`,
+                  children: Array.from({ length: 12 }).map((e, t) =>
+                    (0, p.jsxs)(
+                      `div`,
+                      {
+                        className: `space-y-2`,
+                        children: [
+                          (0, p.jsx)(`div`, {
+                            className: `shimmer aspect-video w-full rounded-md`,
+                          }),
+                          (0, p.jsx)(`div`, { className: `shimmer h-3 w-3/4 rounded-full` }),
+                          (0, p.jsx)(`div`, { className: `shimmer h-2.5 w-1/2 rounded-full` }),
+                        ],
+                      },
+                      t,
+                    ),
+                  ),
+                }),
+          ],
+        }),
+        c.length > 0 &&
+          e.data &&
+          (0, p.jsxs)(`section`, {
+            className: `mt-10`,
+            children: [
+              (0, p.jsx)(`h2`, {
+                className: `mb-4 font-display text-[13px] font-medium uppercase tracking-[0.14em] text-[var(--text-secondary)]`,
+                children: `Recently watched`,
+              }),
+              (0, p.jsx)(m, { catalog: e.data, ids: c, title: `` }),
+            ],
+          }),
+        c.length > 0 &&
+          !e.data &&
+          (0, p.jsxs)(`section`, {
+            className: `mt-10`,
+            children: [
+              (0, p.jsx)(`div`, { className: `shimmer mb-4 h-3 w-36 rounded-full` }),
+              (0, p.jsx)(`div`, {
+                className: `flex gap-3 overflow-hidden`,
+                children: Array.from({ length: 6 }).map((e, t) =>
+                  (0, p.jsxs)(
+                    `div`,
+                    {
+                      className: `w-[200px] shrink-0 space-y-2`,
+                      children: [
+                        (0, p.jsx)(`div`, { className: `shimmer aspect-video w-full rounded-md` }),
+                        (0, p.jsx)(`div`, { className: `shimmer h-3 w-3/4 rounded-full` }),
+                        (0, p.jsx)(`div`, { className: `shimmer h-2.5 w-1/2 rounded-full` }),
+                      ],
+                    },
+                    t,
+                  ),
+                ),
+              }),
+            ],
+          }),
+        d.length > 0 &&
+          e.data &&
+          (0, p.jsxs)(`section`, {
+            className: `mt-10`,
+            children: [
+              (0, p.jsx)(`h2`, {
+                className: `mb-4 font-display text-[13px] font-medium uppercase tracking-[0.14em] text-[var(--text-secondary)]`,
+                children: `Because you watched`,
+              }),
+              (0, p.jsx)(m, { catalog: e.data, ids: d, title: `` }),
+            ],
+          }),
+      ],
+    })
+  );
+}
+export { h as component };

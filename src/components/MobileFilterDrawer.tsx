@@ -27,10 +27,7 @@ function Section({
 }) {
   const [q, setQ] = useState("");
   const filtered = useMemo(
-    () =>
-      options
-        .filter((o) => !q || o.name.toLowerCase().includes(q.toLowerCase()))
-        .slice(0, 60),
+    () => options.filter((o) => !q || o.name.toLowerCase().includes(q.toLowerCase())).slice(0, 60),
     [options, q],
   );
 
@@ -130,13 +127,7 @@ function Section({
 }
 
 /* ─── Active filter chip ─────────────────────────────────────────── */
-function ActiveChip({
-  label,
-  onRemove,
-}: {
-  label: string;
-  onRemove: () => void;
-}) {
+function ActiveChip({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
     <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--accent)]/30 bg-[var(--accent-subtle)] px-3 py-1 text-[11px] font-medium text-[var(--accent)]">
       {label}
@@ -237,7 +228,9 @@ export function MobileFilterDrawer({
   );
 
   const hasAny = !!(selected.category || selected.language || selected.country);
-  const activeCount = [selected.category, selected.language, selected.country].filter(Boolean).length;
+  const activeCount = [selected.category, selected.language, selected.country].filter(
+    Boolean,
+  ).length;
 
   const clearAll = useCallback(
     () => onChange({ category: undefined, language: undefined, country: undefined }),
@@ -247,7 +240,6 @@ export function MobileFilterDrawer({
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="flex max-h-[92vh] flex-col bg-[var(--surface-base)] border-[var(--border-subtle)] px-0 pb-0">
-
         {/* ── Header ── */}
         <div className="flex shrink-0 items-center justify-between px-5 pb-3 pt-2">
           <div className="flex items-center gap-2">
@@ -317,9 +309,7 @@ export function MobileFilterDrawer({
                 }`}
               >
                 {t === "country" ? "Country" : "Language"}
-                {hasValue && (
-                  <span className="size-1.5 rounded-full bg-[var(--accent)]" />
-                )}
+                {hasValue && <span className="size-1.5 rounded-full bg-[var(--accent)]" />}
               </button>
             );
           })}

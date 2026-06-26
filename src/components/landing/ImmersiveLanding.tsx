@@ -113,7 +113,7 @@ export function ImmersiveLanding({ onClose }: ImmersiveLandingProps) {
         amplitude: number,
         frequency: number,
         gradientTopColor: string,
-        gradientBottomColor: string
+        gradientBottomColor: string,
       ) => {
         ctx.beginPath();
         ctx.moveTo(0, height);
@@ -151,7 +151,7 @@ export function ImmersiveLanding({ onClose }: ImmersiveLandingProps) {
         28,
         0.0016,
         "rgba(229, 72, 77, 0.08)",
-        "rgba(229, 72, 77, 0.002)"
+        "rgba(229, 72, 77, 0.002)",
       );
 
       drawFluidWave(
@@ -160,7 +160,7 @@ export function ImmersiveLanding({ onClose }: ImmersiveLandingProps) {
         20,
         0.0034,
         "rgba(229, 72, 77, 0.16)",
-        "rgba(229, 72, 77, 0.005)"
+        "rgba(229, 72, 77, 0.005)",
       );
 
       drawFluidWave(
@@ -169,7 +169,7 @@ export function ImmersiveLanding({ onClose }: ImmersiveLandingProps) {
         14,
         0.0062,
         "rgba(229, 72, 77, 0.28)",
-        "rgba(229, 72, 77, 0.01)"
+        "rgba(229, 72, 77, 0.01)",
       );
 
       // Increment phases
@@ -199,35 +199,31 @@ export function ImmersiveLanding({ onClose }: ImmersiveLandingProps) {
   return (
     <div
       className={`fixed inset-0 w-full h-full z-[100] bg-[#010102] flex flex-col justify-center items-center overflow-hidden select-none transition-all duration-800 ${
-        isExiting 
-          ? "opacity-0 translate-y-[-100%] pointer-events-none" 
+        isExiting
+          ? "opacity-0 translate-y-[-100%] pointer-events-none"
           : "opacity-100 translate-y-0"
       }`}
       style={{
-        transitionTimingFunction: "cubic-bezier(0.32, 0.72, 0, 1)"
+        transitionTimingFunction: "cubic-bezier(0.32, 0.72, 0, 1)",
       }}
     >
       {/* ── Background Canvas (Liquid Waves Only) ── */}
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 w-full h-full pointer-events-none"
-      />
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />
 
       {/* ── Center Immersive Layout (Hero Brand Identity) ── */}
       <main className="relative z-10 flex flex-col justify-center items-center px-6">
         <div className="max-w-2xl w-full flex flex-col items-center text-center gap-8 sm:gap-11">
-          
           {/* Custom Animated Dot Matrix SVG Logo - flat and solid (no glows) */}
-          <div 
+          <div
             className={`w-[110px] h-[110px] sm:w-[160px] sm:h-[160px] flex items-center justify-center transition-all duration-1000 ${
               isMounted && !isExiting ? "opacity-100 scale-100" : "opacity-0 scale-90"
             }`}
           >
-            <svg 
-              width="100%" 
-              height="100%" 
-              viewBox="-7 -7 131 131" 
-              xmlns="http://www.w3.org/2000/svg" 
+            <svg
+              width="100%"
+              height="100%"
+              viewBox="-7 -7 131 131"
+              xmlns="http://www.w3.org/2000/svg"
               aria-hidden="true"
             >
               {[
@@ -266,7 +262,7 @@ export function ImmersiveLanding({ onClose }: ImmersiveLandingProps) {
                 { cx: 110, cy: 44, f: "#e5484d", d: 280 },
                 { cx: 110, cy: 66, f: "#34343a", d: 320 },
                 { cx: 110, cy: 88, f: "#e5484d", d: 360 },
-                { cx: 110, cy: 110, f: "#34343a", d: 400 }
+                { cx: 110, cy: 110, f: "#34343a", d: 400 },
               ].map((dot, idx) => (
                 <circle
                   key={idx}
@@ -278,7 +274,7 @@ export function ImmersiveLanding({ onClose }: ImmersiveLandingProps) {
                   style={{
                     animation: `logo-dot-entrance 0.9s cubic-bezier(0.23, 1, 0.32, 1) both`,
                     animationDelay: `${dot.d}ms`,
-                    transformOrigin: `${dot.cx}px ${dot.cy}px`
+                    transformOrigin: `${dot.cx}px ${dot.cy}px`,
                   }}
                 />
               ))}
@@ -301,16 +297,16 @@ export function ImmersiveLanding({ onClose }: ImmersiveLandingProps) {
           {/* Wordmark, Tagline and Underscore */}
           <div className="flex flex-col items-center">
             {/* Project Wordmark (styled exactly like index.tsx hero) - flat & solid */}
-            <h1 
+            <h1
               className={`font-display font-bold text-[var(--text-primary)] tracking-[-0.04em] text-[3.4rem] sm:text-[4rem] leading-[1.05] sm:leading-[1.1] transition-all duration-1000 delay-[150ms] ${
                 isMounted && !isExiting ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
               }`}
             >
               Pulse
             </h1>
-            
+
             {/* Tagline and Underscore (Left-aligned relative to each other so underscore fits below "Feel") */}
-            <div 
+            <div
               className={`mt-2 flex flex-col items-start transition-all duration-1000 delay-[280ms] ${
                 isMounted && !isExiting ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
               }`}
@@ -323,24 +319,26 @@ export function ImmersiveLanding({ onClose }: ImmersiveLandingProps) {
           </div>
 
           {/* Premium "Enter Experience" Trigger Button */}
-          <div 
+          <div
             className={`mt-4 transition-all duration-1000 delay-[360ms] ${
-              isMounted && !isExiting ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-6"
+              isMounted && !isExiting
+                ? "opacity-100 scale-100 translate-y-0"
+                : "opacity-0 scale-95 translate-y-6"
             }`}
           >
             <button
               onClick={handleEnter}
               className="relative group flex items-center gap-3.5 px-8 py-4 bg-transparent text-[13px] font-mono tracking-[0.2em] uppercase text-white border border-white/10 rounded-full cursor-pointer overflow-hidden transition-all duration-300 hover:border-[var(--accent)] hover:text-white active:scale-97 active:bg-white/[0.02]"
               style={{
-                boxShadow: "0 0 0 0 rgba(229,72,77,0)"
+                boxShadow: "0 0 0 0 rgba(229,72,77,0)",
               }}
             >
               {/* Animated Hover Background Fill */}
-              <div 
+              <div
                 className="absolute inset-0 w-full h-full bg-gradient-to-r from-[rgba(229,72,77,0.12)] to-[rgba(229,72,77,0.02)] -translate-x-full transition-transform duration-500 ease-out group-hover:translate-x-0"
                 style={{ zIndex: -1 }}
               />
-              
+
               {/* Subtle pulsing outer ring on hover */}
               <div className="absolute inset-0 rounded-full border border-[var(--accent)] opacity-0 scale-95 transition-all duration-500 group-hover:opacity-60 group-hover:scale-100 pointer-events-none" />
 
@@ -348,7 +346,6 @@ export function ImmersiveLanding({ onClose }: ImmersiveLandingProps) {
               <ArrowRight className="size-4 text-[var(--text-tertiary)] transition-transform duration-300 group-hover:translate-x-1.5 group-hover:text-[var(--accent)]" />
             </button>
           </div>
-
         </div>
       </main>
     </div>

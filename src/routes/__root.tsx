@@ -131,7 +131,7 @@ function RootShell({ children }: { children: ReactNode }) {
                   }
                 } catch (e) {}
               })();
-            `
+            `,
           }}
         />
       </head>
@@ -159,10 +159,7 @@ function RouteTransition({ children }: { children: ReactNode }) {
   }, [pathname]);
 
   return (
-    <div
-      key={pathname}
-      className={phase === "enter" ? "route-enter" : ""}
-    >
+    <div key={pathname} className={phase === "enter" ? "route-enter" : ""}>
       {children}
     </div>
   );

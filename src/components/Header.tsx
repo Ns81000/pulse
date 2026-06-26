@@ -26,43 +26,49 @@ export function Header({ onSearchOpen }: { onSearchOpen?: () => void }) {
           className="flex shrink-0 items-center gap-2.5 transition-transform active:scale-98"
         >
           {/* Pulse dot matrix mark — exact pattern from pulse_dot_matrix_final.svg */}
-          <svg width="22" height="22" viewBox="44 30 130 130" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <circle cx="44" cy="30" r="7" fill="#34343a"/>
-            <circle cx="44" cy="52" r="7" fill="#e5484d"/>
-            <circle cx="44" cy="74" r="7" fill="#e5484d"/>
-            <circle cx="44" cy="96" r="7" fill="#e5484d"/>
-            <circle cx="44" cy="118" r="7" fill="#e5484d"/>
-            <circle cx="44" cy="140" r="7" fill="#e5484d"/>
-            <circle cx="66" cy="30" r="7" fill="#34343a"/>
-            <circle cx="66" cy="52" r="7" fill="#34343a"/>
-            <circle cx="66" cy="74" r="7" fill="#e5484d"/>
-            <circle cx="66" cy="96" r="7" fill="#34343a"/>
-            <circle cx="66" cy="118" r="7" fill="#34343a"/>
-            <circle cx="66" cy="140" r="7" fill="#e5484d"/>
-            <circle cx="88" cy="30" r="7" fill="#34343a"/>
-            <circle cx="88" cy="52" r="7" fill="#34343a"/>
-            <circle cx="88" cy="74" r="7" fill="#34343a"/>
-            <circle cx="88" cy="96" r="7" fill="#34343a"/>
-            <circle cx="88" cy="118" r="7" fill="#34343a"/>
-            <circle cx="88" cy="140" r="7" fill="#e5484d"/>
-            <circle cx="110" cy="30" r="7" fill="#e5484d"/>
-            <circle cx="110" cy="52" r="7" fill="#e5484d"/>
-            <circle cx="110" cy="74" r="7" fill="#e5484d"/>
-            <circle cx="110" cy="96" r="7" fill="#e5484d"/>
-            <circle cx="110" cy="118" r="7" fill="#e5484d"/>
-            <circle cx="110" cy="140" r="7" fill="#e5484d"/>
-            <circle cx="132" cy="30" r="7" fill="#e5484d"/>
-            <circle cx="132" cy="52" r="7" fill="#34343a"/>
-            <circle cx="132" cy="74" r="7" fill="#34343a"/>
-            <circle cx="132" cy="96" r="7" fill="#e5484d"/>
-            <circle cx="132" cy="118" r="7" fill="#34343a"/>
-            <circle cx="132" cy="140" r="7" fill="#e5484d"/>
-            <circle cx="154" cy="30" r="7" fill="#34343a"/>
-            <circle cx="154" cy="52" r="7" fill="#e5484d"/>
-            <circle cx="154" cy="74" r="7" fill="#e5484d"/>
-            <circle cx="154" cy="96" r="7" fill="#34343a"/>
-            <circle cx="154" cy="118" r="7" fill="#e5484d"/>
-            <circle cx="154" cy="140" r="7" fill="#34343a"/>
+          <svg
+            width="22"
+            height="22"
+            viewBox="44 30 130 130"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <circle cx="44" cy="30" r="7" fill="#34343a" />
+            <circle cx="44" cy="52" r="7" fill="#e5484d" />
+            <circle cx="44" cy="74" r="7" fill="#e5484d" />
+            <circle cx="44" cy="96" r="7" fill="#e5484d" />
+            <circle cx="44" cy="118" r="7" fill="#e5484d" />
+            <circle cx="44" cy="140" r="7" fill="#e5484d" />
+            <circle cx="66" cy="30" r="7" fill="#34343a" />
+            <circle cx="66" cy="52" r="7" fill="#34343a" />
+            <circle cx="66" cy="74" r="7" fill="#e5484d" />
+            <circle cx="66" cy="96" r="7" fill="#34343a" />
+            <circle cx="66" cy="118" r="7" fill="#34343a" />
+            <circle cx="66" cy="140" r="7" fill="#e5484d" />
+            <circle cx="88" cy="30" r="7" fill="#34343a" />
+            <circle cx="88" cy="52" r="7" fill="#34343a" />
+            <circle cx="88" cy="74" r="7" fill="#34343a" />
+            <circle cx="88" cy="96" r="7" fill="#34343a" />
+            <circle cx="88" cy="118" r="7" fill="#34343a" />
+            <circle cx="88" cy="140" r="7" fill="#e5484d" />
+            <circle cx="110" cy="30" r="7" fill="#e5484d" />
+            <circle cx="110" cy="52" r="7" fill="#e5484d" />
+            <circle cx="110" cy="74" r="7" fill="#e5484d" />
+            <circle cx="110" cy="96" r="7" fill="#e5484d" />
+            <circle cx="110" cy="118" r="7" fill="#e5484d" />
+            <circle cx="110" cy="140" r="7" fill="#e5484d" />
+            <circle cx="132" cy="30" r="7" fill="#e5484d" />
+            <circle cx="132" cy="52" r="7" fill="#34343a" />
+            <circle cx="132" cy="74" r="7" fill="#34343a" />
+            <circle cx="132" cy="96" r="7" fill="#e5484d" />
+            <circle cx="132" cy="118" r="7" fill="#34343a" />
+            <circle cx="132" cy="140" r="7" fill="#e5484d" />
+            <circle cx="154" cy="30" r="7" fill="#34343a" />
+            <circle cx="154" cy="52" r="7" fill="#e5484d" />
+            <circle cx="154" cy="74" r="7" fill="#e5484d" />
+            <circle cx="154" cy="96" r="7" fill="#34343a" />
+            <circle cx="154" cy="118" r="7" fill="#e5484d" />
+            <circle cx="154" cy="140" r="7" fill="#34343a" />
           </svg>
           <span className="font-display text-[15px] font-semibold tracking-tight">Pulse</span>
         </Link>

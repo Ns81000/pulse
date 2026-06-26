@@ -12,7 +12,13 @@ import {
   ArrowRight,
   Zap,
 } from "lucide-react";
-import { useCatalog, useStreamHealth, useUserCountry, sortChannels, queueBackgroundCheck } from "@/lib/data-hooks";
+import {
+  useCatalog,
+  useStreamHealth,
+  useUserCountry,
+  sortChannels,
+  queueBackgroundCheck,
+} from "@/lib/data-hooks";
 import { usePlayer } from "@/lib/player-context";
 import { checkStream } from "@/lib/data-hooks";
 import { toast } from "sonner";
@@ -150,12 +156,7 @@ export function SearchModal({ open, onClose }: Props) {
   const trendingChannels = useMemo(() => {
     if (!open || !cat.data) return [];
     // Run the same sort used everywhere else in the app
-    const sorted = sortChannels(
-      cat.data.indexes.all_ids,
-      cat.data.channels,
-      userCountry,
-      health,
-    );
+    const sorted = sortChannels(cat.data.indexes.all_ids, cat.data.channels, userCountry, health);
     // Pick 1 representative per category, prefer confirmed-online channels
     const seenCategories = new Set<string>();
     const result: string[] = [];
@@ -279,7 +280,8 @@ export function SearchModal({ open, onClose }: Props) {
           isFilter: true,
           filterType: "country",
           filterCode: co.code,
-          action: () => addPill({ type: "country", code: co.code, label: co.name, countryCode: co.code }),
+          action: () =>
+            addPill({ type: "country", code: co.code, label: co.name, countryCode: co.code }),
         });
         if (++count >= 4) break;
       }
@@ -328,7 +330,9 @@ export function SearchModal({ open, onClose }: Props) {
     return out;
   }, [cat.data, debouncedQ, pills, pillSets, pinnedTypes, playChannel, addPill]);
 
-  useEffect(() => { setActive(0); }, [debouncedQ, pills]);
+  useEffect(() => {
+    setActive(0);
+  }, [debouncedQ, pills]);
 
   const isShowingRecent = !debouncedQ.trim() && pills.length === 0;
   const navList: (() => void)[] = useMemo(() => {
@@ -352,7 +356,10 @@ export function SearchModal({ open, onClose }: Props) {
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") { onClose(); return; }
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
       if (e.key === "Backspace" && q === "" && pills.length > 0) {
         setPills((prev) => prev.slice(0, -1));
         return;
@@ -385,7 +392,10 @@ export function SearchModal({ open, onClose }: Props) {
     let idx = 0;
     for (const row of rows) {
       let s = groups.find((g) => g.name === row.group);
-      if (!s) { s = { name: row.group, rows: [] }; groups.push(s); }
+      if (!s) {
+        s = { name: row.group, rows: [] };
+        groups.push(s);
+      }
       s.rows.push({ row, flatIdx: idx++ });
     }
     return groups;
@@ -422,9 +432,10 @@ export function SearchModal({ open, onClose }: Props) {
           sm:pt-0 sm:pb-0
           /* Entry animation */
           transition-[transform,opacity] duration-250
-          ${mounted
-            ? "translate-y-0 opacity-100 sm:scale-100"
-            : "translate-y-4 opacity-0 sm:scale-[0.96]"
+          ${
+            mounted
+              ? "translate-y-0 opacity-100 sm:scale-100"
+              : "translate-y-4 opacity-0 sm:scale-[0.96]"
           }
         `}
         style={{ transitionTimingFunction: "cubic-bezier(0.23, 1, 0.32, 1)" }}
@@ -449,7 +460,9 @@ export function SearchModal({ open, onClose }: Props) {
                     {flagCode && (
                       <img
                         src={`https://flagcdn.com/w20/${flagCode}.png`}
-                        width={14} height={10} alt={pill.label}
+                        width={14}
+                        height={10}
+                        alt={pill.label}
                         className="rounded-[2px] object-cover"
                       />
                     )}
@@ -458,7 +471,10 @@ export function SearchModal({ open, onClose }: Props) {
                     <span>{pill.label}</span>
                     <button
                       type="button"
-                      onMouseDown={(e) => { e.preventDefault(); removePill(pill.type); }}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        removePill(pill.type);
+                      }}
                       className="ml-0.5 rounded-full p-0.5 hover:bg-[var(--accent)]/20 active:opacity-60 transition-colors"
                       aria-label={`Remove ${pill.label} filter`}
                     >
@@ -486,7 +502,11 @@ export function SearchModal({ open, onClose }: Props) {
             {q ? (
               <button
                 type="button"
-                onMouseDown={(e) => { e.preventDefault(); setQ(""); inputRef.current?.focus(); }}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  setQ("");
+                  inputRef.current?.focus();
+                }}
                 className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[var(--surface-3)] text-[var(--text-tertiary)] transition-colors active:scale-90"
                 aria-label="Clear"
               >
@@ -508,7 +528,6 @@ export function SearchModal({ open, onClose }: Props) {
 
         {/* ── Results list ── */}
         <div ref={listRef} className="flex-1 overflow-y-auto no-scrollbar">
-
           {/* Loading */}
           {cat.isLoading && (
             <div className="flex flex-col items-center justify-center py-16 gap-3">
@@ -534,18 +553,29 @@ export function SearchModal({ open, onClose }: Props) {
                       <button
                         key={id}
                         data-idx={idx}
-                        onMouseEnter={() => { if (!isUsingKeyboard.current) setActive(idx); }}
-                        onMouseMove={() => { isUsingKeyboard.current = false; setActive(idx); }}
+                        onMouseEnter={() => {
+                          if (!isUsingKeyboard.current) setActive(idx);
+                        }}
+                        onMouseMove={() => {
+                          isUsingKeyboard.current = false;
+                          setActive(idx);
+                        }}
                         onClick={() => playChannel(id)}
                         className={`flex w-full items-center gap-3 rounded-xl px-3 py-3.5 text-left transition-all active:scale-[0.97] ${
-                          isActive ? "bg-[var(--surface-3)] text-[var(--text-primary)]" : "text-[var(--text-secondary)]"
+                          isActive
+                            ? "bg-[var(--surface-3)] text-[var(--text-primary)]"
+                            : "text-[var(--text-secondary)]"
                         }`}
                       >
                         <Clock className="size-4 shrink-0 text-[var(--text-tertiary)]" />
                         <span className="flex-1 truncate text-[14px] font-medium">{c.name}</span>
                         {code && (
-                          <img src={`https://flagcdn.com/w20/${code}.png`} width={18} height={13}
-                            alt={c.country} className="shrink-0 rounded-[3px] object-cover"
+                          <img
+                            src={`https://flagcdn.com/w20/${code}.png`}
+                            width={18}
+                            height={13}
+                            alt={c.country}
+                            className="shrink-0 rounded-[3px] object-cover"
                           />
                         )}
                       </button>
@@ -572,7 +602,7 @@ export function SearchModal({ open, onClose }: Props) {
                     const code = toFlagCode(c.country);
                     const isOnline = health[id] === "online";
                     const catName = cat.data?.meta.categories.find(
-                      (ca) => ca.id === c.categories[0]
+                      (ca) => ca.id === c.categories[0],
                     )?.name;
                     return (
                       <button
@@ -607,7 +637,9 @@ export function SearchModal({ open, onClose }: Props) {
                         </div>
 
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{c.name}</p>
+                          <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">
+                            {c.name}
+                          </p>
                           <p className="truncate text-[11px] text-[var(--text-tertiary)]">
                             {catName ?? c.categories[0]}
                           </p>
@@ -617,7 +649,8 @@ export function SearchModal({ open, onClose }: Props) {
                           {code && (
                             <img
                               src={`https://flagcdn.com/w20/${code}.png`}
-                              width={18} height={13}
+                              width={18}
+                              height={13}
                               alt={c.country}
                               className="rounded-[3px] object-cover"
                             />
@@ -662,7 +695,9 @@ export function SearchModal({ open, onClose }: Props) {
                 No results{debouncedQ ? ` for "${debouncedQ}"` : ""}
               </p>
               {pills.length > 0 && (
-                <p className="mt-1 text-[12px] text-[var(--text-tertiary)]">Try removing a filter</p>
+                <p className="mt-1 text-[12px] text-[var(--text-tertiary)]">
+                  Try removing a filter
+                </p>
               )}
             </div>
           )}
@@ -682,11 +717,18 @@ export function SearchModal({ open, onClose }: Props) {
                     <button
                       key={row.id}
                       data-idx={flatIdx}
-                      onMouseEnter={() => { if (!isUsingKeyboard.current) setActive(flatIdx); }}
-                      onMouseMove={() => { isUsingKeyboard.current = false; setActive(flatIdx); }}
+                      onMouseEnter={() => {
+                        if (!isUsingKeyboard.current) setActive(flatIdx);
+                      }}
+                      onMouseMove={() => {
+                        isUsingKeyboard.current = false;
+                        setActive(flatIdx);
+                      }}
                       onClick={row.action}
                       className={`flex w-full items-center gap-3 rounded-xl px-3 py-3.5 text-left transition-all active:scale-[0.97] ${
-                        isActive ? "bg-[var(--surface-3)] text-[var(--text-primary)]" : "text-[var(--text-secondary)]"
+                        isActive
+                          ? "bg-[var(--surface-3)] text-[var(--text-primary)]"
+                          : "text-[var(--text-secondary)]"
                       }`}
                     >
                       {/* Left: channel logo or group icon */}
@@ -712,21 +754,33 @@ export function SearchModal({ open, onClose }: Props) {
                       <span className="flex-1 truncate text-[14px] font-medium">{row.label}</span>
                       {/* Right: flag only for channel rows, sub text for filter rows */}
                       {flagCode && (
-                        <img src={`https://flagcdn.com/w20/${flagCode}.png`} width={18} height={13}
-                          alt={row.countryCode} className="shrink-0 rounded-[2px] object-cover"
+                        <img
+                          src={`https://flagcdn.com/w20/${flagCode}.png`}
+                          width={18}
+                          height={13}
+                          alt={row.countryCode}
+                          className="shrink-0 rounded-[2px] object-cover"
                         />
                       )}
                       {!row.countryCode && row.sub && (
-                        <span className="shrink-0 text-[12px] text-[var(--text-tertiary)]">{row.sub}</span>
+                        <span className="shrink-0 text-[12px] text-[var(--text-tertiary)]">
+                          {row.sub}
+                        </span>
                       )}
                       {row.isFilter ? (
-                        <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium transition-colors ${
-                          isActive ? "bg-[var(--accent-subtle)] text-[var(--accent)]" : "bg-[var(--surface-3)] text-[var(--text-tertiary)]"
-                        }`}>
+                        <span
+                          className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium transition-colors ${
+                            isActive
+                              ? "bg-[var(--accent-subtle)] text-[var(--accent)]"
+                              : "bg-[var(--surface-3)] text-[var(--text-tertiary)]"
+                          }`}
+                        >
                           Filter
                         </span>
                       ) : (
-                        isActive && <CornerDownLeft className="size-3.5 shrink-0 text-[var(--text-tertiary)] hidden sm:block" />
+                        isActive && (
+                          <CornerDownLeft className="size-3.5 shrink-0 text-[var(--text-tertiary)] hidden sm:block" />
+                        )
                       )}
                     </button>
                   );

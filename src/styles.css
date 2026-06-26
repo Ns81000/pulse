@@ -418,7 +418,8 @@
     }
   }
   @keyframes cardGlowBreathe {
-    0%, 100% {
+    0%,
+    100% {
       opacity: 0.7;
     }
     50% {
@@ -426,7 +427,8 @@
     }
   }
   @keyframes dotPulse {
-    0%, 100% {
+    0%,
+    100% {
       opacity: 0.15;
       transform: scale(0.9);
     }

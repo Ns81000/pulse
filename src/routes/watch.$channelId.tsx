@@ -363,7 +363,7 @@ function MobileAlternativesGrid({
       const available = viewportH - rect.top - bottomTabH - headerH;
       // Each card: aspect-video thumb (~(screenW/2 - 20) * 9/16) + name + cat ≈ 130px
       const cardH = Math.round((window.innerWidth / 2 - 20) * (9 / 16)) + 48;
-      const rows = Math.max(1, Math.floor((available) / (cardH + gapH)));
+      const rows = Math.max(1, Math.floor(available / (cardH + gapH)));
       setLimit(rows * 2); // 2 columns
     };
     calculate();
@@ -408,9 +408,10 @@ function MobileAlternativesGrid({
           const c = catalog.channels[id];
           if (!c) return null;
           const code = c.country ? toFlagCode(c.country) : "";
-          const catName = catalog.meta.categories.find(
-            (ca) => ca.id === c.categories[0]
-          )?.name ?? c.categories[0] ?? "";
+          const catName =
+            catalog.meta.categories.find((ca) => ca.id === c.categories[0])?.name ??
+            c.categories[0] ??
+            "";
           return (
             <button
               key={id}
@@ -468,7 +469,8 @@ function MobileAlternativesGrid({
                 {code && (
                   <img
                     src={`https://flagcdn.com/w20/${code}.png`}
-                    width={14} height={10}
+                    width={14}
+                    height={10}
                     alt={c.country}
                     className="shrink-0 rounded-[2px] object-cover"
                   />

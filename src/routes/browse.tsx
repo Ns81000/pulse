@@ -1,12 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState, useRef, useCallback, useEffect } from "react";
 import { z } from "zod";
-import {
-  useCatalog,
-  useUserCountry,
-  useStreamHealth,
-  sortChannels,
-} from "@/lib/data-hooks";
+import { useCatalog, useUserCountry, useStreamHealth, sortChannels } from "@/lib/data-hooks";
 import { FilterPanel } from "@/components/FilterPanel";
 import { ChannelGrid } from "@/components/ChannelGrid";
 import { BackgroundPingTrigger } from "@/components/BackgroundPingTrigger";
@@ -374,7 +369,9 @@ function BrowsePage() {
             onChange={(v) => update({ sort: v })}
           />
           <MobileFilterTrigger
-            activeCount={[selected.category, selected.language, selected.country].filter(Boolean).length}
+            activeCount={
+              [selected.category, selected.language, selected.country].filter(Boolean).length
+            }
             onClick={() => setMobileFiltersOpen(true)}
           />
         </div>

@@ -103,7 +103,10 @@ function ChannelCardBase({
         }
       }}
       className="surface-card group relative flex w-full cursor-pointer flex-col gap-2 p-3 text-left fade-in focus-visible:outline-2 focus-visible:outline-[var(--accent)] active:scale-[0.97]"
-      style={{ transition: 'transform 120ms cubic-bezier(0.23,1,0.32,1), background 160ms ease, border-color 160ms ease' }}
+      style={{
+        transition:
+          "transform 120ms cubic-bezier(0.23,1,0.32,1), background 160ms ease, border-color 160ms ease",
+      }}
     >
       <div className="relative flex aspect-video items-center justify-center overflow-hidden rounded-md bg-[var(--surface-base)]">
         {channel.logo_url && !imgError ? (
@@ -121,7 +124,7 @@ function ChannelCardBase({
           type="button"
           onClick={onFav}
           aria-label={isFavourite ? "Remove favourite" : "Add favourite"}
-          className={`absolute right-2 top-2 grid size-7 place-items-center rounded-full transition-all duration-100 active:scale-90 focus-visible:opacity-100 ${isFavourite ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+          className={`absolute right-2 top-2 grid size-7 place-items-center rounded-full transition-all duration-100 active:scale-90 focus-visible:opacity-100 ${isFavourite ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
         >
           <Heart
             className={`size-3.5 ${isFavourite ? "fill-[var(--accent)] text-[var(--accent)]" : "text-white"}`}

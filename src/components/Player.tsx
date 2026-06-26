@@ -96,7 +96,11 @@ export function Player({ channel, onFatalError, compact }: Props) {
 
     (async () => {
       if (hlsRef.current) {
-        try { hlsRef.current.destroy(); } catch { /* ignore */ }
+        try {
+          hlsRef.current.destroy();
+        } catch {
+          /* ignore */
+        }
         hlsRef.current = null;
       }
 
@@ -109,7 +113,9 @@ export function Player({ channel, onFatalError, compact }: Props) {
           xhrSetup: (xhr) => {
             try {
               if (stream.referrer) xhr.setRequestHeader("Referer", stream.referrer);
-            } catch { /* ignore */ }
+            } catch {
+              /* ignore */
+            }
           },
         });
         hlsRef.current = hls;
@@ -125,10 +131,20 @@ export function Player({ channel, onFatalError, compact }: Props) {
         hls.on(HlsMod.Events.ERROR, (_e, data) => {
           if (!data.fatal) return;
           if (data.type === HlsMod.ErrorTypes.MEDIA_ERROR) {
-            try { hls.recoverMediaError(); return; } catch { /* ignore */ }
+            try {
+              hls.recoverMediaError();
+              return;
+            } catch {
+              /* ignore */
+            }
           }
           if (data.type === HlsMod.ErrorTypes.NETWORK_ERROR) {
-            try { hls.startLoad(); return; } catch { /* ignore */ }
+            try {
+              hls.startLoad();
+              return;
+            } catch {
+              /* ignore */
+            }
           }
           if (tryNextStream()) return;
           setLoadState("error");
@@ -147,7 +163,9 @@ export function Player({ channel, onFatalError, compact }: Props) {
     return () => {
       destroyed = true;
       if (hlsRef.current) {
-        try { hlsRef.current.destroy(); } catch {}
+        try {
+          hlsRef.current.destroy();
+        } catch {}
         hlsRef.current = null;
       }
     };
@@ -173,7 +191,10 @@ export function Player({ channel, onFatalError, compact }: Props) {
       setLoadState("error");
       onFatalError?.();
     };
-    const onVol = () => { setMuted(v.muted); setVolume(v.volume); };
+    const onVol = () => {
+      setMuted(v.muted);
+      setVolume(v.volume);
+    };
     const onEnterPip = () => setPip(true);
     const onLeavePip = () => setPip(false);
     v.addEventListener("play", onPlay);
@@ -197,7 +218,14 @@ export function Player({ channel, onFatalError, compact }: Props) {
       v.removeEventListener("enterpictureinpicture", onEnterPip);
       v.removeEventListener("leavepictureinpicture", onLeavePip);
     };
-  }, [player.videoEl, onFatalError, activeStreamIdx, player.workingStreamIndex, channel.id, tryNextStream]);
+  }, [
+    player.videoEl,
+    onFatalError,
+    activeStreamIdx,
+    player.workingStreamIndex,
+    channel.id,
+    tryNextStream,
+  ]);
 
   // ── Fullscreen sync ───────────────────────────────────────────────────────
   useEffect(() => {
@@ -206,7 +234,11 @@ export function Player({ channel, onFatalError, compact }: Props) {
       setFullscreen(isFs);
       // Unlock orientation whenever fullscreen exits (covers native back-gesture too)
       if (!isFs) {
-        try { screen.orientation.unlock(); } catch { /* desktop — ignored */ }
+        try {
+          screen.orientation.unlock();
+        } catch {
+          /* desktop — ignored */
+        }
       }
     };
     document.addEventListener("fullscreenchange", onFs);
@@ -265,12 +297,15 @@ export function Player({ channel, onFatalError, compact }: Props) {
     v.muted = !v.muted;
   }, [player.videoEl]);
 
-  const onVolume = useCallback((val: number) => {
-    const v = player.videoEl;
-    if (!v) return;
-    v.volume = val;
-    v.muted = val === 0;
-  }, [player.videoEl]);
+  const onVolume = useCallback(
+    (val: number) => {
+      const v = player.videoEl;
+      if (!v) return;
+      v.volume = val;
+      v.muted = val === 0;
+    },
+    [player.videoEl],
+  );
 
   const toggleFs = useCallback(async () => {
     const el = wrapRef.current;
@@ -279,13 +314,19 @@ export function Player({ channel, onFatalError, compact }: Props) {
       if (document.fullscreenElement) {
         await document.exitFullscreen();
         // Unlock orientation when leaving fullscreen
-        try { screen.orientation.unlock(); } catch { /* not supported on desktop */ }
+        try {
+          screen.orientation.unlock();
+        } catch {
+          /* not supported on desktop */
+        }
       } else {
         await el.requestFullscreen();
         // Lock to landscape on mobile after entering fullscreen
         try {
           await (screen.orientation as any).lock("landscape");
-        } catch { /* desktop or unsupported browser — silently ignored */ }
+        } catch {
+          /* desktop or unsupported browser — silently ignored */
+        }
       }
     } catch {}
   }, []);
@@ -316,29 +357,43 @@ export function Player({ channel, onFatalError, compact }: Props) {
   const didTouchRef = useRef(false);
 
   const handleVideoClick = useCallback(() => {
-    if (didTouchRef.current) { didTouchRef.current = false; return; }
+    if (didTouchRef.current) {
+      didTouchRef.current = false;
+      return;
+    }
     armHide();
     if (clickTimer.current) clearTimeout(clickTimer.current);
-    clickTimer.current = setTimeout(() => { togglePlay(); }, 150);
+    clickTimer.current = setTimeout(() => {
+      togglePlay();
+    }, 150);
   }, [armHide, togglePlay]);
 
   const handleVideoTouch = useCallback(() => {
     didTouchRef.current = true;
     armHide();
     if (clickTimer.current) clearTimeout(clickTimer.current);
-    clickTimer.current = setTimeout(() => { togglePlay(); }, 150);
+    clickTimer.current = setTimeout(() => {
+      togglePlay();
+    }, 150);
   }, [armHide, togglePlay]);
 
   // ── Keyboard shortcuts ────────────────────────────────────────────────────
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-      if (e.code === "Space") { e.preventDefault(); togglePlay(); }
-      else if (e.key === "f" || e.key === "F") toggleFs();
+      if (e.code === "Space") {
+        e.preventDefault();
+        togglePlay();
+      } else if (e.key === "f" || e.key === "F") toggleFs();
       else if (e.key === "m" || e.key === "M") toggleMute();
       else if (e.key === "p" || e.key === "P") togglePip();
-      else if (e.key === "ArrowUp") { e.preventDefault(); onVolume(Math.min(1, volume + 0.1)); }
-      else if (e.key === "ArrowDown") { e.preventDefault(); onVolume(Math.max(0, volume - 0.1)); }
+      else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        onVolume(Math.min(1, volume + 0.1));
+      } else if (e.key === "ArrowDown") {
+        e.preventDefault();
+        onVolume(Math.max(0, volume - 0.1));
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -359,7 +414,10 @@ export function Player({ channel, onFatalError, compact }: Props) {
       <button
         aria-label={playing ? "Pause" : "Play"}
         onClick={handleVideoClick}
-        onTouchEnd={(e) => { e.preventDefault(); handleVideoTouch(); }}
+        onTouchEnd={(e) => {
+          e.preventDefault();
+          handleVideoTouch();
+        }}
         className="absolute inset-0 z-[15] h-full w-full bg-transparent"
         style={{ WebkitTapHighlightColor: "transparent", cursor: "default" }}
       />
@@ -367,13 +425,19 @@ export function Player({ channel, onFatalError, compact }: Props) {
       {/* Top status badge */}
       <div className="pointer-events-none absolute left-3 top-3 z-[20] flex items-center gap-2">
         {loadState === "connecting" && (
-          <span className="badge badge--checking"><span className="dot" /> Connecting</span>
+          <span className="badge badge--checking">
+            <span className="dot" /> Connecting
+          </span>
         )}
         {loadState === "buffering" && (
-          <span className="badge badge--checking"><span className="dot" /> Buffering</span>
+          <span className="badge badge--checking">
+            <span className="dot" /> Buffering
+          </span>
         )}
         {loadState === "ready" && playing && (
-          <span className="badge badge--live"><span className="dot" /> Live</span>
+          <span className="badge badge--live">
+            <span className="dot" /> Live
+          </span>
         )}
       </div>
 
@@ -420,9 +484,11 @@ export function Player({ channel, onFatalError, compact }: Props) {
         <div />
         <div className="flex items-center gap-1 px-3 pb-3 sm:gap-2 sm:px-4 sm:pb-4">
           <button aria-label={playing ? "Pause" : "Play"} onClick={togglePlay} className="ctrl-btn">
-            {playing
-              ? <Pause className="size-4" fill="currentColor" />
-              : <Play className="size-4 translate-x-0.5" fill="currentColor" />}
+            {playing ? (
+              <Pause className="size-4" fill="currentColor" />
+            ) : (
+              <Play className="size-4 translate-x-0.5" fill="currentColor" />
+            )}
           </button>
 
           <div ref={volumeRef} className="group relative flex items-center gap-2">
@@ -435,7 +501,11 @@ export function Player({ channel, onFatalError, compact }: Props) {
               }}
               className="ctrl-btn"
             >
-              {muted || volume === 0 ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
+              {muted || volume === 0 ? (
+                <VolumeX className="size-4" />
+              ) : (
+                <Volume2 className="size-4" />
+              )}
             </button>
             <input
               type="range"
@@ -453,26 +523,39 @@ export function Player({ channel, onFatalError, compact }: Props) {
           <div className="ml-auto flex items-center gap-1 sm:gap-2">
             {levels.length > 1 && (
               <div className="relative">
-                <button aria-label="Quality" onClick={() => setShowSettings((s) => !s)} className="ctrl-btn">
+                <button
+                  aria-label="Quality"
+                  onClick={() => setShowSettings((s) => !s)}
+                  className="ctrl-btn"
+                >
                   <Settings className="size-4" />
                 </button>
                 {showSettings && (
                   <div className="absolute bottom-[44px] right-0 min-w-[140px] overflow-hidden rounded-lg border border-white/10 bg-black/90 p-1 backdrop-blur">
                     <button
-                      onClick={() => { if (hlsRef.current) hlsRef.current.currentLevel = -1; setShowSettings(false); }}
+                      onClick={() => {
+                        if (hlsRef.current) hlsRef.current.currentLevel = -1;
+                        setShowSettings(false);
+                      }}
                       className={`block w-full rounded-md px-3 py-1.5 text-left text-[12px] text-white hover:bg-white/10 ${currentLevel === -1 ? "bg-white/10" : ""}`}
                     >
                       Auto
                     </button>
-                    {levels.slice().reverse().map((l) => (
-                      <button
-                        key={l.index}
-                        onClick={() => { if (hlsRef.current) hlsRef.current.currentLevel = l.index; setShowSettings(false); }}
-                        className={`block w-full rounded-md px-3 py-1.5 text-left text-[12px] text-white hover:bg-white/10 ${currentLevel === l.index ? "bg-white/10" : ""}`}
-                      >
-                        {l.height ? `${l.height}p` : `${Math.round(l.bitrate / 1000)}k`}
-                      </button>
-                    ))}
+                    {levels
+                      .slice()
+                      .reverse()
+                      .map((l) => (
+                        <button
+                          key={l.index}
+                          onClick={() => {
+                            if (hlsRef.current) hlsRef.current.currentLevel = l.index;
+                            setShowSettings(false);
+                          }}
+                          className={`block w-full rounded-md px-3 py-1.5 text-left text-[12px] text-white hover:bg-white/10 ${currentLevel === l.index ? "bg-white/10" : ""}`}
+                        >
+                          {l.height ? `${l.height}p` : `${Math.round(l.bitrate / 1000)}k`}
+                        </button>
+                      ))}
                   </div>
                 )}
               </div>

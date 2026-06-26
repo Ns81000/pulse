@@ -29,7 +29,7 @@ export function HorizScrollShelf({ children }: Props) {
       el.removeEventListener("scroll", updateState);
       ro.disconnect();
     };
-  }, [updateState]);  // Native wheel listener — must be non-passive to call preventDefault()
+  }, [updateState]); // Native wheel listener — must be non-passive to call preventDefault()
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;

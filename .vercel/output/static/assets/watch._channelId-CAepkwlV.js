@@ -1,0 +1,1125 @@
+import {
+  At as e,
+  C as t,
+  F as n,
+  Mt as r,
+  O as i,
+  b as a,
+  d as o,
+  g as s,
+  h as c,
+  m as l,
+  n as u,
+  o as d,
+  r as f,
+  t as p,
+  u as m,
+  v as h,
+  w as g,
+  x as _,
+  y as v,
+} from "./stream-messages-xGwTYkSz.js";
+import { r as y, t as b } from "./index-D4lRGdic.js";
+import { t as x } from "./StatusBadge-D1k02qb-.js";
+var S = _(`arrow-left`, [
+    [`path`, { d: `m12 19-7-7 7-7`, key: `1l729n` }],
+    [`path`, { d: `M19 12H5`, key: `x3x0zl` }],
+  ]),
+  C = _(`external-link`, [
+    [`path`, { d: `M15 3h6v6`, key: `1q9fwt` }],
+    [`path`, { d: `M10 14 21 3`, key: `gplh6r` }],
+    [`path`, { d: `M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6`, key: `a6xqqp` }],
+  ]),
+  w = _(`maximize-2`, [
+    [`path`, { d: `M15 3h6v6`, key: `1q9fwt` }],
+    [`path`, { d: `m21 3-7 7`, key: `1l2asr` }],
+    [`path`, { d: `m3 21 7-7`, key: `tjx5ai` }],
+    [`path`, { d: `M9 21H3v-6`, key: `wtvkvv` }],
+  ]),
+  T = _(`minimize-2`, [
+    [`path`, { d: `m14 10 7-7`, key: `oa77jy` }],
+    [`path`, { d: `M20 10h-6V4`, key: `mjg0md` }],
+    [`path`, { d: `m3 21 7-7`, key: `tjx5ai` }],
+    [`path`, { d: `M4 14h6v6`, key: `rmj7iw` }],
+  ]),
+  E = _(`pause`, [
+    [`rect`, { x: `14`, y: `3`, width: `5`, height: `18`, rx: `1`, key: `kaeet6` }],
+    [`rect`, { x: `5`, y: `3`, width: `5`, height: `18`, rx: `1`, key: `1wsw3u` }],
+  ]),
+  D = _(`picture-in-picture-2`, [
+    [`path`, { d: `M21 9V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10c0 1.1.9 2 2 2h4`, key: `daa4of` }],
+    [`rect`, { width: `10`, height: `7`, x: `12`, y: `13`, rx: `2`, key: `1nb8gs` }],
+  ]),
+  O = _(`play`, [
+    [
+      `path`,
+      {
+        d: `M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z`,
+        key: `10ikf1`,
+      },
+    ],
+  ]),
+  k = _(`rotate-ccw`, [
+    [`path`, { d: `M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8`, key: `1357e3` }],
+    [`path`, { d: `M3 3v5h5`, key: `1xhq8a` }],
+  ]),
+  A = _(`settings`, [
+    [
+      `path`,
+      {
+        d: `M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915`,
+        key: `1i5ecw`,
+      },
+    ],
+    [`circle`, { cx: `12`, cy: `12`, r: `3`, key: `1v7zrd` }],
+  ]),
+  j = _(`volume-2`, [
+    [
+      `path`,
+      {
+        d: `M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z`,
+        key: `uqj9uw`,
+      },
+    ],
+    [`path`, { d: `M16 9a5 5 0 0 1 0 6`, key: `1q6k2b` }],
+    [`path`, { d: `M19.364 18.364a9 9 0 0 0 0-12.728`, key: `ijwkga` }],
+  ]),
+  M = _(`volume-x`, [
+    [
+      `path`,
+      {
+        d: `M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z`,
+        key: `uqj9uw`,
+      },
+    ],
+    [`line`, { x1: `22`, x2: `16`, y1: `9`, y2: `15`, key: `1ewh16` }],
+    [`line`, { x1: `16`, x2: `22`, y1: `9`, y2: `15`, key: `5ykzw1` }],
+  ]),
+  N = r(e(), 1),
+  P = n();
+function ee({ channel: e, onFatalError: t, compact: n }) {
+  let r = (0, N.useRef)(null),
+    i = (0, N.useRef)(null),
+    a = (0, N.useRef)(null),
+    o = (0, N.useRef)(null),
+    s = (0, N.useRef)(null),
+    c = h(),
+    [u, d] = (0, N.useState)(c.workingStreamIndex),
+    [f, p] = (0, N.useState)(`connecting`),
+    [m, g] = (0, N.useState)(!1),
+    [_, v] = (0, N.useState)(!1),
+    [b, x] = (0, N.useState)(1),
+    [S, C] = (0, N.useState)(!1),
+    [ee, F] = (0, N.useState)(!1),
+    [I, L] = (0, N.useState)(!1),
+    [R, z] = (0, N.useState)(!1),
+    [B, V] = (0, N.useState)([]),
+    [H, U] = (0, N.useState)(-1),
+    [te, W] = (0, N.useState)(!0),
+    G = (0, N.useRef)(null);
+  (0, N.useEffect)(() => {
+    d(c.workingStreamIndex);
+  }, [c.workingStreamIndex]);
+  let K = (0, N.useCallback)(
+    () =>
+      u < e.streams.length - 1
+        ? (console.warn(`Stream ${u} of channel ${e.name} failed, trying fallback stream ${u + 1}`),
+          p(`connecting`),
+          d((e) => e + 1),
+          !0)
+        : !1,
+    [u, e.streams.length, e.name],
+  );
+  ((0, N.useEffect)(() => {
+    if (!(!r.current || !c.videoEl))
+      return (
+        c.mountInto(r.current),
+        () => {
+          c.mountInto(null);
+        }
+      );
+  }, [e.id, c.videoEl]),
+    (0, N.useEffect)(() => {
+      let n = c.videoEl;
+      if (!n) return;
+      let r = e.streams[u] || e.streams[0];
+      if (!r) return;
+      p(`connecting`);
+      let i = !1,
+        o = () => {
+          n.play().catch((e) => {
+            (console.warn(`Playback blocked, attempting muted autoplay:`, e),
+              (n.muted = !0),
+              n.play().catch((e) => {
+                console.error(`Muted playback also blocked:`, e);
+              }));
+          });
+        };
+      return (
+        (async () => {
+          if (a.current) {
+            try {
+              a.current.destroy();
+            } catch {}
+            a.current = null;
+          }
+          let e = (
+            await y(async () => {
+              let { default: e } = await import(`./hls-fc0_wIbX.js`);
+              return { default: e };
+            }, [])
+          ).default;
+          if (e.isSupported()) {
+            let s = new e({
+              enableWorker: !0,
+              lowLatencyMode: !1,
+              maxBufferLength: 30,
+              xhrSetup: (e) => {
+                try {
+                  r.referrer && e.setRequestHeader(`Referer`, r.referrer);
+                } catch {}
+              },
+            });
+            ((a.current = s),
+              s.loadSource(r.url),
+              s.attachMedia(n),
+              s.on(e.Events.MANIFEST_PARSED, () => {
+                i ||
+                  (V(s.levels.map((e, t) => ({ index: t, height: e.height, bitrate: e.bitrate }))),
+                  U(s.currentLevel),
+                  o());
+              }),
+              s.on(e.Events.LEVEL_SWITCHED, (e, t) => U(t.level)),
+              s.on(e.Events.ERROR, (n, r) => {
+                if (r.fatal) {
+                  if (r.type === e.ErrorTypes.MEDIA_ERROR)
+                    try {
+                      s.recoverMediaError();
+                      return;
+                    } catch {}
+                  if (r.type === e.ErrorTypes.NETWORK_ERROR)
+                    try {
+                      s.startLoad();
+                      return;
+                    } catch {}
+                  K() || (p(`error`), t?.());
+                }
+              }));
+          } else if (n.canPlayType(`application/vnd.apple.mpegurl`)) ((n.src = r.url), o());
+          else {
+            if (K()) return;
+            (p(`error`), t?.());
+          }
+        })(),
+        () => {
+          if (((i = !0), a.current)) {
+            try {
+              a.current.destroy();
+            } catch {}
+            a.current = null;
+          }
+        }
+      );
+    }, [e.id, c.videoEl, u, K]),
+    (0, N.useEffect)(() => {
+      let n = c.videoEl;
+      if (!n) return;
+      let r = () => {
+          (g(!0), p(`ready`), u !== c.workingStreamIndex && l(e.id, `online`, u).catch(() => {}));
+        },
+        i = () => g(!1),
+        a = () => p((e) => (e === `ready` ? `buffering` : e)),
+        o = () => p(`ready`),
+        s = () => {
+          K() || (p(`error`), t?.());
+        },
+        d = () => {
+          (v(n.muted), x(n.volume));
+        },
+        f = () => F(!0),
+        m = () => F(!1);
+      return (
+        n.addEventListener(`play`, r),
+        n.addEventListener(`pause`, i),
+        n.addEventListener(`waiting`, a),
+        n.addEventListener(`playing`, o),
+        n.addEventListener(`error`, s),
+        n.addEventListener(`volumechange`, d),
+        n.addEventListener(`enterpictureinpicture`, f),
+        n.addEventListener(`leavepictureinpicture`, m),
+        g(!n.paused),
+        v(n.muted),
+        x(n.volume),
+        () => {
+          (n.removeEventListener(`play`, r),
+            n.removeEventListener(`pause`, i),
+            n.removeEventListener(`waiting`, a),
+            n.removeEventListener(`playing`, o),
+            n.removeEventListener(`error`, s),
+            n.removeEventListener(`volumechange`, d),
+            n.removeEventListener(`enterpictureinpicture`, f),
+            n.removeEventListener(`leavepictureinpicture`, m));
+        }
+      );
+    }, [c.videoEl, t, u, c.workingStreamIndex, e.id, K]),
+    (0, N.useEffect)(() => {
+      let e = () => {
+        let e = !!document.fullscreenElement;
+        if ((C(e), !e))
+          try {
+            screen.orientation.unlock();
+          } catch {}
+      };
+      return (
+        document.addEventListener(`fullscreenchange`, e),
+        () => document.removeEventListener(`fullscreenchange`, e)
+      );
+    }, []),
+    (0, N.useEffect)(() => {
+      if (!I) return;
+      let e = (e) => {
+        G.current && !G.current.contains(e.target) && L(!1);
+      };
+      return (
+        document.addEventListener(`mousedown`, e),
+        document.addEventListener(`touchstart`, e),
+        () => {
+          (document.removeEventListener(`mousedown`, e),
+            document.removeEventListener(`touchstart`, e));
+        }
+      );
+    }, [I]));
+  let q = (0, N.useCallback)(() => {
+    (W(!0), o.current && clearTimeout(o.current), (o.current = setTimeout(() => W(!1), 2500)));
+  }, []);
+  ((0, N.useEffect)(
+    () => (
+      q(),
+      () => {
+        o.current && clearTimeout(o.current);
+      }
+    ),
+    [q],
+  ),
+    (0, N.useEffect)(
+      () => () => {
+        s.current && clearTimeout(s.current);
+      },
+      [],
+    ));
+  let J = (0, N.useCallback)(() => {
+      let e = c.videoEl;
+      e && (e.paused ? e.play().catch(() => {}) : e.pause());
+    }, [c.videoEl]),
+    Y = (0, N.useCallback)(() => {
+      let e = c.videoEl;
+      e && (e.muted = !e.muted);
+    }, [c.videoEl]),
+    X = (0, N.useCallback)(
+      (e) => {
+        let t = c.videoEl;
+        t && ((t.volume = e), (t.muted = e === 0));
+      },
+      [c.videoEl],
+    ),
+    Z = (0, N.useCallback)(async () => {
+      let e = i.current;
+      if (e)
+        try {
+          if (document.fullscreenElement) {
+            await document.exitFullscreen();
+            try {
+              screen.orientation.unlock();
+            } catch {}
+          } else {
+            await e.requestFullscreen();
+            try {
+              await screen.orientation.lock(`landscape`);
+            } catch {}
+          }
+        } catch {}
+    }, []),
+    Q = (0, N.useCallback)(async () => {
+      let e = c.videoEl;
+      if (e)
+        try {
+          document.pictureInPictureElement
+            ? await document.exitPictureInPicture()
+            : await e.requestPictureInPicture();
+        } catch {}
+    }, [c.videoEl]),
+    ne = (0, N.useCallback)(() => {
+      let e = c.videoEl;
+      if (e) {
+        p(`connecting`);
+        try {
+          (a.current && a.current.startLoad(), e.play().catch(() => {}));
+        } catch {}
+      }
+    }, [c.videoEl]),
+    $ = (0, N.useRef)(!1),
+    re = (0, N.useCallback)(() => {
+      if ($.current) {
+        $.current = !1;
+        return;
+      }
+      (q(),
+        s.current && clearTimeout(s.current),
+        (s.current = setTimeout(() => {
+          J();
+        }, 150)));
+    }, [q, J]),
+    ie = (0, N.useCallback)(() => {
+      (($.current = !0),
+        q(),
+        s.current && clearTimeout(s.current),
+        (s.current = setTimeout(() => {
+          J();
+        }, 150)));
+    }, [q, J]);
+  return (
+    (0, N.useEffect)(() => {
+      let e = (e) => {
+        e.target instanceof HTMLInputElement ||
+          e.target instanceof HTMLTextAreaElement ||
+          (e.code === `Space`
+            ? (e.preventDefault(), J())
+            : e.key === `f` || e.key === `F`
+              ? Z()
+              : e.key === `m` || e.key === `M`
+                ? Y()
+                : e.key === `p` || e.key === `P`
+                  ? Q()
+                  : e.key === `ArrowUp`
+                    ? (e.preventDefault(), X(Math.min(1, b + 0.1)))
+                    : e.key === `ArrowDown` && (e.preventDefault(), X(Math.max(0, b - 0.1))));
+      };
+      return (
+        window.addEventListener(`keydown`, e),
+        () => window.removeEventListener(`keydown`, e)
+      );
+    }, [J, Z, Y, Q, b]),
+    (0, P.jsxs)(`div`, {
+      ref: i,
+      className: `player-wrap ${te ? `controls-visible` : ``} ${n ? `rounded-lg` : `rounded-xl`} overflow-hidden`,
+      onMouseMove: q,
+      children: [
+        (0, P.jsx)(`div`, { ref: r, className: `aspect-video w-full` }),
+        (0, P.jsx)(`button`, {
+          "aria-label": m ? `Pause` : `Play`,
+          onClick: re,
+          onTouchEnd: (e) => {
+            (e.preventDefault(), ie());
+          },
+          className: `absolute inset-0 z-[15] h-full w-full bg-transparent`,
+          style: { WebkitTapHighlightColor: `transparent`, cursor: `default` },
+        }),
+        (0, P.jsxs)(`div`, {
+          className: `pointer-events-none absolute left-3 top-3 z-[20] flex items-center gap-2`,
+          children: [
+            f === `connecting` &&
+              (0, P.jsxs)(`span`, {
+                className: `badge badge--checking`,
+                children: [(0, P.jsx)(`span`, { className: `dot` }), ` Connecting`],
+              }),
+            f === `buffering` &&
+              (0, P.jsxs)(`span`, {
+                className: `badge badge--checking`,
+                children: [(0, P.jsx)(`span`, { className: `dot` }), ` Buffering`],
+              }),
+            f === `ready` &&
+              m &&
+              (0, P.jsxs)(`span`, {
+                className: `badge badge--live`,
+                children: [(0, P.jsx)(`span`, { className: `dot` }), ` Live`],
+              }),
+          ],
+        }),
+        !m &&
+          f !== `error` &&
+          (0, P.jsx)(`button`, {
+            "aria-label": `Play`,
+            onClick: (e) => {
+              (e.stopPropagation(), s.current && clearTimeout(s.current), J());
+            },
+            onTouchEnd: (e) => {
+              (e.preventDefault(), e.stopPropagation(), s.current && clearTimeout(s.current), J());
+            },
+            className: `absolute inset-x-0 top-0 bottom-[60px] z-[25] grid place-items-center`,
+            children: (0, P.jsx)(`span`, {
+              className: `ctrl-btn ctrl-btn--lg`,
+              children: (0, P.jsx)(O, {
+                className: `size-7 translate-x-0.5`,
+                fill: `currentColor`,
+              }),
+            }),
+          }),
+        f === `error` &&
+          (0, P.jsx)(`div`, {
+            className: `absolute inset-0 z-[25] grid place-items-center bg-black/80 text-center text-white`,
+            children: (0, P.jsxs)(`div`, {
+              className: `max-w-xs`,
+              children: [
+                (0, P.jsx)(`p`, {
+                  className: `text-[13px] text-white/80`,
+                  children: `This stream isn't responding.`,
+                }),
+                (0, P.jsxs)(`button`, {
+                  onClick: ne,
+                  className: `mt-3 inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-1.5 text-[12px] font-medium text-black hover:bg-white/90`,
+                  children: [(0, P.jsx)(k, { className: `size-3.5` }), ` Try again`],
+                }),
+              ],
+            }),
+          }),
+        (0, P.jsxs)(`div`, {
+          className: `player-controls`,
+          style: { zIndex: 20 },
+          children: [
+            (0, P.jsx)(`div`, {}),
+            (0, P.jsxs)(`div`, {
+              className: `flex items-center gap-1 px-3 pb-3 sm:gap-2 sm:px-4 sm:pb-4`,
+              children: [
+                (0, P.jsx)(`button`, {
+                  "aria-label": m ? `Pause` : `Play`,
+                  onClick: J,
+                  className: `ctrl-btn`,
+                  children: m
+                    ? (0, P.jsx)(E, { className: `size-4`, fill: `currentColor` })
+                    : (0, P.jsx)(O, { className: `size-4 translate-x-0.5`, fill: `currentColor` }),
+                }),
+                (0, P.jsxs)(`div`, {
+                  ref: G,
+                  className: `group relative flex items-center gap-2`,
+                  children: [
+                    (0, P.jsx)(`button`, {
+                      "aria-label": _ ? `Unmute` : `Mute`,
+                      onClick: () => {
+                        window.matchMedia(`(hover: none)`).matches ? L((e) => !e) : Y();
+                      },
+                      className: `ctrl-btn`,
+                      children:
+                        _ || b === 0
+                          ? (0, P.jsx)(M, { className: `size-4` })
+                          : (0, P.jsx)(j, { className: `size-4` }),
+                    }),
+                    (0, P.jsx)(`input`, {
+                      type: `range`,
+                      min: 0,
+                      max: 1,
+                      step: 0.05,
+                      value: _ ? 0 : b,
+                      onChange: (e) => X(Number(e.target.value)),
+                      className: `vol-slider hidden group-hover:block sm:group-hover:block`,
+                      style: { display: I ? `block` : void 0 },
+                      "aria-label": `Volume`,
+                    }),
+                  ],
+                }),
+                (0, P.jsxs)(`div`, {
+                  className: `ml-auto flex items-center gap-1 sm:gap-2`,
+                  children: [
+                    B.length > 1 &&
+                      (0, P.jsxs)(`div`, {
+                        className: `relative`,
+                        children: [
+                          (0, P.jsx)(`button`, {
+                            "aria-label": `Quality`,
+                            onClick: () => z((e) => !e),
+                            className: `ctrl-btn`,
+                            children: (0, P.jsx)(A, { className: `size-4` }),
+                          }),
+                          R &&
+                            (0, P.jsxs)(`div`, {
+                              className: `absolute bottom-[44px] right-0 min-w-[140px] overflow-hidden rounded-lg border border-white/10 bg-black/90 p-1 backdrop-blur`,
+                              children: [
+                                (0, P.jsx)(`button`, {
+                                  onClick: () => {
+                                    (a.current && (a.current.currentLevel = -1), z(!1));
+                                  },
+                                  className: `block w-full rounded-md px-3 py-1.5 text-left text-[12px] text-white hover:bg-white/10 ${H === -1 ? `bg-white/10` : ``}`,
+                                  children: `Auto`,
+                                }),
+                                B.slice()
+                                  .reverse()
+                                  .map((e) =>
+                                    (0, P.jsx)(
+                                      `button`,
+                                      {
+                                        onClick: () => {
+                                          (a.current && (a.current.currentLevel = e.index), z(!1));
+                                        },
+                                        className: `block w-full rounded-md px-3 py-1.5 text-left text-[12px] text-white hover:bg-white/10 ${H === e.index ? `bg-white/10` : ``}`,
+                                        children: e.height
+                                          ? `${e.height}p`
+                                          : `${Math.round(e.bitrate / 1e3)}k`,
+                                      },
+                                      e.index,
+                                    ),
+                                  ),
+                              ],
+                            }),
+                        ],
+                      }),
+                    typeof document < `u` &&
+                      `pictureInPictureEnabled` in document &&
+                      (0, P.jsx)(`button`, {
+                        "aria-label": `Picture in picture`,
+                        onClick: Q,
+                        className: `ctrl-btn`,
+                        children: (0, P.jsx)(D, { className: `size-4` }),
+                      }),
+                    (0, P.jsx)(`button`, {
+                      "aria-label": S ? `Exit fullscreen` : `Fullscreen`,
+                      onClick: Z,
+                      className: `ctrl-btn`,
+                      children: S
+                        ? (0, P.jsx)(T, { className: `size-4` })
+                        : (0, P.jsx)(w, { className: `size-4` }),
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }),
+      ],
+    })
+  );
+}
+var F = { uk: `gb`, int: `` };
+function I(e) {
+  let t = e.toLowerCase();
+  return F[t] ?? t;
+}
+function L() {
+  let { channelId: e } = b.useParams(),
+    n = i(),
+    r = d(),
+    { open: p, close: _ } = h(),
+    [v, y] = (0, N.useState)(`checking`),
+    [w, T] = (0, N.useState)(!1);
+  (0, N.useEffect)(
+    () => () => {
+      _();
+    },
+    [_],
+  );
+  let E = r.data?.channels[e],
+    D = (0, N.useMemo)(() => (E && E.country ? I(E.country) : ``), [E]),
+    O = (0, N.useMemo)(
+      () =>
+        !r.data || !E
+          ? []
+          : E.categories.map((e) => r.data.meta.categories.find((t) => t.id === e)?.name ?? e),
+      [r.data, E],
+    ),
+    k = (0, N.useCallback)(
+      async (e = !1) => {
+        if (!E) return;
+        y(`checking`);
+        let t = f(E.id),
+          n = `error`,
+          r = t,
+          i = async (t) => {
+            let n = E.streams[t];
+            return n
+              ? typeof window < `u` &&
+                window.location.protocol === `https:` &&
+                n.url.startsWith(`http://`)
+                ? `blocked`
+                : await u(n.url, n.referrer, n.user_agent, e)
+              : `error`;
+          };
+        if ((await i(r)) === `online`) n = `online`;
+        else {
+          let e = !1;
+          for (let t = 0; t < E.streams.length; t++) {
+            if (t === r) continue;
+            let a = await i(t);
+            if (a === `online`) {
+              ((r = t), (n = `online`), (e = !0));
+              break;
+            } else n = a;
+          }
+          e || (r = 0);
+        }
+        (y(n),
+          n === `online`
+            ? (p(E, r), await l(E.id, `online`, r), await c(E.id))
+            : await l(E.id, n, r));
+      },
+      [E, p],
+    );
+  ((0, N.useEffect)(() => {
+    if (!E) {
+      r.isLoading || y(`error`);
+      return;
+    }
+    (k(), o(E.id).then(T));
+  }, [E, k, r.isLoading]),
+    (0, N.useEffect)(() => {
+      if (!E) return;
+      let e = () => o(E.id).then(T);
+      return (
+        window.addEventListener(`favchange`, e),
+        () => window.removeEventListener(`favchange`, e)
+      );
+    }, [E]));
+  let A = (0, N.useCallback)(() => {
+      (y(`recovering`),
+        k(!0),
+        t.error(`Playback failed`, {
+          description: `The stream stopped unexpectedly.`,
+          duration: 8e3,
+          action: { label: `Try again`, onClick: () => k(!0) },
+        }));
+    }, [k]),
+    j = (0, N.useCallback)(async () => {
+      E &&
+        (w
+          ? (await s(E.id), T(!1), t.success(`Removed from favourites`, { duration: 2e3 }))
+          : (await m(E.id), T(!0), t.success(`${E.name} added to favourites`, { duration: 2e3 })));
+    }, [E, w]),
+    M = (0, N.useCallback)(() => {
+      typeof window < `u` && window.history.length > 1
+        ? window.history.back()
+        : n({ to: `/browse` });
+    }, [n]);
+  if (r.isLoading)
+    return (0, P.jsx)(`div`, { className: `shimmer mx-auto aspect-video max-w-5xl rounded-xl` });
+  if (!E)
+    return (0, P.jsxs)(`div`, {
+      className: `mx-auto max-w-xl py-12 text-center`,
+      children: [
+        (0, P.jsx)(`h1`, { className: `font-display text-xl`, children: `Channel not found` }),
+        (0, P.jsx)(`p`, {
+          className: `mt-2 text-sm text-[var(--text-tertiary)]`,
+          children: `It may have been removed.`,
+        }),
+        (0, P.jsx)(g, {
+          to: `/browse`,
+          className: `btn-primary mt-4 inline-flex`,
+          children: `Browse channels`,
+        }),
+      ],
+    });
+  let F = v === `online`,
+    L = v === `blocked` || v === `timeout` || v === `error`;
+  return (0, P.jsxs)(`div`, {
+    className: `mx-auto max-w-[1600px] w-full px-1`,
+    children: [
+      (0, P.jsxs)(`button`, {
+        onClick: M,
+        className: `mb-4 inline-flex items-center gap-1.5 text-[12px] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors active:scale-95`,
+        children: [(0, P.jsx)(S, { className: `size-3.5` }), ` Back`],
+      }),
+      (0, P.jsxs)(`div`, {
+        className: `grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]`,
+        children: [
+          (0, P.jsxs)(`div`, {
+            className: `space-y-5 min-w-0`,
+            children: [
+              F &&
+                (0, P.jsx)(`div`, {
+                  className: `overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-black shadow-lg`,
+                  children: (0, P.jsx)(ee, { channel: E, onFatalError: A }),
+                }),
+              (v === `checking` || v === `recovering`) &&
+                (0, P.jsx)(`div`, {
+                  className: `shimmer relative aspect-video w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-1)]`,
+                  children: (0, P.jsxs)(`div`, {
+                    className: `absolute inset-0 flex flex-col items-center justify-center gap-3`,
+                    children: [
+                      (0, P.jsx)(`div`, {
+                        className: `size-8 animate-spin rounded-full border-2 border-[var(--border-default)] border-t-[var(--accent)]`,
+                      }),
+                      (0, P.jsx)(`p`, {
+                        className: `text-[12px] text-[var(--text-tertiary)] font-medium animate-pulse`,
+                        children:
+                          v === `checking`
+                            ? `Verifying stream connection...`
+                            : `Re-connecting to stream...`,
+                      }),
+                    ],
+                  }),
+                }),
+              L &&
+                (0, P.jsx)(`div`, {
+                  className: `rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-1)] p-6`,
+                  children: (0, P.jsxs)(`div`, {
+                    className: `flex items-start gap-3`,
+                    children: [
+                      (0, P.jsx)(x, { status: v, size: `md` }),
+                      (0, P.jsxs)(`div`, {
+                        children: [
+                          (0, P.jsx)(`h2`, {
+                            className: `font-display text-base font-medium`,
+                            children: `This channel isn't responding right now.`,
+                          }),
+                          (0, P.jsx)(`p`, {
+                            className: `mt-1 text-[13px] text-[var(--text-tertiary)]`,
+                            children: `Public IPTV links come and go. Try an alternative below — they're picked from channels in the same category.`,
+                          }),
+                          (0, P.jsx)(`button`, {
+                            onClick: () => k(!0),
+                            className: `btn-ghost mt-3 text-[12px] active:scale-95 transition-transform`,
+                            children: `Try again`,
+                          }),
+                        ],
+                      }),
+                    ],
+                  }),
+                }),
+              (0, P.jsx)(`div`, {
+                className: `py-2 px-1`,
+                children: (0, P.jsxs)(`header`, {
+                  className: `flex flex-wrap justify-between items-start gap-4`,
+                  children: [
+                    (0, P.jsxs)(`div`, {
+                      className: `min-w-0 flex-1`,
+                      children: [
+                        (0, P.jsxs)(`div`, {
+                          className: `flex min-w-0 flex-wrap items-center gap-2.5`,
+                          children: [
+                            (0, P.jsx)(`h1`, {
+                              className: `truncate font-display text-xl sm:text-2xl font-semibold tracking-tight`,
+                              children: E.name,
+                            }),
+                            D &&
+                              (0, P.jsx)(`img`, {
+                                src: `https://flagcdn.com/w20/${D}.png`,
+                                srcSet: `https://flagcdn.com/w40/${D}.png 2x`,
+                                width: 20,
+                                height: 15,
+                                alt: E.country,
+                                title: E.country,
+                                className: `rounded-[2px] object-cover shrink-0 shadow-sm`,
+                              }),
+                            (0, P.jsx)(x, { status: v }),
+                          ],
+                        }),
+                        O.length > 0 &&
+                          (0, P.jsx)(`div`, {
+                            className: `mt-3 flex flex-wrap gap-1.5`,
+                            children: O.map((e) =>
+                              (0, P.jsx)(
+                                `span`,
+                                {
+                                  className: `rounded-full bg-[var(--surface-2)] px-2.5 py-1 text-[11px] text-[var(--text-tertiary)] font-medium`,
+                                  children: e,
+                                },
+                                e,
+                              ),
+                            ),
+                          }),
+                      ],
+                    }),
+                    (0, P.jsxs)(`div`, {
+                      className: `flex shrink-0 gap-2`,
+                      children: [
+                        (0, P.jsxs)(`button`, {
+                          onClick: j,
+                          className: `btn-ghost inline-flex items-center gap-1.5 active:scale-95 transition-transform`,
+                          children: [
+                            (0, P.jsx)(a, {
+                              className: `size-3.5 ${w ? `fill-[var(--accent)] text-[var(--accent)]` : ``}`,
+                            }),
+                            (0, P.jsx)(`span`, {
+                              className: `hidden sm:inline`,
+                              children: w ? `Favourited` : `Favourite`,
+                            }),
+                          ],
+                        }),
+                        E.website &&
+                          (0, P.jsxs)(`a`, {
+                            href: E.website,
+                            target: `_blank`,
+                            rel: `noreferrer`,
+                            className: `btn-ghost inline-flex items-center gap-1.5 active:scale-95 transition-transform`,
+                            children: [
+                              (0, P.jsx)(C, { className: `size-3.5` }),
+                              (0, P.jsx)(`span`, {
+                                className: `hidden sm:inline`,
+                                children: `Site`,
+                              }),
+                            ],
+                          }),
+                      ],
+                    }),
+                  ],
+                }),
+              }),
+              (0, P.jsx)(`div`, {
+                className: `block lg:hidden`,
+                id: `mobile-alts-section`,
+                children:
+                  r.data &&
+                  (0, P.jsx)(R, { catalog: r.data, failedChannelId: E.id, showRecovery: L }),
+              }),
+            ],
+          }),
+          (0, P.jsx)(`div`, {
+            className: `hidden lg:flex flex-col gap-5 min-w-0`,
+            children: (0, P.jsxs)(`div`, {
+              className: `py-1 flex flex-col`,
+              children: [
+                (0, P.jsx)(`h3`, {
+                  className: `mb-3 font-mono text-[10.5px] font-bold uppercase tracking-[0.14em] text-[var(--text-tertiary)] shrink-0`,
+                  children: L ? `Working Alternatives` : `Recommended Channels`,
+                }),
+                (0, P.jsx)(`div`, {
+                  className: `space-y-3`,
+                  children:
+                    r.data && (0, P.jsx)(z, { catalog: r.data, failedChannelId: E.id, limit: 8 }),
+                }),
+              ],
+            }),
+          }),
+        ],
+      }),
+    ],
+  });
+}
+function R({ catalog: e, failedChannelId: n, showRecovery: r }) {
+  let a = i(),
+    o = h(),
+    s = (0, N.useRef)(null),
+    [c, l] = (0, N.useState)(4);
+  (0, N.useEffect)(() => {
+    let e = () => {
+      let e = s.current;
+      if (!e) return;
+      let t = e.getBoundingClientRect(),
+        n = window.innerHeight - t.top - 72 - 32,
+        r = Math.round((window.innerWidth / 2 - 20) * (9 / 16)) + 48;
+      l(Math.max(1, Math.floor(n / (r + 8))) * 2);
+    };
+    return (
+      e(),
+      window.addEventListener(`resize`, e),
+      () => window.removeEventListener(`resize`, e)
+    );
+  }, []);
+  let d = (0, N.useMemo)(() => {
+    let t = n ? e.channels[n] : null;
+    if (!t) return e.indexes.all_ids.slice(0, c);
+    let r = new Set(t.categories),
+      i = t.country,
+      a = [];
+    for (let n of e.indexes.all_ids) {
+      if (n === t.id) continue;
+      let o = e.channels[n];
+      if (!o) continue;
+      let s = o.categories.filter((e) => r.has(e)).length;
+      if (s === 0) continue;
+      let c = s * 10 + (o.country === i ? 5 : 0);
+      a.push({ id: n, score: c });
+    }
+    a.sort((e, t) => t.score - e.score);
+    let o = a.slice(0, c).map((e) => e.id);
+    if (o.length < c) {
+      for (let n of e.indexes.all_ids)
+        if (!(n === t.id || o.includes(n)) && (o.push(n), o.length >= c)) break;
+    }
+    return o.slice(0, c);
+  }, [e, n, c]);
+  return (0, P.jsxs)(`div`, {
+    ref: s,
+    children: [
+      (0, P.jsx)(`h3`, {
+        className: `mb-3 font-mono text-[10.5px] font-bold uppercase tracking-[0.14em] text-[var(--text-tertiary)]`,
+        children: r ? `Working alternatives` : `More like this`,
+      }),
+      (0, P.jsx)(`div`, {
+        className: `grid grid-cols-2 gap-2`,
+        children: d.map((n) => {
+          let r = e.channels[n];
+          if (!r) return null;
+          let i = r.country ? I(r.country) : ``,
+            s =
+              e.meta.categories.find((e) => e.id === r.categories[0])?.name ??
+              r.categories[0] ??
+              ``;
+          return (0, P.jsxs)(
+            `button`,
+            {
+              onClick: async () => {
+                let e = r.streams[0],
+                  n = `stream-${r.id}`;
+                t.loading(`Connecting…`, { id: n });
+                let i = await u(e.url, e.referrer, e.user_agent);
+                i === `online`
+                  ? (t.dismiss(n),
+                    o.open(r),
+                    a({ to: `/watch/$channelId`, params: { channelId: r.id } }))
+                  : t.error(r.name, {
+                      id: n,
+                      description: p(i),
+                      duration: 6e3,
+                      action: {
+                        label: `Open anyway`,
+                        onClick: () => {
+                          (t.dismiss(n),
+                            o.open(r),
+                            a({ to: `/watch/$channelId`, params: { channelId: r.id } }));
+                        },
+                      },
+                    });
+              },
+              className: `flex flex-col overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-1)] text-left transition-all active:scale-[0.97] active:bg-[var(--surface-2)]`,
+              children: [
+                (0, P.jsx)(`div`, {
+                  className: `relative aspect-video w-full bg-[var(--surface-2)] flex items-center justify-center`,
+                  children: r.logo_url
+                    ? (0, P.jsx)(`img`, {
+                        src: r.logo_url,
+                        alt: r.name,
+                        className: `max-h-[60%] max-w-[60%] object-contain`,
+                      })
+                    : (0, P.jsx)(v, { className: `size-6 text-[var(--text-tertiary)]` }),
+                }),
+                (0, P.jsxs)(`div`, {
+                  className: `flex items-center gap-1.5 px-2.5 py-2`,
+                  children: [
+                    (0, P.jsxs)(`div`, {
+                      className: `min-w-0 flex-1`,
+                      children: [
+                        (0, P.jsx)(`p`, {
+                          className: `truncate text-[12px] font-semibold text-[var(--text-primary)]`,
+                          children: r.name,
+                        }),
+                        s &&
+                          (0, P.jsx)(`p`, {
+                            className: `truncate text-[10px] text-[var(--text-tertiary)] mt-0.5`,
+                            children: s,
+                          }),
+                      ],
+                    }),
+                    i &&
+                      (0, P.jsx)(`img`, {
+                        src: `https://flagcdn.com/w20/${i}.png`,
+                        width: 14,
+                        height: 10,
+                        alt: r.country,
+                        className: `shrink-0 rounded-[2px] object-cover`,
+                      }),
+                  ],
+                }),
+              ],
+            },
+            n,
+          );
+        }),
+      }),
+    ],
+  });
+}
+function z({ catalog: e, failedChannelId: n, limit: r = 6 }) {
+  let a = i(),
+    o = h();
+  return (0, P.jsx)(`div`, {
+    className: `flex flex-col gap-2.5`,
+    children: (0, N.useMemo)(() => {
+      let t = n ? e.channels[n] : null;
+      if (!t) return e.indexes.all_ids.slice(0, r);
+      let i = new Set(t.categories),
+        a = t.country,
+        o = [];
+      for (let n of e.indexes.all_ids) {
+        if (n === t.id) continue;
+        let r = e.channels[n];
+        if (!r) continue;
+        let s = r.categories.filter((e) => i.has(e)).length;
+        if (s === 0) continue;
+        let c = s * 10 + (r.country === a ? 5 : 0);
+        o.push({ id: n, score: c });
+      }
+      o.sort((e, t) => t.score - e.score);
+      let s = o.slice(0, r).map((e) => e.id);
+      if (s.length < Math.min(10, r)) {
+        for (let n of e.indexes.all_ids)
+          if (n !== t.id && (s.includes(n) || s.push(n), s.length >= r)) break;
+      }
+      return s;
+    }, [e, n, r]).map((n) => {
+      let r = e.channels[n];
+      if (!r) return null;
+      let i = r.country ? I(r.country) : ``;
+      return (0, P.jsxs)(
+        `button`,
+        {
+          onClick: async () => {
+            let e = r.streams[0],
+              n = `stream-${r.id}`;
+            t.loading(`Connecting to ${r.name}...`, { id: n });
+            let i = await u(e.url, e.referrer, e.user_agent);
+            i === `online`
+              ? (t.dismiss(n),
+                o.open(r),
+                a({ to: `/watch/$channelId`, params: { channelId: r.id } }))
+              : t.error(r.name, {
+                  id: n,
+                  description: p(i),
+                  duration: 6e3,
+                  action: {
+                    label: `Open anyway`,
+                    onClick: () => {
+                      (t.dismiss(n),
+                        o.open(r),
+                        a({ to: `/watch/$channelId`, params: { channelId: r.id } }));
+                    },
+                  },
+                });
+          },
+          className: `flex items-start gap-3 w-full p-1.5 text-left rounded-lg hover:bg-[var(--surface-2)] transition-all duration-150 active:scale-[0.985]`,
+          children: [
+            (0, P.jsx)(`div`, {
+              className: `relative aspect-video w-28 h-[63px] shrink-0 rounded-md bg-[var(--surface-base)] border border-[var(--border-subtle)] flex items-center justify-center overflow-hidden`,
+              children: r.logo_url
+                ? (0, P.jsx)(`img`, {
+                    src: r.logo_url,
+                    alt: ``,
+                    className: `max-h-[75%] max-w-[75%] object-contain`,
+                  })
+                : (0, P.jsx)(v, { className: `size-5 text-[var(--text-disabled)]` }),
+            }),
+            (0, P.jsxs)(`div`, {
+              className: `min-w-0 flex-1 py-0.5`,
+              children: [
+                (0, P.jsxs)(`div`, {
+                  className: `flex items-center gap-1.5 flex-wrap`,
+                  children: [
+                    (0, P.jsx)(`span`, {
+                      className: `truncate text-[13.5px] font-semibold text-[var(--text-primary)]`,
+                      children: r.name,
+                    }),
+                    i &&
+                      (0, P.jsx)(`img`, {
+                        src: `https://flagcdn.com/w20/${i}.png`,
+                        width: 14,
+                        height: 10,
+                        alt: ``,
+                        className: `rounded-[1.5px] shrink-0 shadow-sm`,
+                      }),
+                  ],
+                }),
+                r.categories.length > 0
+                  ? (0, P.jsx)(`p`, {
+                      className: `truncate text-[11.5px] text-[var(--text-secondary)] mt-1.5 font-medium`,
+                      children: r.categories[0],
+                    })
+                  : (0, P.jsx)(`p`, {
+                      className: `text-[10px] text-[var(--text-disabled)] mt-1.5 font-mono text-[9px] uppercase tracking-wide`,
+                      children: `No category`,
+                    }),
+              ],
+            }),
+          ],
+        },
+        n,
+      );
+    }),
+  });
+}
+export { L as component };

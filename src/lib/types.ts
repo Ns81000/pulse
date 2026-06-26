@@ -41,4 +41,3 @@ export interface Catalog {
     countries: { name: string; code: string; flag: string }[];
   };
 }
-

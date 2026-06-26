@@ -1,0 +1,87 @@
+import { At as e, F as t, Mt as n } from "./stream-messages-xGwTYkSz.js";
+import { i as r, r as i } from "./use-favourites-D-e0KHYb.js";
+var a = n(e(), 1),
+  o = t();
+function s({ children: e }) {
+  let t = (0, a.useRef)(null),
+    [n, s] = (0, a.useState)(!1),
+    [c, l] = (0, a.useState)(!1),
+    [u, d] = (0, a.useState)(!1),
+    f = (0, a.useCallback)(() => {
+      let e = t.current;
+      e && (s(e.scrollLeft > 4), l(e.scrollLeft + e.clientWidth < e.scrollWidth - 4));
+    }, []);
+  ((0, a.useEffect)(() => {
+    let e = t.current;
+    if (!e) return;
+    (f(), e.addEventListener(`scroll`, f, { passive: !0 }));
+    let n = new ResizeObserver(f);
+    return (
+      n.observe(e),
+      () => {
+        (e.removeEventListener(`scroll`, f), n.disconnect());
+      }
+    );
+  }, [f]),
+    (0, a.useEffect)(() => {
+      let e = t.current;
+      if (!e) return;
+      let n = (t) => {
+        if (Math.abs(t.deltaY) <= Math.abs(t.deltaX)) return;
+        let n = e.scrollLeft > 1,
+          r = e.scrollLeft + e.clientWidth < e.scrollWidth - 1,
+          i = t.deltaY < 0,
+          a = t.deltaY > 0;
+        ((i && n) || (a && r)) &&
+          (t.preventDefault(), e.scrollBy({ left: t.deltaY, behavior: `auto` }));
+      };
+      return (
+        e.addEventListener(`wheel`, n, { passive: !1 }),
+        () => e.removeEventListener(`wheel`, n)
+      );
+    }, []));
+  let p = (0, a.useCallback)((e) => {
+    t.current?.scrollBy({ left: e === `left` ? -480 : 480, behavior: `smooth` });
+  }, []);
+  return (0, o.jsxs)(`div`, {
+    className: `relative`,
+    onMouseEnter: () => d(!0),
+    onMouseLeave: () => d(!1),
+    children: [
+      (0, o.jsx)(`div`, {
+        ref: t,
+        className: `-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 no-scrollbar sm:mx-0 sm:px-0`,
+        children: e,
+      }),
+      (0, o.jsx)(`div`, {
+        className: `pointer-events-none absolute inset-y-0 left-0 z-10 flex items-center transition-opacity duration-200 sm:-left-1 ${u && n ? `opacity-100` : `opacity-0`}`,
+        style: {
+          background: `linear-gradient(to right, var(--surface-base) 40%, transparent)`,
+          width: `4rem`,
+        },
+        children: (0, o.jsx)(`button`, {
+          type: `button`,
+          "aria-label": `Scroll left`,
+          onClick: () => p(`left`),
+          className: `pointer-events-auto ml-0 hidden size-7 items-center justify-center rounded-full bg-[var(--surface-3)]/80 text-[var(--text-secondary)] backdrop-blur-sm transition-colors hover:bg-[var(--surface-4)] hover:text-[var(--text-primary)] sm:flex`,
+          children: (0, o.jsx)(r, { className: `size-3.5` }),
+        }),
+      }),
+      (0, o.jsx)(`div`, {
+        className: `pointer-events-none absolute inset-y-0 right-0 z-10 flex items-center justify-end transition-opacity duration-200 sm:-right-1 ${u && c ? `opacity-100` : `opacity-0`}`,
+        style: {
+          background: `linear-gradient(to left, var(--surface-base) 40%, transparent)`,
+          width: `4rem`,
+        },
+        children: (0, o.jsx)(`button`, {
+          type: `button`,
+          "aria-label": `Scroll right`,
+          onClick: () => p(`right`),
+          className: `pointer-events-auto mr-0 hidden size-7 items-center justify-center rounded-full bg-[var(--surface-3)]/80 text-[var(--text-secondary)] backdrop-blur-sm transition-colors hover:bg-[var(--surface-4)] hover:text-[var(--text-primary)] sm:flex`,
+          children: (0, o.jsx)(i, { className: `size-3.5` }),
+        }),
+      }),
+    ],
+  });
+}
+export { s as t };
