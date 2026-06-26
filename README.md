@@ -283,6 +283,15 @@ Pulse is fully pre-configured to build on Vercel.
 
 ---
 
+## Tribute & Acknowledgement
+
+Pulse is made possible by the dedicated contributions of the open-source IPTV database communities. We extend our gratitude and tribute to:
+
+- **The IPTV-Org Project**: For compiling and maintaining the comprehensive database of public television broadcasts, logos, and streams worldwide.
+- **Open-Source Stream Curators**: The community of maintainers and contributors who ensure public broadcasts remain accessible to all.
+
+---
+
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](file:///c:/Users/Ns8pc/Music/bloom-production-ready-main/LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
