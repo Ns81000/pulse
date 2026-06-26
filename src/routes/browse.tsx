@@ -343,8 +343,8 @@ function BrowsePage() {
             {cat.data ? `${ids.length.toLocaleString()} channels` : "Loading catalog…"}
           </p>
         </div>
-        <div className="flex flex-1 items-center gap-2 sm:flex-none">
-          <div className="relative flex-1 sm:w-[280px] sm:flex-none">
+        <div className="flex items-center gap-2">
+          <div className="relative hidden sm:block sm:w-[280px] sm:flex-none">
             <SearchIcon className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[var(--text-tertiary)]" />
             <input
               value={selected.q ?? ""}
