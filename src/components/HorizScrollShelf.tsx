@@ -37,8 +37,17 @@ export function HorizScrollShelf({ children }: Props) {
     if (!el) return;
     const onWheel = (e: WheelEvent) => {
       if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
-      e.preventDefault();
-      el.scrollBy({ left: e.deltaY, behavior: "auto" });
+
+      const canScrollLeft = el.scrollLeft > 1;
+      const canScrollRight = el.scrollLeft + el.clientWidth < el.scrollWidth - 1;
+
+      const scrollingLeft = e.deltaY < 0;
+      const scrollingRight = e.deltaY > 0;
+
+      if ((scrollingLeft && canScrollLeft) || (scrollingRight && canScrollRight)) {
+        e.preventDefault();
+        el.scrollBy({ left: e.deltaY, behavior: "auto" });
+      }
     };
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
