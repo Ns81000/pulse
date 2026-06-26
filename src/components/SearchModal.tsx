@@ -10,8 +10,9 @@ import {
   X,
   Clock,
   ArrowRight,
+  Zap,
 } from "lucide-react";
-import { useCatalog } from "@/lib/data-hooks";
+import { useCatalog, useStreamHealth, useUserCountry, sortChannels, queueBackgroundCheck } from "@/lib/data-hooks";
 import { usePlayer } from "@/lib/player-context";
 import { checkStream } from "@/lib/data-hooks";
 import { toast } from "sonner";
@@ -32,6 +33,7 @@ type Row = {
   label: string;
   sub?: string;
   countryCode?: string;
+  logoUrl?: string | null;
   isFilter: boolean;
   filterType?: "country" | "category" | "language";
   filterCode?: string;
@@ -54,6 +56,8 @@ export function SearchModal({ open, onClose }: Props) {
   const cat = useCatalog();
   const navigate = useNavigate();
   const player = usePlayer();
+  const health = useStreamHealth();
+  const userCountry = useUserCountry();
 
   const [q, setQ] = useState("");
   const [debouncedQ, setDebouncedQ] = useState("");
@@ -142,6 +146,44 @@ export function SearchModal({ open, onClose }: Props) {
     return sets;
   }, [cat.data, pills]);
 
+  // Trending: full hybrid sort (health + geo), then 1 per category for variety
+  const trendingChannels = useMemo(() => {
+    if (!cat.data) return [];
+    // Run the same sort used everywhere else in the app
+    const sorted = sortChannels(
+      cat.data.indexes.all_ids,
+      cat.data.channels,
+      userCountry,
+      health,
+    );
+    // Pick 1 representative per category, prefer confirmed-online channels
+    const seenCategories = new Set<string>();
+    const result: string[] = [];
+    for (const id of sorted) {
+      if (result.length >= 12) break;
+      const ch = cat.data.channels[id];
+      if (!ch) continue;
+      // Skip confirmed-dead channels
+      const h = health[id];
+      if (h && h !== "online") continue;
+      // Pick first unseen category
+      const cat1 = ch.categories[0];
+      if (!cat1 || seenCategories.has(cat1)) continue;
+      seenCategories.add(cat1);
+      result.push(id);
+    }
+    return result;
+  }, [cat.data, health, userCountry]);
+
+  // Queue background pings for trending channels so health updates reactively
+  useEffect(() => {
+    if (!cat.data || trendingChannels.length === 0) return;
+    for (const id of trendingChannels) {
+      const ch = cat.data.channels[id];
+      if (ch) queueBackgroundCheck(ch.id, ch.streams);
+    }
+  }, [cat.data, trendingChannels]);
+
   const playChannel = useCallback(
     async (id: string) => {
       const ch = cat.data?.channels[id];
@@ -212,6 +254,7 @@ export function SearchModal({ open, onClose }: Props) {
           label: c.name,
           sub: countryNameMap.get(c.country) ?? c.country,
           countryCode: c.country,
+          logoUrl: c.logo_url,
           isFilter: false,
           action: () => playChannel(m.id),
         });
@@ -427,15 +470,17 @@ export function SearchModal({ open, onClose }: Props) {
           )}
 
           {/* Search input row */}
-          <div className="flex items-center gap-3 px-4 py-3">
-            <SearchIcon className="size-5 shrink-0 text-[var(--text-tertiary)]" />
+          <div className="flex items-center gap-3 px-4 py-4">
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-[var(--surface-3)]">
+              <SearchIcon className="size-[18px] text-[var(--text-secondary)]" />
+            </div>
             <input
               ref={inputRef}
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder={pills.length === 0 ? "Search channels, countries…" : "Filter channels…"}
-              className="flex-1 bg-transparent text-[16px] text-[var(--text-primary)] outline-none placeholder:text-[var(--text-tertiary)]"
-              style={{ fontSize: "16px" }} // prevent iOS zoom
+              className="flex-1 bg-transparent text-[17px] font-medium text-[var(--text-primary)] outline-none placeholder:text-[var(--text-tertiary)] placeholder:font-normal"
+              style={{ fontSize: "17px" }}
             />
             {q ? (
               <button
@@ -471,10 +516,10 @@ export function SearchModal({ open, onClose }: Props) {
             </div>
           )}
 
-          {/* Recent history */}
+          {/* Recent history + Trending */}
           {!cat.isLoading && isShowingRecent && (
             <div className="px-2 pt-3 pb-2">
-              {recent.length > 0 ? (
+              {recent.length > 0 && (
                 <>
                   <p className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
                     Recently watched
@@ -499,15 +544,98 @@ export function SearchModal({ open, onClose }: Props) {
                         <span className="flex-1 truncate text-[14px] font-medium">{c.name}</span>
                         {code && (
                           <img src={`https://flagcdn.com/w20/${code}.png`} width={18} height={13}
-                            alt={c.country} className="shrink-0 rounded-[3px] object-cover opacity-70"
+                            alt={c.country} className="shrink-0 rounded-[3px] object-cover"
                           />
                         )}
-                        <ArrowRight className="size-3.5 shrink-0 text-[var(--text-tertiary)] opacity-0 transition-opacity group-hover:opacity-100 sm:group-hover:opacity-100" />
                       </button>
                     );
                   })}
                 </>
-              ) : (
+              )}
+
+              {/* Trending / Popular right now */}
+              {trendingChannels.length > 0 && (
+                <div className={recent.length > 0 ? "mt-5" : ""}>
+                  <div className="mb-2 flex items-center gap-2 px-3">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
+                      Popular right now
+                    </p>
+                    <span className="flex items-center gap-1 rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-400">
+                      <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      Live
+                    </span>
+                  </div>
+                  {trendingChannels.map((id) => {
+                    const c = cat.data?.channels[id];
+                    if (!c) return null;
+                    const code = toFlagCode(c.country);
+                    const isOnline = health[id] === "online";
+                    const catName = cat.data?.meta.categories.find(
+                      (ca) => ca.id === c.categories[0]
+                    )?.name;
+                    return (
+                      <button
+                        key={id}
+                        onClick={() => playChannel(id)}
+                        className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition-all active:scale-[0.97] text-[var(--text-secondary)] hover:bg-[var(--surface-3)] hover:text-[var(--text-primary)]"
+                      >
+                        {/* Logo or fallback */}
+                        <div className="relative shrink-0">
+                          {c.logo_url ? (
+                            <img
+                              src={c.logo_url}
+                              alt={c.name}
+                              width={36}
+                              height={36}
+                              className="size-9 rounded-lg object-contain bg-[var(--surface-3)]"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).style.display = "none";
+                              }}
+                            />
+                          ) : (
+                            <div className="flex size-9 items-center justify-center rounded-lg bg-[var(--surface-3)]">
+                              <Tv className="size-4 text-[var(--text-tertiary)]" />
+                            </div>
+                          )}
+                          {/* Online dot */}
+                          {isOnline && (
+                            <span className="absolute -bottom-0.5 -right-0.5 flex size-2.5 items-center justify-center rounded-full bg-[var(--surface-1)]">
+                              <span className="size-1.5 rounded-full bg-emerald-400" />
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{c.name}</p>
+                          <p className="truncate text-[11px] text-[var(--text-tertiary)]">
+                            {catName ?? c.categories[0]}
+                          </p>
+                        </div>
+
+                        <div className="flex shrink-0 flex-col items-end gap-1">
+                          {code && (
+                            <img
+                              src={`https://flagcdn.com/w20/${code}.png`}
+                              width={18} height={13}
+                              alt={c.country}
+                              className="rounded-[3px] object-cover"
+                            />
+                          )}
+                          {isOnline && (
+                            <span className="flex items-center gap-0.5 text-[10px] font-medium text-emerald-400">
+                              <Zap className="size-2.5" />
+                              Live
+                            </span>
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Empty state — no history, no trending yet */}
+              {recent.length === 0 && trendingChannels.length === 0 && (
                 <div className="flex flex-col items-center justify-center px-6 py-14 text-center">
                   <div className="mb-3 flex size-12 items-center justify-center rounded-2xl bg-[var(--surface-2)]">
                     <SearchIcon className="size-5 text-[var(--text-tertiary)]" />
@@ -560,15 +688,34 @@ export function SearchModal({ open, onClose }: Props) {
                         isActive ? "bg-[var(--surface-3)] text-[var(--text-primary)]" : "text-[var(--text-secondary)]"
                       }`}
                     >
-                      {flagCode ? (
-                        <img src={`https://flagcdn.com/w20/${flagCode}.png`} width={20} height={15}
-                          alt={row.countryCode} className="shrink-0 rounded-[3px] object-cover shadow-sm"
+                      {/* Left: channel logo or group icon */}
+                      {row.logoUrl ? (
+                        <img
+                          src={row.logoUrl}
+                          alt={row.label}
+                          width={28}
+                          height={28}
+                          className="size-7 shrink-0 rounded-md object-contain bg-[var(--surface-3)]"
+                          onError={(e) => {
+                            const el = e.currentTarget;
+                            el.style.display = "none";
+                            const sibling = el.nextElementSibling as HTMLElement | null;
+                            if (sibling) sibling.style.display = "flex";
+                          }}
                         />
-                      ) : (
-                        <Icon className="size-4 shrink-0 text-[var(--text-tertiary)]" />
-                      )}
+                      ) : null}
+                      <Icon
+                        className="size-4 shrink-0 text-[var(--text-tertiary)]"
+                        style={{ display: row.logoUrl ? "none" : undefined }}
+                      />
                       <span className="flex-1 truncate text-[14px] font-medium">{row.label}</span>
-                      {row.sub && (
+                      {/* Right: flag only for channel rows, sub text for filter rows */}
+                      {flagCode && (
+                        <img src={`https://flagcdn.com/w20/${flagCode}.png`} width={18} height={13}
+                          alt={row.countryCode} className="shrink-0 rounded-[2px] object-cover"
+                        />
+                      )}
+                      {!row.countryCode && row.sub && (
                         <span className="shrink-0 text-[12px] text-[var(--text-tertiary)]">{row.sub}</span>
                       )}
                       {row.isFilter ? (
